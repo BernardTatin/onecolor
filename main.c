@@ -18,13 +18,13 @@ int main(int argc, char **argv) {
             switch (argv[1][1]) {
                 case '0': filter = filterGrayscale;
                     break;
-                case 'R': filter = filterRed;
+                case 'R': filter = hsvFilterRed;
                     break;
-                case 'G': filter = filterGreen;
+                case 'G': filter = hsvFilterGreen;
                     break;
-                case 'B': filter = filterBlue;
+                case 'B': filter = hsvFilterBlue;
                     break;
-                case 'Y': filter = filterYellow;
+                case 'Y': filter = hsvFilterYellow;
                     break;
                 default:
                     fprintf(stderr, "Bad filter name (%s)\n", argv[1]);

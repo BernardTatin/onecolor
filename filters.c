@@ -5,13 +5,37 @@
 //
 
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <math.h>
+#include <stdio.h>:w
+
+
 #include "color-tools.h"
 #include "filters.h"
+#include "hsv-filter.h"
 
+imageLibraryError hsvFilterRed(
+        imgRawImage* lpInput,
+        imgRawImage** lpOutput) {
+    return hsvFilter(&hsvRed, lpInput, lpOutput);
+}
+
+imageLibraryError hsvFilterGreen(
+        imgRawImage* lpInput,
+        imgRawImage** lpOutput) {
+    return hsvFilter(&hsvGreen, lpInput, lpOutput);
+}
+
+imageLibraryError hsvFilterBlue(
+        imgRawImage* lpInput,
+        imgRawImage** lpOutput) {
+    return hsvFilter(&hsvBlue, lpInput, lpOutput);
+}
+
+imageLibraryError hsvFilterYellow(
+        imgRawImage* lpInput,
+        imgRawImage** lpOutput) {
+    return hsvFilter(&hsvYellow, lpInput, lpOutput);
+}
 
 imageLibraryError filterGrayscale(imgRawImage* lpInput, imgRawImage** lpOutput) {
     unsigned long int i;
@@ -24,7 +48,7 @@ imageLibraryError filterGrayscale(imgRawImage* lpInput, imgRawImage** lpOutput) 
 
     for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
         /* Do a grayscale transformation */
-        int i3 = i*3;
+        unsigned long  i3 = i*3;
         unsigned char luma = (unsigned char)getLuma(Rin(i3), Gin(i3), Bin(i3) );
         Rout(i3) = luma;
         Gout(i3) = luma;
@@ -47,7 +71,7 @@ imageLibraryError filterRed(
     }
 
     for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
-        int i3 = i*3;
+        unsigned long  i3 = i*3;
         if (isRed(Rin(i3), Gin(i3), Bin(i3))) {
             Rout(i3) = Rin(i3);
             Gout(i3) = Gin(i3);
@@ -77,7 +101,7 @@ imageLibraryError filterGreen(
 
     for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
         /* Do a grayscale transformation */
-        int i3 = i*3;
+        unsigned long  i3 = i*3;
         unsigned char luma = (unsigned char)getLuma(Rin(i3), Gin(i3), Bin(i3) );
 
         if (luma < lpInput->lpData[i3 + 1]) {
@@ -108,7 +132,7 @@ imageLibraryError filterBlue(
 
     for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
         /* Do a grayscale transformation */
-        int i3 = i*3;
+        unsigned long  i3 = i*3;
         unsigned char luma = (unsigned char)getLuma(Rin(i3), Gin(i3), Bin(i3) );
         if (luma < lpInput->lpData[i3 + 2]) {
             Rout(i3) = Rin(i3);
@@ -138,7 +162,7 @@ imageLibraryError filterYellow(
 
     for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
         /* Do a grayscale transformation */
-        int i3 = i*3;
+        unsigned long  i3 = i*3;
         if (isYellow(Rin(i3), Gin(i3), Bin(i3))) {
             Rout(i3) = Rin(i3);
             Gout(i3) = Gin(i3);
