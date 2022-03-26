@@ -9,10 +9,16 @@
 #include "color-tools.h"
 #include "hsv-filter.h"
 
-HSVFilter hsvRed = {0.0f, 5.0f};
-HSVFilter hsvGreen = {120.0f, 5.0f};
-HSVFilter hsvBlue = {240.0f, 5.0f};
-HSVFilter hsvYellow = {60.0f, 5.0f};
+static const float defaultHSVDelta = 30.0f;
+
+HSVFilter hsvRed = {0.0f, defaultHSVDelta};
+HSVFilter hsvGreen = {120.0f, defaultHSVDelta};
+HSVFilter hsvBlue = {240.0f, defaultHSVDelta};
+HSVFilter hsvYellow = {60.0f, defaultHSVDelta};
+
+typedef enum {
+    CMaxR, CMaxG, CMaxB
+} CMaxType;
 
 static float modF(float x, float m) {
     while (x < 0.0f) {
@@ -30,12 +36,15 @@ static float rgb2hue(unsigned char R, unsigned char G, unsigned char B) {
     float fB = (float)B/255.0f;
     unsigned char cMax = R;
     unsigned char cMin = R;
+    CMaxType mType = CMaxR;
     unsigned char delta = 0;
     float fDelta = 0.0f;
     if (G > R && G > B) {
         cMax = G;
+        mType = CMaxG;
     } else if (B > R && B > G) {
         cMax = B;
+        mType = CMaxB;
     }
     if (G < R && G < B) {
         cMin = G;
@@ -46,14 +55,15 @@ static float rgb2hue(unsigned char R, unsigned char G, unsigned char B) {
     fDelta = (float)delta / 255.0f;
     if (delta == 0) {
        return hue;
-    } else if (cMax == R) {
-        hue = (fG - fB) / fDelta;
-    } else if (cMax == G) {
+    } else if (mType == CMaxR) {
+        hue = 0.0f + (fG - fB) / fDelta;
+    } else if (mType == CMaxG) {
         hue = 2.0f + (fB - fR) / fDelta;
     } else {
         hue = 4.0f + (fR - fG) / fDelta;
     }
-    hue = modF(60.0f * hue, 360.0f);
+    hue = 60.0f * hue;
+    // hue = modF(60.0f * hue, 360.0f);
     return hue;
 }
 
