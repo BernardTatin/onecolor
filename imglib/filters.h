@@ -8,18 +8,6 @@
 imageLibraryError filterGrayscale(
         imgRawImage* lpInput,
         imgRawImage** lpOutput);
-imageLibraryError filterRed(
-        imgRawImage* lpInput,
-        imgRawImage** lpOutput);
-imageLibraryError filterGreen(
-        imgRawImage* lpInput,
-        imgRawImage** lpOutput);
-imageLibraryError filterBlue(
-        imgRawImage* lpInput,
-        imgRawImage** lpOutput);
-imageLibraryError filterYellow(
-        imgRawImage* lpInput,
-        imgRawImage** lpOutput);
 
 imageLibraryError hsvFilterRed(
         imgRawImage* lpInput,
@@ -31,6 +19,9 @@ imageLibraryError hsvFilterBlue(
         imgRawImage* lpInput,
         imgRawImage** lpOutput);
 imageLibraryError hsvFilterYellow(
+        imgRawImage* lpInput,
+        imgRawImage** lpOutput);
+imageLibraryError hsvFilterNormal(
         imgRawImage* lpInput,
         imgRawImage** lpOutput);
 

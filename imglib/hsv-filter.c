@@ -9,12 +9,17 @@
 #include "color-tools.h"
 #include "hsv-filter.h"
 
-static const float defaultHSVDelta = 30.0f;
+const float defaultHSVDelta = 30.0f;
 
-HSVFilter hsvRed = {0.0f, defaultHSVDelta};
-HSVFilter hsvGreen = {120.0f, defaultHSVDelta};
-HSVFilter hsvBlue = {240.0f, defaultHSVDelta};
-HSVFilter hsvYellow = {60.0f, defaultHSVDelta};
+const float hsvRed      =   0.0f;
+const float hsvGreen    = 120.0f;
+const float hsvBlue     = 240.0f;
+const float hsvYellow   =  60.0f;
+
+HSVFilter mainHSVFilter = {
+        hsvRed,
+        defaultHSVDelta
+};
 
 typedef enum {
     CMaxR, CMaxG, CMaxB
@@ -63,6 +68,9 @@ static float rgb2hue(unsigned char R, unsigned char G, unsigned char B) {
         hue = 4.0f + (fR - fG) / fDelta;
     }
     hue = 60.0f * hue;
+//    fprintf(stdout, "RGB: %3u, %3u, %3u -> hue: %3.5f\n",
+//            (unsigned)R, (unsigned)G, (unsigned)B,
+//            hue);
     // hue = modF(60.0f * hue, 360.0f);
     return hue;
 }
@@ -73,6 +81,8 @@ imageLibraryError hsvFilter(
         imgRawImage** lpOutput) {
     unsigned long int i;
 
+    fprintf(stdout, "hue = %3.5f, delta = %3.5f\n",
+            filter->h, filter->delta);
     if(lpOutput == NULL) {
         (*lpOutput) = lpInput; /* We will replace our input structure ... */
     } else {

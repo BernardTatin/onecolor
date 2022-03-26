@@ -10,9 +10,9 @@ do_sample() {
   ${ONE_COLOR} -${option} images/${sample}.jpg images/${sample}-${option}.jpg
 }
 
-for opt in 0 R G B Y
-do
-  do_sample ${opt}
-done
+#for opt in 0 R G B Y
+#do
+#  do_sample ${opt}
+#done
 
-eog /home/bernard/git/onecolor/images/${sample}.jpg &
+eog images/${sample}.jpg &
