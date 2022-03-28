@@ -25,7 +25,7 @@ typedef enum {
     CMaxR, CMaxG, CMaxB
 } CMaxType;
 
-static float modF(float x, float m) {
+static float modF(float x, const float m) {
     while (x < 0.0f) {
         x += m;
     }
@@ -34,7 +34,7 @@ static float modF(float x, float m) {
     }
     return x;
 }
-static float rgb2hue(unsigned char R, unsigned char G, unsigned char B) {
+static float rgb2hue(const unsigned char R, const unsigned char G, const unsigned char B) {
     float hue = 0.0f;
     float fR = (float)R/255.0f;
     float fG = (float)G/255.0f;
@@ -76,21 +76,16 @@ static float rgb2hue(unsigned char R, unsigned char G, unsigned char B) {
 }
 
 imageLibraryError hsvFilter(
-        HSVFilter *filter,
+        const HSVFilter *filter,
         imgRawImage* lpInput,
         imgRawImage** lpOutput) {
-    unsigned long int i;
+    unsigned long int pixelNumber = lpInput->width*lpInput->height;
 
     fprintf(stdout, "hue = %3.5f, delta = %3.5f\n",
             filter->h, filter->delta);
-    if(lpOutput == NULL) {
-        (*lpOutput) = lpInput; /* We will replace our input structure ... */
-    } else {
-        (*lpOutput) = make_lpOutput(lpInput);
-    }
+    (*lpOutput) = make_lpOutput(lpInput);
 
-    for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
-        /* Do a grayscale transformation */
+    for(unsigned int i = 0; i < pixelNumber; i++) {
         unsigned long int i3 = i*3;
         bool inFilter = false;
         float hue = rgb2hue(Rin(i3), Gin(i3), Bin(i3) );

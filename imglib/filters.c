@@ -48,15 +48,10 @@ imageLibraryError hsvFilterNormal(
 }
 
 imageLibraryError filterGrayscale(imgRawImage* lpInput, imgRawImage** lpOutput) {
-    unsigned long int i;
+    unsigned long int pixelNumber = lpInput->width*lpInput->height;
+    (*lpOutput) = make_lpOutput(lpInput);
 
-    if(lpOutput == NULL) {
-        (*lpOutput) = lpInput; /* We will replace our input structure ... */
-    } else {
-        (*lpOutput) = make_lpOutput(lpInput);
-    }
-
-    for(i = 0; i < lpInput->width*lpInput->height; i=i+1) {
+    for(unsigned int i = 0; i < pixelNumber; i++) {
         /* Do a grayscale transformation */
         unsigned long  i3 = i*3;
         unsigned char luma = (unsigned char)getLuma(Rin(i3), Gin(i3), Bin(i3) );

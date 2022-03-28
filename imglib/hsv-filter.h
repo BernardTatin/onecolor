@@ -25,7 +25,7 @@ extern const float hsvBlue;
 extern const float hsvYellow;
 
 imageLibraryError hsvFilter(
-        HSVFilter *filter,
+        const HSVFilter *filter,
         imgRawImage* lpInput,
         imgRawImage** lpOutput);
 
