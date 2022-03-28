@@ -29,20 +29,7 @@ static inline imgRawImage* make_lpOutput(imgRawImage* lpInput) {
     lpOutput->lpData = malloc(sizeof(unsigned char) * lpInput->width*lpInput->height*3);
     return lpOutput;
 }
-static inline bool isRed(unsigned char R, unsigned char G, unsigned char B) {
-    return (KlR*(float)R > KlG*(float)G) && (KlR*(float)R > KlG*(float)B);
-}
-
-static inline bool isYellow(unsigned char R, unsigned char G, unsigned char B) {
-    float yDiff = fabsf(KlR*(float)R - KlG*(float)G);
-    float yellow = KlR*(float)R + KlG*(float)G;
-    if (yDiff >= 255.0f) {
-        fprintf(stderr, "Yellow diff: %3.5f, R: %3u, G: %3u\n",
-                yDiff, R, G);
-    }
-    return (yDiff < 31.0f) && (yellow > (float)B);
-}
-static inline float getLuma(unsigned char R, unsigned char G, unsigned char B) {
+static inline float getLuma(const unsigned char R, const unsigned char G, const unsigned char B) {
     return roundf(KlR * (float)R + KlG * (float)G + KlB * (float)B);
 }
 
