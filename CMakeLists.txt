@@ -1,16 +1,17 @@
 cmake_minimum_required(VERSION 3.21)
-project(onecolor C)
+project(one-color C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(onecolor
-        onecolor/onecolor.c
-        imglib/filters.h
-        imglib/filters.c
-        imglib/image-files.c
-        imglib/image-files.h
-        imglib/color-tools.h
-        imglib/color-data.h
-        imglib/hsv-filter.c
-        imglib/hsv-filter.h)
-target_link_libraries(onecolor jpeg m)
+include_directories(image-lib)
+add_executable(one-color
+        one-color/one-color.c
+        image-lib/filters.h
+        image-lib/filters.c
+        image-lib/image-files.c
+        image-lib/image-files.h
+        image-lib/color-tools.h
+        image-lib/color-data.h
+        image-lib/hsv-filter.c
+        image-lib/hsv-filter.h)
+target_link_libraries(one-color jpeg m)

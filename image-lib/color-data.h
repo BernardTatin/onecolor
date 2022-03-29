@@ -9,16 +9,16 @@
 #define KlG 0.587f
 #define KlB 0.114f
 
-typedef struct _imgRawImage {
+typedef struct {
     unsigned int numComponents;
     unsigned long int width, height;
 
     unsigned char* lpData;
-} imgRawImage;
+} ImageLib_RawImage;
 
 typedef enum {
     imageLibE_Ok,
     imageLibE_Bad
-} imageLibraryError;
+} ImageLib_Error;
 
 #endif //ONECOLOR_COLOR_DATA_H

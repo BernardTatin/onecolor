@@ -7,7 +7,7 @@
 
 #include "filters.h"
 
-imgRawImage *loadJpegImageFile(char *lpFilename);
-int storeJpegImageFile(imgRawImage *lpImage, char *lpFilename);
+ImageLib_RawImage *loadJpegImageFile(char *lpFilename);
+int storeJpegImageFile(ImageLib_RawImage *lpImage, char *lpFilename);
 
 #endif //ONECOLOR_IMAGE_FILES_H

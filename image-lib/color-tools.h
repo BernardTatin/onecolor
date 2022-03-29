@@ -19,10 +19,10 @@
 #define Bout(i3) (*lpOutput)->lpData[i3 + 2]
 
 
-static inline imgRawImage* make_lpOutput(imgRawImage* lpInput) {
-    imgRawImage* lpOutput;
+static inline ImageLib_RawImage* make_lpOutput(ImageLib_RawImage* lpInput) {
+    ImageLib_RawImage * lpOutput;
 
-    lpOutput = malloc(sizeof(imgRawImage));
+    lpOutput = malloc(sizeof(ImageLib_RawImage));
     lpOutput->width = lpInput->width;
     lpOutput->height = lpInput->height;
     lpOutput->numComponents = lpInput->numComponents;
