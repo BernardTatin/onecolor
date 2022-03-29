@@ -16,17 +16,17 @@ typedef struct {
     float delta;
 } HSVFilter;
 
-extern const float defaultHSVDelta;
-extern HSVFilter mainHSVFilter;
+extern const float default_HSV_delta;
+extern HSVFilter main_HSV_filter;
 
-extern const float hsvRed;
-extern const float hsvGreen;
-extern const float hsvBlue;
-extern const float hsvYellow;
+extern const float hsv_Red;
+extern const float hsv_Green;
+extern const float hsv_Blue;
+extern const float hsv_Yellow;
 
-imageLibraryError hsvFilter(
+ImageLib_Error hsv_filter(
         const HSVFilter *filter,
-        imgRawImage* lpInput,
-        imgRawImage** lpOutput);
+        ImageLib_RawImage* lpInput,
+        ImageLib_RawImage** lpOutput);
 
 #endif //ONECOLOR_HSV_FILTER_H

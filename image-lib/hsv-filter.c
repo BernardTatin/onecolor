@@ -9,23 +9,23 @@
 #include "color-tools.h"
 #include "hsv-filter.h"
 
-const float defaultHSVDelta = 30.0f;
+const float default_HSV_delta = 30.0f;
 
-const float hsvRed      =   0.0f;
-const float hsvGreen    = 120.0f;
-const float hsvBlue     = 240.0f;
-const float hsvYellow   =  60.0f;
+const float hsv_Red      =   0.0f;
+const float hsv_Green    = 120.0f;
+const float hsv_Blue     = 240.0f;
+const float hsv_Yellow   =  60.0f;
 
-HSVFilter mainHSVFilter = {
-        hsvRed,
-        defaultHSVDelta
+HSVFilter main_HSV_filter = {
+        hsv_Red,
+        default_HSV_delta
 };
 
 typedef enum {
     CMaxR, CMaxG, CMaxB
 } CMaxType;
 
-static float modF(float x, const float m) {
+static float mod_float(float x, const float m) {
     while (x < 0.0f) {
         x += m;
     }
@@ -34,6 +34,7 @@ static float modF(float x, const float m) {
     }
     return x;
 }
+
 static float rgb2hue(const unsigned char R, const unsigned char G, const unsigned char B) {
     float hue = 0.0f;
     float fR = (float)R/255.0f;
@@ -71,14 +72,14 @@ static float rgb2hue(const unsigned char R, const unsigned char G, const unsigne
 //    fprintf(stdout, "RGB: %3u, %3u, %3u -> hue: %3.5f\n",
 //            (unsigned)R, (unsigned)G, (unsigned)B,
 //            hue);
-    // hue = modF(60.0f * hue, 360.0f);
+    // hue = mod_float(60.0f * hue, 360.0f);
     return hue;
 }
 
-imageLibraryError hsvFilter(
+ImageLib_Error hsv_filter(
         const HSVFilter *filter,
-        imgRawImage* lpInput,
-        imgRawImage** lpOutput) {
+        ImageLib_RawImage* lpInput,
+        ImageLib_RawImage** lpOutput) {
     unsigned long int pixelNumber = lpInput->width*lpInput->height;
 
     fprintf(stdout, "hue = %3.5f, delta = %3.5f\n",
@@ -89,8 +90,8 @@ imageLibraryError hsvFilter(
         unsigned long int i3 = i*3;
         bool inFilter = false;
         float hue = rgb2hue(Rin(i3), Gin(i3), Bin(i3) );
-        float minHue = modF(filter->h - filter->delta, 360.0f);
-        float maxHue = modF(filter->h + filter->delta, 360.0f);
+        float minHue = mod_float(filter->h - filter->delta, 360.0f);
+        float maxHue = mod_float(filter->h + filter->delta, 360.0f);
         if (minHue < maxHue) {
             inFilter = (hue <= maxHue) && (hue >= minHue);
         } else {

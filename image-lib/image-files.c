@@ -12,11 +12,11 @@
 #include "color-data.h"
 #include "image-files.h"
 
-imgRawImage *loadJpegImageFile(char *lpFilename) {
+ImageLib_RawImage *loadJpegImageFile(char *lpFilename) {
     struct jpeg_decompress_struct info;
     struct jpeg_error_mgr err;
 
-    imgRawImage *lpNewImage;
+    ImageLib_RawImage *lpNewImage;
 
     unsigned long int imgWidth, imgHeight;
     int numComponents;
@@ -59,7 +59,7 @@ imgRawImage *loadJpegImageFile(char *lpFilename) {
     dwBufferBytes = imgWidth * imgHeight * 3; /* We only read RGB, not A */
     lpData = (unsigned char *) malloc(sizeof(unsigned char) * dwBufferBytes);
 
-    lpNewImage = (imgRawImage *) malloc(sizeof(imgRawImage));
+    lpNewImage = (ImageLib_RawImage *) malloc(sizeof(ImageLib_RawImage));
     lpNewImage->numComponents = numComponents;
     lpNewImage->width = imgWidth;
     lpNewImage->height = imgHeight;
@@ -78,7 +78,7 @@ imgRawImage *loadJpegImageFile(char *lpFilename) {
     return lpNewImage;
 }
 
-int storeJpegImageFile(imgRawImage *lpImage, char *lpFilename) {
+int storeJpegImageFile(ImageLib_RawImage *lpImage, char *lpFilename) {
     struct jpeg_compress_struct info;
     struct jpeg_error_mgr err;
 
