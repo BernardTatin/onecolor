@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ONE_COLOR=./cmake-build-debug/onecolor
+ONE_COLOR=./cmake-build-debug/one-color
 sample=sample2
 [ $# -ne 0 ] && sample=$1
 

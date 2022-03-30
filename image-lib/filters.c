@@ -13,40 +13,7 @@
 #include "color-tools.h"
 #include "filters.h"
 #include "hsv-filter.h"
-
-ImageLib_Error hsv_filter_red(
-        ImageLib_RawImage* lpInput,
-        ImageLib_RawImage** lpOutput) {
-    main_HSV_filter.h = hsv_Red;
-    return hsv_filter(&main_HSV_filter, lpInput, lpOutput);
-}
-
-ImageLib_Error hsv_filter_green(
-        ImageLib_RawImage* lpInput,
-        ImageLib_RawImage** lpOutput) {
-    main_HSV_filter.h = hsv_Green;
-    return hsv_filter(&main_HSV_filter, lpInput, lpOutput);
-}
-
-ImageLib_Error hsv_filter_blue(
-        ImageLib_RawImage* lpInput,
-        ImageLib_RawImage** lpOutput) {
-    main_HSV_filter.h = hsv_Blue;
-    return hsv_filter(&main_HSV_filter, lpInput, lpOutput);
-}
-
-ImageLib_Error hsv_filter_yellow(
-        ImageLib_RawImage* lpInput,
-        ImageLib_RawImage** lpOutput) {
-    main_HSV_filter.h = hsv_Yellow;
-    return hsv_filter(&main_HSV_filter, lpInput, lpOutput);
-}
-
-ImageLib_Error hsv_filter_normal(
-        ImageLib_RawImage* lpInput,
-        ImageLib_RawImage** lpOutput) {
-    return hsv_filter(&main_HSV_filter, lpInput, lpOutput);
-}
+#include "main-configuration.h"
 
 ImageLib_Error filter_gray_scale(ImageLib_RawImage* lpInput, ImageLib_RawImage** lpOutput) {
     unsigned long int pixelNumber = lpInput->width*lpInput->height;
@@ -62,4 +29,26 @@ ImageLib_Error filter_gray_scale(ImageLib_RawImage* lpInput, ImageLib_RawImage**
     }
 
     return imageLibE_Ok;
+}
+
+ImageLib_Error exec_filter(ImageLib_RawImage* lpInput, ImageLib_RawImage** lpOutput) {
+    switch (global_configuration.type) {
+        case Filter_Grey:
+            return filter_gray_scale(lpInput, lpOutput);
+        case Filter_Red:
+            global_configuration.hue = hsv_Red;
+            return filter_hue(lpInput, lpOutput);
+        case Filter_Green:
+            global_configuration.hue = hsv_Green;
+            return filter_hue(lpInput, lpOutput);
+        case Filter_Blue:
+            global_configuration.hue = hsv_Blue;
+            return filter_hue(lpInput, lpOutput);
+        case Filter_Yellow:
+            global_configuration.hue = hsv_Yellow;
+            return filter_hue(lpInput, lpOutput);
+        default:
+            fprintf(stderr, "FATAL ERROR: unknown filter\n");
+            exit(1);
+    }
 }

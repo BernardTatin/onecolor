@@ -7,19 +7,9 @@
 #include <stdio.h>
 
 #include "color-tools.h"
+#include "filters.h"
 #include "hsv-filter.h"
-
-const float default_HSV_delta = 30.0f;
-
-const float hsv_Red      =   0.0f;
-const float hsv_Green    = 120.0f;
-const float hsv_Blue     = 240.0f;
-const float hsv_Yellow   =  60.0f;
-
-HSVFilter main_HSV_filter = {
-        hsv_Red,
-        default_HSV_delta
-};
+#include "main-configuration.h"
 
 typedef enum {
     CMaxR, CMaxG, CMaxB
@@ -76,22 +66,21 @@ static float rgb2hue(const unsigned char R, const unsigned char G, const unsigne
     return hue;
 }
 
-ImageLib_Error hsv_filter(
-        const HSVFilter *filter,
-        ImageLib_RawImage* lpInput,
-        ImageLib_RawImage** lpOutput) {
+ImageLib_Error filter_hue(ImageLib_RawImage* lpInput, ImageLib_RawImage** lpOutput) {
     unsigned long int pixelNumber = lpInput->width*lpInput->height;
 
-    fprintf(stdout, "hue = %3.5f, delta = %3.5f\n",
-            filter->h, filter->delta);
+    if (global_configuration.verbose) {
+        fprintf(stdout, "hue = %3.5f, delta = %3.5f\n",
+                global_configuration.hue, global_configuration.delta);
+    }
     (*lpOutput) = make_lpOutput(lpInput);
 
     for(unsigned int i = 0; i < pixelNumber; i++) {
         unsigned long int i3 = i*3;
         bool inFilter = false;
         float hue = rgb2hue(Rin(i3), Gin(i3), Bin(i3) );
-        float minHue = mod_float(filter->h - filter->delta, 360.0f);
-        float maxHue = mod_float(filter->h + filter->delta, 360.0f);
+        float minHue = mod_float(global_configuration.hue - global_configuration.delta, 360.0f);
+        float maxHue = mod_float(global_configuration.hue + global_configuration.delta, 360.0f);
         if (minHue < maxHue) {
             inFilter = (hue <= maxHue) && (hue >= minHue);
         } else {

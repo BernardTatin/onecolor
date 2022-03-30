@@ -3,11 +3,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #include "color-data.h"
 #include "image-files.h"
 #include "filters.h"
 #include "hsv-filter.h"
+#include "main-configuration.h"
 
 static void do_help(const int exit_code) {
     fprintf(stderr, "one-color [-0|-R|-V|-B|-Y|-h hue] jpegin jpegout\n");
@@ -25,31 +27,37 @@ static inline float get_float_arg(char *arg) {
 }
 
 int main(int argc, char **argv) {
-    ImageLib_Error (*filter)(
-            ImageLib_RawImage* lpInput,
-            ImageLib_RawImage** lpOutput) = NULL;
     if (argc < 3) {
         do_help(1);
     } else {
         int idx = 1;
         while (*argv[idx] == '-') {
-            switch (argv[1][idx]) {
-                case '0': filter = filter_gray_scale;
+            switch (argv[idx][1]) {
+                case 'V' :
+                    global_configuration.verbose = true;
                     break;
-                case 'R': filter = hsv_filter_red;
+                case '0':
+                    global_configuration.type = Filter_Grey;
                     break;
-                case 'G': filter = hsv_filter_green;
+                case 'R':
+                    global_configuration.type = Filter_Red;
                     break;
-                case 'B': filter = hsv_filter_blue;
+                case 'G':
+                    global_configuration.type = Filter_Green;
                     break;
-                case 'Y': filter = hsv_filter_yellow;
+                case 'B':
+                    global_configuration.type = Filter_Blue;
                     break;
-                case 'h': filter = hsv_filter_normal;
+                case 'Y':
+                    global_configuration.type = Filter_Yellow;
+                    break;
+                case 'h':
+                    global_configuration.type = Filter_Hue;
                     idx++;
                     if (idx >= argc) {
                         do_help(1);
                     }
-                    main_HSV_filter.h = get_float_arg(argv[idx]);
+                    global_configuration.hue = get_float_arg(argv[idx]);
                     break;
                 default:
                     fprintf(stderr, "Bad filter name (%s)\n", argv[1]);
@@ -64,7 +72,7 @@ int main(int argc, char **argv) {
             exit (1);
         }
         idx++;
-        filter(image, &grey_image);
+        exec_filter(image, &grey_image);
         storeJpegImageFile(grey_image, argv[idx]);
     }
     return 0;
