@@ -47,6 +47,8 @@ ImageLib_Error exec_filter(ImageLib_RawImage* lpInput, ImageLib_RawImage** lpOut
         case Filter_Yellow:
             global_configuration.hue = hsv_Yellow;
             return filter_hue(lpInput, lpOutput);
+        case Filter_Hue:
+            return filter_hue(lpInput, lpOutput);
         default:
             fprintf(stderr, "FATAL ERROR: unknown filter\n");
             exit(1);
