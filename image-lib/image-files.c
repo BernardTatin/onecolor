@@ -7,15 +7,20 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <jpeglib.h>
 
 #include "color-data.h"
 #include "image-files.h"
+#include "main-configuration.h"
 
 ImageLib_RawImage *loadJpegImageFile(char *lpFilename) {
     struct jpeg_decompress_struct info;
     struct jpeg_error_mgr err;
 
+    if (global_configuration.verbose) {
+        fprintf(stdout, "Reading %s\n", lpFilename);
+    }
     ImageLib_RawImage *lpNewImage;
 
     unsigned long int imgWidth, imgHeight;
@@ -86,6 +91,9 @@ int storeJpegImageFile(ImageLib_RawImage *lpImage, char *lpFilename) {
 
     FILE *fHandle;
 
+    if (global_configuration.verbose) {
+        fprintf(stdout, "Writing %s\n", lpFilename);
+    }
     fHandle = fopen(lpFilename, "wb");
     if (fHandle == NULL) {
         fprintf(stderr, "%s:%u Failed to open output file %s\n", __FILE__, __LINE__, lpFilename);

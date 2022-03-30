@@ -6,5 +6,5 @@
 src=images/sample$1.jpg
 dst=images/sample$1-$2.jpg
 
-${ONE_COLOR} -h $2 ${src} ${dst} \
-  && eog ${dst} &
+${ONE_COLOR} -V -h $2 ${src} ${dst} || exit 1
+eog ${dst} &
