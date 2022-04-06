@@ -2,6 +2,12 @@
 
 Le but de cet outil est de ne garder qu'une seule couleur d'une photo pour rendre en noir et blanc tout le reste. Pour la teinte (_hue_), voir [HSL and HSV](https://en.m.wikipedia.org/wiki/HSL_and_HSV) sur _Wikipedia_.
 
+Voir aussi:
+
+- [TODO](TODO.md)
+
+
+
 ## le code
 
 Pour le moment, tout est écrit en _C_ sur une plate-forme _Linux_. La compilation se fait très simplement:
