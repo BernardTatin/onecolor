@@ -1,6 +1,6 @@
 # One Color
 
-Le but de cet outil est de ne garder qu'une seule couleur d'une photo et tout ce qui n'est pas de cette couleur est en noir et blanc. Pour la teinte (_hue_), voir [HSL and HSV](https://en.m.wikipedia.org/wiki/HSL_and_HSV) sur _Wikipedia_.
+Le but de cet outil est de ne garder qu'une seule couleur d'une photo pour rendre en noir et blanc tout le reste. Pour la teinte (_hue_), voir [HSL and HSV](https://en.m.wikipedia.org/wiki/HSL_and_HSV) sur _Wikipedia_.
 
 ## le code
 
