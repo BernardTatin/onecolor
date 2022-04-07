@@ -61,21 +61,30 @@ static inline void quad_vertex(const int tx, const int ty,
 static inline void unit_quad(void) {
     int width = mainWindow.width;
     int height = mainWindow.height;
+    int left = 0;
+    int top = 0;
     float nh = (float)height;
     float nw = mainImage.ratio * (float)height;
     if (nw > (float)width) {
+        float fTop;
         float r = (float)width / nw;
         nh = roundf(nh * r);
         nw = (float)width;
+        fTop = roundf(0.5f * ((float)mainWindow.height - nh));
+        top = (int)fTop;
     } else {
+        float fLeft;
         nw = roundf(nw);
+        fLeft = roundf(0.5f * ((float)mainWindow.width - nw));
+        left = (int)fLeft;
     }
-    width = (int)nw;
-    height = (int)nh;
-    quad_vertex(0, 0, 0, 0);
-    quad_vertex(0, 1, 0, height);
+    width = (int)nw + left;
+    height = (int)nh + top;
+
+    quad_vertex(0, 0, left, top);
+    quad_vertex(0, 1, left, height);
     quad_vertex(1, 1, width, height);
-    quad_vertex(1, 0, width, 0);
+    quad_vertex(1, 0, width, top);
 }
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
@@ -113,8 +122,6 @@ void reshapeFunc(GLsizei new_width, GLsizei new_height) {
     glMatrixMode(GL_MODELVIEW);
 
     glutPostRedisplay();
-    fprintf(stdout, "Window width: %d, height: %d\n",
-            mainWindow.width, mainWindow.height);
 }
 
 
