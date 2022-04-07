@@ -117,7 +117,7 @@ void initGL(int w, int h) {
 }
 
 /* Load an image using DevIL and return the devIL handle (-1 if failure) */
-int LoadImage(char *filename) {
+ILuint LoadImage(char *filename) {
     ILuint image;
     ILboolean success;
 
@@ -126,7 +126,8 @@ int LoadImage(char *filename) {
 
 
     /* Loading of the image filename by DevIL */
-    if (success = ilLoadImage(filename)) {
+    success = ilLoadImage(filename);
+    if (success) {
         /* Convert every colour component into unsigned byte */
         /* You can replace IL_RGB with IL_RGBA if your image contains alpha channel */
 
@@ -144,7 +145,7 @@ int LoadImage(char *filename) {
 int main(int argc, char **argv) {
 
     GLuint texid;
-    int image;
+    ILuint image;
 
     if (argc < 2) {
         fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
@@ -200,8 +201,8 @@ int main(int argc, char **argv) {
     glutMainLoop();
 
     /* Delete used resources and quit */
-    ilDeleteImages(1,
-                   &image); /* Because we have already copied image data into texture data we can release memory used by image. */
+    /* Because we have already copied image data into texture data we can release memory used by image. */
+    ilDeleteImages(1, &image);
     glDeleteTextures(1, &texid);
 
     return 0;
