@@ -16,39 +16,41 @@ int height = DEFAULT_HEIGHT;
 int nFrames = 0;
 
 
-static int window;
-static int menu_id;
-static int submenu_id;
-static int value = 2;
-
+//static int window;
+//static int menu_id;
+//static int submenu_id;
+//static int value = 2;
+static GLWindow mainWindow = {
+    .value = 2
+};
 
 void menuFunc0(int num) {
-    value = num;
+    mainWindow.value = num;
 
     glutPostRedisplay();
 }
 
 void menuFunc1(int num) {
     if (num == 0) {
-        glutDestroyWindow(window);
+        glutDestroyWindow(mainWindow.window);
         exit(0);
     } else {
-        value = num;
+        mainWindow.value = num;
     }
 
     glutPostRedisplay();
 }
 
 void createMenu(void) {
-    submenu_id = glutCreateMenu(menuFunc0);
+    mainWindow.submenu_id = glutCreateMenu(menuFunc0);
     glutAddMenuEntry("submenu1", 2);
     glutAddMenuEntry("submenu2", 3);
     glutAddMenuEntry("submenu3", 4);
     glutAddMenuEntry("submenu4", 5);
 
-    menu_id = glutCreateMenu(menuFunc1);
+    mainWindow.menu_id = glutCreateMenu(menuFunc1);
     glutAddMenuEntry("Clear", 1);
-    glutAddSubMenu("Draw", submenu_id);
+    glutAddSubMenu("Draw", mainWindow.submenu_id);
     glutAddMenuEntry("Quit", 0);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
@@ -67,7 +69,7 @@ void displayFunc() {
     // Operate on model-view matrix
     glMatrixMode(GL_MODELVIEW);
 
-    /* Draw a fullscreen mapped quad */
+    /* Draw a full screen mapped quad */
     glBegin(GL_QUADS);
     glTexCoord2i(0, 0);
     glVertex2i(0, 0);
@@ -84,12 +86,12 @@ void displayFunc() {
 
 /* Handler for window re-size event. Called back when the window first appears and
    whenever the window is re-sized with its new width and height */
-void reshapeFunc(GLsizei newwidth, GLsizei newheight) {
+void reshapeFunc(GLsizei new_width, GLsizei new_height) {
 
-    // printf("reshape(%d, %d) ", newwidth, newheight );
+    // printf("reshape(%d, %d) ", new_width, new_height );
 
     // Set the viewport to cover the new window
-    glViewport(0, 0, width = newwidth, height = newheight);
+    glViewport(0, 0, width = new_width, height = new_height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, width, height, 0.0, 0.0, 100.0);
@@ -156,7 +158,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
     glutInitWindowSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);   // Set the window's initial width & height
 
-    window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
+    mainWindow.window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
 
     createMenu();
 
