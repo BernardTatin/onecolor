@@ -10,6 +10,10 @@ add_executable(opengl-load-image
         opengl/opengl-load-image.c)
 target_link_libraries(opengl-load-image m glut GL GLU IL)
 
+add_executable(one-color-GL
+        opengl/one-color-GL.c)
+target_link_libraries(one-color-GL m glut GL GLU IL)
+
 add_executable(one-color
         one-color/one-color.c
         image-lib/filters.h

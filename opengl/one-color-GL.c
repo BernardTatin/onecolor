@@ -1,7 +1,7 @@
 //
 // Created by bernard on 06/04/2022.
 //
-// Original code (with an addition of a printf) from The Little Body found at:
+// Code heavily copied from The Little Body at:
 //      https://community.khronos.org/t/how-to-load-an-image-in-opengl/71231/5
 
 #include <IL/il.h>
@@ -60,7 +60,7 @@ void createMenu(void) {
    whenever the window needs to be re-painted. */
 void displayFunc() {
 
-    printf("Frame %d ", ++nFrames);
+    // printf("Frame %d ", ++nFrames);
 
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -87,7 +87,7 @@ void displayFunc() {
    whenever the window is re-sized with its new width and height */
 void reshapeFunc(GLsizei newwidth, GLsizei newheight) {
 
-    printf("reshape(%d, %d) ", newwidth, newheight );
+    // printf("reshape(%d, %d) ", newwidth, newheight );
 
     // Set the viewport to cover the new window
     glViewport(0, 0, width = newwidth, height = newheight);
@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
     int image;
 
     if (argc < 2) {
-        printf("%s image1.[jpg,bmp,tga,...] ", argv[0] );
+        fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
         return 0;
     }
 
@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
     glutInitWindowSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);   // Set the window's initial width & height
 
-    window = glutCreateWindow(argv[0]);      // Create window with the name of the executable
+    window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
 
     createMenu();
 
@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
 
     /* Initialization of DevIL */
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
-        printf("wrong DevIL version ");
+        fprintf(stderr, "wrong DevIL version\n");
         return -1;
     }
     ilInit();
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
     /* load the file picture with DevIL */
     image = LoadImage(argv[1]);
     if (image == -1) {
-        printf("Can't load picture file %s by DevIL ", argv[1]);
+        fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
 
