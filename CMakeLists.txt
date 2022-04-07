@@ -6,6 +6,10 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 include_directories(image-lib
         configuration)
+add_executable(opengl-load-image
+        opengl/opengl-load-image.c)
+target_link_libraries(opengl-load-image m glut GL GLU IL)
+
 add_executable(one-color
         one-color/one-color.c
         image-lib/filters.h
