@@ -15,4 +15,12 @@ typedef struct {
     int value;
 } GLWindow;
 
+typedef struct {
+    ILuint image_name;
+    int width;
+    int height;
+    int byte_per_pixel;
+    int format;
+} GLImage;
+
 #endif //ONE_COLOR_GL_CONFIGURATION_H

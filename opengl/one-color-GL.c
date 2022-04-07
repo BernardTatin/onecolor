@@ -16,10 +16,6 @@ int height = DEFAULT_HEIGHT;
 int nFrames = 0;
 
 
-//static int window;
-//static int menu_id;
-//static int submenu_id;
-//static int value = 2;
 static GLWindow mainWindow = {
     .value = 2
 };
@@ -146,7 +142,7 @@ ILuint LoadImage(char *filename) {
 int main(int argc, char **argv) {
 
     GLuint texID;
-    ILuint image;
+    GLImage image;
 
     if (argc != 2) {
         fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
@@ -177,33 +173,45 @@ int main(int argc, char **argv) {
 
 
     /* load the file picture with DevIL */
-    image = LoadImage(argv[1]);
-    if (image == -1) {
+    image.image_name = LoadImage(argv[1]);
+    if (image.image_name == -1) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
-
-    printf("\nImage bits/pix: %d, width: %d, height: %d\n",
-           ilGetInteger(IL_IMAGE_BPP),
-           ilGetInteger(IL_IMAGE_WIDTH),
-           ilGetInteger(IL_IMAGE_HEIGHT));
+    image.width = ilGetInteger(IL_IMAGE_WIDTH);
+    image.height = ilGetInteger(IL_IMAGE_HEIGHT);
+    image.byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
+    image.format = ilGetInteger(IL_IMAGE_FORMAT);
+    fprintf(stdout,"\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
+           image.byte_per_pixel,
+           image.width,
+           image.height,
+           image.format);
     /* OpenGL texture binding of the image loaded by DevIL  */
     glGenTextures(1, &texID); /* Texture name generation */
     glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for minifying filter */
-    glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH),
-                 ilGetInteger(IL_IMAGE_HEIGHT),
-                 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData()); /* Texture specification */
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 image.byte_per_pixel,
+                 image.width,
+                 image.height,
+                 0,
+                 image.format,
+                 GL_UNSIGNED_BYTE,
+                 ilGetData()); /* Texture specification */
 
     /* Main loop */
     glutMainLoop();
 
     /* Delete used resources and quit */
     /* Because we have already copied image data into texture data we can release memory used by image. */
-    ilDeleteImages(1, &image);
+    ilDeleteImages(1, &image.image_name);
     glDeleteTextures(1, &texID);
 
     return 0;
