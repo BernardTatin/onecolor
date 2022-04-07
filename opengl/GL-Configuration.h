@@ -10,6 +10,8 @@
 
 typedef struct {
     int window;
+    int width;
+    int height;
     int menu_id;
     int submenu_id;
     int value;
@@ -21,6 +23,7 @@ typedef struct {
     int height;
     int byte_per_pixel;
     int format;
+    float ratio;
 } GLImage;
 
 #endif //ONE_COLOR_GL_CONFIGURATION_H

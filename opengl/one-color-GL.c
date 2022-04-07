@@ -4,21 +4,21 @@
 // Code heavily copied from The Little Body at:
 //      https://community.khronos.org/t/how-to-load-an-image-in-opengl/71231/5
 
+#include <stdbool.h>
+#include <math.h>
 #include <IL/il.h>
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
 
-
-int width = DEFAULT_WIDTH;
-int height = DEFAULT_HEIGHT;
-
 int nFrames = 0;
 
-
 static GLWindow mainWindow = {
+    .width = DEFAULT_WIDTH,
+    .height = DEFAULT_HEIGHT,
     .value = 2
 };
+static GLImage mainImage;
 
 void menuFunc0(int num) {
     mainWindow.value = num;
@@ -52,7 +52,31 @@ void createMenu(void) {
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
+static inline void quad_vertex(const int tx, const int ty,
+                               const int vx, const int vy) {
+    glTexCoord2i(tx, ty);
+    glVertex2i(vx, vy);
+}
 
+static inline void unit_quad(void) {
+    int width = mainWindow.width;
+    int height = mainWindow.height;
+    float nh = (float)height;
+    float nw = mainImage.ratio * (float)height;
+    if (nw > (float)width) {
+        float r = (float)width / nw;
+        nh = roundf(nh * r);
+        nw = (float)width;
+    } else {
+        nw = roundf(nw);
+    }
+    width = (int)nw;
+    height = (int)nh;
+    quad_vertex(0, 0, 0, 0);
+    quad_vertex(0, 1, 0, height);
+    quad_vertex(1, 1, width, height);
+    quad_vertex(1, 0, width, 0);
+}
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
 void displayFunc() {
@@ -67,14 +91,7 @@ void displayFunc() {
 
     /* Draw a full screen mapped quad */
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0);
-    glVertex2i(0, 0);
-    glTexCoord2i(0, 1);
-    glVertex2i(0, height);
-    glTexCoord2i(1, 1);
-    glVertex2i(width, height);
-    glTexCoord2i(1, 0);
-    glVertex2i(width, 0);
+    unit_quad();
     glEnd();
 
     glutSwapBuffers();
@@ -86,14 +103,18 @@ void reshapeFunc(GLsizei new_width, GLsizei new_height) {
 
     // printf("reshape(%d, %d) ", new_width, new_height );
 
+    mainWindow.width = new_width;
+    mainWindow.height = new_height;
     // Set the viewport to cover the new window
-    glViewport(0, 0, width = new_width, height = new_height);
+    glViewport(0, 0, mainWindow.width, mainWindow.height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, width, height, 0.0, 0.0, 100.0);
+    glOrtho(0.0, mainWindow.width, mainWindow.height, 0.0, 0.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
 
     glutPostRedisplay();
+    fprintf(stdout, "Window width: %d, height: %d\n",
+            mainWindow.width, mainWindow.height);
 }
 
 
@@ -114,12 +135,11 @@ void initGL(int w, int h) {
 }
 
 /* Load an image using DevIL and return the devIL handle (-1 if failure) */
-ILuint LoadImage(char *filename) {
-    ILuint image;
+bool LoadImage(GLImage *image, char *filename) {
     ILboolean success;
 
-    ilGenImages(1, &image);    /* Generation of one image name */
-    ilBindImage(image);        /* Binding of image name */
+    ilGenImages(1, &(image->image_name));    /* Generation of one image name */
+    ilBindImage(image->image_name);        /* Binding of image name */
 
 
     /* Loading of the image filename by DevIL */
@@ -131,18 +151,22 @@ ILuint LoadImage(char *filename) {
         success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
         if (!success) {
-            return -1;
+            return false;
         }
     } else
-        return -1;
+        return false;
 
-    return image;
+    image->width = ilGetInteger(IL_IMAGE_WIDTH);
+    image->height = ilGetInteger(IL_IMAGE_HEIGHT);
+    image->byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
+    image->format = ilGetInteger(IL_IMAGE_FORMAT);
+    image->ratio = (float)image->width / (float)image->height;
+    return true;
 }
 
 int main(int argc, char **argv) {
 
     GLuint texID;
-    GLImage image;
 
     if (argc != 2) {
         fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
@@ -152,7 +176,7 @@ int main(int argc, char **argv) {
     /* GLUT init */
     glutInit(&argc, argv);            // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-    glutInitWindowSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);   // Set the window's initial width & height
+    glutInitWindowSize(mainWindow.width, mainWindow.height);   // Set the window's initial width & height
 
     mainWindow.window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
 
@@ -162,7 +186,7 @@ int main(int argc, char **argv) {
     glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event
 
     /* OpenGL 2D generic init */
-    initGL(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+//    initGL(mainWindow.width, mainWindow.height);
 
     /* Initialization of DevIL */
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
@@ -173,21 +197,18 @@ int main(int argc, char **argv) {
 
 
     /* load the file picture with DevIL */
-    image.image_name = LoadImage(argv[1]);
-    if (image.image_name == -1) {
+    if (!LoadImage(&mainImage, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
-    image.width = ilGetInteger(IL_IMAGE_WIDTH);
-    image.height = ilGetInteger(IL_IMAGE_HEIGHT);
-    image.byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
-    image.format = ilGetInteger(IL_IMAGE_FORMAT);
-    fprintf(stdout,"\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
-           image.byte_per_pixel,
-           image.width,
-           image.height,
-           image.format);
-    /* OpenGL texture binding of the image loaded by DevIL  */
+    fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
+            mainImage.byte_per_pixel,
+            mainImage.width,
+            mainImage.height,
+            mainImage.format);
+    /* OpenGL 2D generic init */
+    initGL(mainWindow.width, mainWindow.height);
+    /* OpenGL texture binding of the mainImage loaded by DevIL  */
     glGenTextures(1, &texID); /* Texture name generation */
     glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
     glTexParameteri(GL_TEXTURE_2D,
@@ -198,11 +219,11 @@ int main(int argc, char **argv) {
                     GL_LINEAR); /* We will use linear interpolation for minifying filter */
     glTexImage2D(GL_TEXTURE_2D,
                  0,
-                 image.byte_per_pixel,
-                 image.width,
-                 image.height,
+                 mainImage.byte_per_pixel,
+                 mainImage.width,
+                 mainImage.height,
                  0,
-                 image.format,
+                 mainImage.format,
                  GL_UNSIGNED_BYTE,
                  ilGetData()); /* Texture specification */
 
@@ -210,8 +231,8 @@ int main(int argc, char **argv) {
     glutMainLoop();
 
     /* Delete used resources and quit */
-    /* Because we have already copied image data into texture data we can release memory used by image. */
-    ilDeleteImages(1, &image.image_name);
+    /* Because we have already copied mainImage data into texture data we can release memory used by mainImage. */
+    ilDeleteImages(1, &mainImage.image_name);
     glDeleteTextures(1, &texID);
 
     return 0;
