@@ -7,9 +7,8 @@
 #include <IL/il.h>
 #include <GL/glut.h>
 
+#include "GL-Configuration.h"
 
-#define DEFAULT_WIDTH  640
-#define DEFAULT_HEIGHT 480
 
 int width = DEFAULT_WIDTH;
 int height = DEFAULT_HEIGHT;
@@ -144,10 +143,10 @@ ILuint LoadImage(char *filename) {
 
 int main(int argc, char **argv) {
 
-    GLuint texid;
+    GLuint texID;
     ILuint image;
 
-    if (argc < 2) {
+    if (argc != 2) {
         fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
         return 0;
     }
@@ -187,8 +186,8 @@ int main(int argc, char **argv) {
            ilGetInteger(IL_IMAGE_WIDTH),
            ilGetInteger(IL_IMAGE_HEIGHT));
     /* OpenGL texture binding of the image loaded by DevIL  */
-    glGenTextures(1, &texid); /* Texture name generation */
-    glBindTexture(GL_TEXTURE_2D, texid); /* Binding of texture name */
+    glGenTextures(1, &texID); /* Texture name generation */
+    glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -203,7 +202,7 @@ int main(int argc, char **argv) {
     /* Delete used resources and quit */
     /* Because we have already copied image data into texture data we can release memory used by image. */
     ilDeleteImages(1, &image);
-    glDeleteTextures(1, &texid);
+    glDeleteTextures(1, &texID);
 
     return 0;
 }
