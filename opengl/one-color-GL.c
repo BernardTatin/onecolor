@@ -27,7 +27,7 @@ void menuFunc0(int num) {
 }
 
 void menuFunc1(int num) {
-    if (num == 0) {
+    if (num == Menu_Quit) {
         glutDestroyWindow(mainWindow.window);
         exit(0);
     } else {
@@ -39,15 +39,15 @@ void menuFunc1(int num) {
 
 void createMenu(void) {
     mainWindow.submenu_id = glutCreateMenu(menuFunc0);
-    glutAddMenuEntry("submenu1", 2);
-    glutAddMenuEntry("submenu2", 3);
-    glutAddMenuEntry("submenu3", 4);
-    glutAddMenuEntry("submenu4", 5);
+    glutAddMenuEntry("Normal", Menu_BW_Normal);
+    glutAddMenuEntry("Luminance", Menu_BW_Luminance);
+    glutAddMenuEntry("Average", Menu_BW_Average);
+    glutAddMenuEntry("Suppress saturation", Menu_BW_No_Saturation);
 
     mainWindow.menu_id = glutCreateMenu(menuFunc1);
-    glutAddMenuEntry("Clear", 1);
-    glutAddSubMenu("Draw", mainWindow.submenu_id);
-    glutAddMenuEntry("Quit", 0);
+    glutAddMenuEntry("Clear", Menu_Clear);
+    glutAddSubMenu("Black and White", mainWindow.submenu_id);
+    glutAddMenuEntry("Quit", Menu_Quit);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }

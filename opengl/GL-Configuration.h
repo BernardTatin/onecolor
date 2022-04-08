@@ -26,4 +26,13 @@ typedef struct {
     float ratio;
 } GLImage;
 
+typedef enum {
+    Menu_Quit,
+    Menu_Clear,
+    Menu_BW_Normal,
+    Menu_BW_Luminance,
+    Menu_BW_Average,
+    Menu_BW_No_Saturation
+} Menu_Values;
+
 #endif //ONE_COLOR_GL_CONFIGURATION_H
