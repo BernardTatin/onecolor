@@ -10,47 +10,17 @@
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
+#include "GL-menus.h"
 
 int nFrames = 0;
 
-static GLWindow mainWindow = {
+GLWindow mainWindow = {
     .width = DEFAULT_WIDTH,
     .height = DEFAULT_HEIGHT,
     .value = 2
 };
-static GLImage mainImage;
+GLImage mainImage;
 
-void menuFunc0(int num) {
-    mainWindow.value = num;
-
-    glutPostRedisplay();
-}
-
-void menuFunc1(int num) {
-    if (num == Menu_Quit) {
-        glutDestroyWindow(mainWindow.window);
-        exit(0);
-    } else {
-        mainWindow.value = num;
-    }
-
-    glutPostRedisplay();
-}
-
-void createMenu(void) {
-    mainWindow.submenu_id = glutCreateMenu(menuFunc0);
-    glutAddMenuEntry("Normal", Menu_BW_Normal);
-    glutAddMenuEntry("Luminance", Menu_BW_Luminance);
-    glutAddMenuEntry("Average", Menu_BW_Average);
-    glutAddMenuEntry("Suppress saturation", Menu_BW_No_Saturation);
-
-    mainWindow.menu_id = glutCreateMenu(menuFunc1);
-    glutAddMenuEntry("Clear", Menu_Clear);
-    glutAddSubMenu("Black and White", mainWindow.submenu_id);
-    glutAddMenuEntry("Quit", Menu_Quit);
-
-    glutAttachMenu(GLUT_RIGHT_BUTTON);
-}
 
 static inline void quad_vertex(const int tx, const int ty,
                                const int vx, const int vy) {
@@ -88,7 +58,7 @@ static inline void unit_quad(void) {
 }
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
-void displayFunc() {
+static void displayFunc() {
 
     // printf("Frame %d ", ++nFrames);
 
@@ -98,6 +68,15 @@ void displayFunc() {
     // Operate on model-view matrix
     glMatrixMode(GL_MODELVIEW);
 
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 mainImage.byte_per_pixel,
+                 mainImage.width,
+                 mainImage.height,
+                 0,
+                 mainImage.format,
+                 GL_UNSIGNED_BYTE,
+                 mainImage.screen_pixels); /* Texture specification */
     /* Draw a full screen mapped quad */
     glBegin(GL_QUADS);
     unit_quad();
@@ -108,7 +87,7 @@ void displayFunc() {
 
 /* Handler for window re-size event. Called back when the window first appears and
    whenever the window is re-sized with its new width and height */
-void reshapeFunc(GLsizei new_width, GLsizei new_height) {
+static void reshapeFunc(GLsizei new_width, GLsizei new_height) {
 
     // printf("reshape(%d, %d) ", new_width, new_height );
 
@@ -126,7 +105,7 @@ void reshapeFunc(GLsizei new_width, GLsizei new_height) {
 
 
 /* Initialize OpenGL Graphics */
-void initGL(int w, int h) {
+static void initGL(int w, int h) {
     glViewport(0, 0, w, h); // use a screen size of WIDTH x HEIGHT
     glEnable(GL_TEXTURE_2D);     // Enable 2D texturing
 
@@ -141,8 +120,22 @@ void initGL(int w, int h) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the window
 }
 
+static void fill_pixels_buffers(GLImage *image) {
+    int n = image->number_of_pixels;
+    image->hsv = (HSV *) malloc(n * sizeof(HSV));
+    image->rgb = (fRGB *) malloc(n * sizeof(fRGB));
+
+    RGBA *pixels = image->original_pixels;
+    HSV *hsv = image->hsv;
+    fRGB *rgb = image->rgb;
+    for (int i=0; i<n; i++, pixels++, rgb++, hsv++) {
+        rgb->r = (float)pixels->r / 255.0f;
+        rgb->g = (float)pixels->g / 255.0f;
+        rgb->b = (float)pixels->b / 255.0f;
+    }
+}
 /* Load an image using DevIL and return the devIL handle (-1 if failure) */
-bool LoadImage(GLImage *image, char *filename) {
+static bool LoadImage(GLImage *image, char *filename) {
     ILboolean success;
 
     ilGenImages(1, &(image->image_name));    /* Generation of one image name */
@@ -165,9 +158,19 @@ bool LoadImage(GLImage *image, char *filename) {
 
     image->width = ilGetInteger(IL_IMAGE_WIDTH);
     image->height = ilGetInteger(IL_IMAGE_HEIGHT);
+    int n = image->width * image->height;
+    image->number_of_pixels = n;
     image->byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
     image->format = ilGetInteger(IL_IMAGE_FORMAT);
     image->ratio = (float)image->width / (float)image->height;
+    image->original_pixels = (RGBA *)ilGetData();
+    image->screen_pixels = (RGBA *)malloc(n * sizeof(RGBA));
+    ilCopyPixels(0, 0, 0,
+                 image->width, image->height,
+                 1,
+                 IL_RGBA, IL_UNSIGNED_BYTE,
+                 image->screen_pixels);
+    fill_pixels_buffers(image);
     return true;
 }
 
@@ -232,7 +235,7 @@ int main(int argc, char **argv) {
                  0,
                  mainImage.format,
                  GL_UNSIGNED_BYTE,
-                 ilGetData()); /* Texture specification */
+                 mainImage.screen_pixels); /* Texture specification */
 
     /* Main loop */
     glutMainLoop();
