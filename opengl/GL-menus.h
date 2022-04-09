@@ -11,7 +11,11 @@ typedef enum {
     Menu_BW_Normal1,
     Menu_BW_Normal2,
     Menu_BW_Normal3,
-    Menu_BW_Luminance,
+    Menu_BW_Hard1,
+    Menu_BW_Hard2,
+    Menu_BW_Hard_Red,
+    Menu_BW_Hard_Green,
+    Menu_BW_Hard_Blue,
     Menu_BW_Average,
     Menu_BW_No_Saturation
 } Menu_Values;
