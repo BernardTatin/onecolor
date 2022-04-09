@@ -26,6 +26,21 @@ static void menuBlackAndWhite(int num) {
         case Menu_BW_Normal3:
             filter_bw_normal3();
             break;
+        case Menu_BW_Hard1:
+            filter_bw_hard_black1();
+            break;
+        case Menu_BW_Hard2:
+            filter_bw_hard_black2();
+            break;
+        case Menu_BW_Hard_Red:
+            filter_bw_hard_red();
+            break;
+        case Menu_BW_Hard_Green:
+            filter_bw_hard_green();
+            break;
+        case Menu_BW_Hard_Blue:
+            filter_bw_hard_blue();
+            break;
         case Menu_BW_Average:
             filter_average();
             break;
@@ -63,7 +78,11 @@ void createMenu(void) {
     glutAddMenuEntry("Normal 2", Menu_BW_Normal2);
     glutAddMenuEntry("Normal 3", Menu_BW_Normal3);
     glutAddMenuEntry("Average", Menu_BW_Average);
-    glutAddMenuEntry("Luminance", Menu_BW_Luminance);
+    glutAddMenuEntry("Hard 1", Menu_BW_Hard1);
+    glutAddMenuEntry("Hard 2", Menu_BW_Hard2);
+    glutAddMenuEntry("Hard Red", Menu_BW_Hard_Red);
+    glutAddMenuEntry("Hard Green", Menu_BW_Hard_Green);
+    glutAddMenuEntry("Hard Blue", Menu_BW_Hard_Blue);
     glutAddMenuEntry("Suppress saturation", Menu_BW_No_Saturation);
 
     mainWindow.menu_id = glutCreateMenu(menuMain);
