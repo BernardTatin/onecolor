@@ -13,10 +13,9 @@
 #include "GL-menus.h"
 #include "GL-filters.h"
 
-static void menuBlackAndWhite(int num) {
-    Menu_Values menu_option = (Menu_Values)num;
-    mainWindow.value = num;
-    switch (menu_option) {
+static void exec_option(const Menu_Values option) {
+    bool redraw = true;
+    switch (option) {
         case Menu_BW_Normal1:
             filter_bw_normal1();
             break;
@@ -44,18 +43,6 @@ static void menuBlackAndWhite(int num) {
         case Menu_BW_Average:
             filter_average();
             break;
-        default:
-            fprintf(stderr, "Unknown B&W filter\n");
-            break;
-    }
-    glutPostRedisplay();
-    fprintf(stdout, "Selected menu: %d\n", num);
-}
-
-static void menuMain(int num) {
-    Menu_Values menu_option = (Menu_Values)num;
-    mainWindow.value = num;
-    switch (menu_option) {
         case Menu_Quit:
             glutDestroyWindow(mainWindow.window);
             exit(0);
@@ -67,7 +54,39 @@ static void menuMain(int num) {
             glutPostRedisplay();
             break;
         default:
-            fprintf(stderr, "Bad menu choice\n");
+            fprintf(stderr, "Unknown option %d\n", (int)option);
+            redraw = false;
+            break;
+    }
+    if (redraw) {
+        glutPostRedisplay();
+    }
+}
+
+static void menuBlackAndWhite(int num) {
+    exec_option((Menu_Values)num);
+}
+
+static void menuMain(int num) {
+    exec_option((Menu_Values)num);
+}
+
+void on_key(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'c':
+            exec_option(Menu_Clear);
+            break;
+        case 'q':
+            exec_option(Menu_Quit);
+            break;
+        case 'R':
+            exec_option(Menu_BW_Hard_Red);
+            break;
+        case 'G':
+            exec_option(Menu_BW_Hard_Green);
+            break;
+        case 'B':
+            exec_option(Menu_BW_Hard_Blue);
             break;
     }
 }
@@ -80,15 +99,15 @@ void createMenu(void) {
     glutAddMenuEntry("Average", Menu_BW_Average);
     glutAddMenuEntry("Hard 1", Menu_BW_Hard1);
     glutAddMenuEntry("Hard 2", Menu_BW_Hard2);
-    glutAddMenuEntry("Hard Red", Menu_BW_Hard_Red);
-    glutAddMenuEntry("Hard Green", Menu_BW_Hard_Green);
-    glutAddMenuEntry("Hard Blue", Menu_BW_Hard_Blue);
+    glutAddMenuEntry("Hard Red :r", Menu_BW_Hard_Red);
+    glutAddMenuEntry("Hard Green :g", Menu_BW_Hard_Green);
+    glutAddMenuEntry("Hard Blue :b", Menu_BW_Hard_Blue);
     glutAddMenuEntry("Suppress saturation", Menu_BW_No_Saturation);
 
     mainWindow.menu_id = glutCreateMenu(menuMain);
-    glutAddMenuEntry("Clear", Menu_Clear);
+    glutAddMenuEntry("Clear :c", Menu_Clear);
     glutAddSubMenu("Black and White", mainWindow.submenu_id);
-    glutAddMenuEntry("Quit", Menu_Quit);
+    glutAddMenuEntry("Quit :q", Menu_Quit);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }

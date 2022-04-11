@@ -191,6 +191,7 @@ int main(int argc, char **argv) {
     mainWindow.window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
 
     createMenu();
+    glutKeyboardFunc(on_key);
 
     glutDisplayFunc(displayFunc);       // Register callback handler for window re-paint event
     glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event
