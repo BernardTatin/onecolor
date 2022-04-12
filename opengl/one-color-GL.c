@@ -175,7 +175,6 @@ static bool LoadImage(GLImage *image, char *filename) {
 }
 
 int main(int argc, char **argv) {
-
     GLuint texID;
 
     if (argc != 2) {
@@ -238,6 +237,17 @@ int main(int argc, char **argv) {
                  GL_UNSIGNED_BYTE,
                  mainImage.screen_pixels); /* Texture specification */
 
+    {
+        u8 *fgl_version = glGetString(GL_VERSION);
+
+        if (fgl_version != NULL) {
+            fprintf(stdout, "Current Open GL version: %s (%s)\n",
+                    gl_version, fgl_version);
+        } else {
+            fprintf(stdout, "Current Open GL version: %s (%s)\n",
+                    gl_version, "????");
+        }
+    }
     /* Main loop */
     glutMainLoop();
 
