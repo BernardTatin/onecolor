@@ -5,7 +5,9 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 UNSET(CMAKE_C_FLAGS CACHE)
-SET(CMAKE_C_FLAGS "-Wall -Wextra -pedantic -std=gnu11" CACHE STRING "" FORCE)
+SET(CMAKE_C_FLAGS "-Wall -Wextra -pedantic" CACHE STRING "" FORCE)
+
+
 include_directories(image-lib
         configuration)
 add_executable(opengl-load-image
