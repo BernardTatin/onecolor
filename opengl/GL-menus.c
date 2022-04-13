@@ -106,30 +106,31 @@ static void exec_key(const int key, const int mods) {
 
 #if defined(WITH_GLFW)
 void on_key(GLFWwindow* window, int iKey, int scancode, int action, int mods) {
-
+    int key = 0;
     if (action == GLFW_PRESS) {
-        int key;
-        switch (iKey) {
-            case GLFW_KEY_ESCAPE:
-                key = 27;
-                break;
-            case GLFW_KEY_Q:
-                if (mods == GLFW_MOD_CONTROL) {
-                    key = 'q';
-                } else {
-                    key = 0;
-                }
-                break;
-            case GLFW_KEY_ENTER:
-                key = 13;
-                break;
-            default:
-                key = (char)iKey;
-                break;
+        fprintf(stdout, "key pressed %c (%d) mods %04x key %c (%d)\n",
+                iKey, (int) iKey, mods, key, key);
+        const char* keyName = glfwGetKeyName(iKey, 0);
+        if (keyName != NULL && *(keyName + 1) == 0) {
+            key = *keyName;
+        } else {
+            switch (iKey) {
+                case GLFW_KEY_ESCAPE:
+                    key = 27;
+                    break;
+                case GLFW_KEY_ENTER:
+                    key = 13;
+                    break;
+                default:
+                    key = 1;
+                    break;
+            }
         }
+        fprintf(stdout, "key pressed %c (%d) mods %04x key %c (%d)\n",
+                iKey, (int) iKey, mods, key, key);
         exec_key(key, mods);
         fprintf(stdout, "key pressed %c (%d) mods %04x key %c (%d)\n",
-                iKey, (int)iKey, mods, key, key);
+                iKey, (int) iKey, mods, key, key);
     }
 }
 #else
