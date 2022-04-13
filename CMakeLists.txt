@@ -52,6 +52,6 @@ add_executable(one-color-GLFW
         opengl/GL_filter_definitions.c
         DevIL/DevIL-Tools.c
         DevIL/DevIL-Tools.h)
-target_link_libraries(one-color-GLFW m glut GL GLU IL)
+target_link_libraries(one-color-GLFW m glut GL GLU IL glfw)
 # I hate cmake
 target_compile_definitions(one-color-GLFW PUBLIC#[[]] -DWITH_GLFW)

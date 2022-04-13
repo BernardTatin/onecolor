@@ -32,7 +32,11 @@
 #define DEFAULT_HEIGHT 640
 
 typedef struct {
+#if defined(WITH_GLFW)
+    GLFWwindow* window;
+#else
     int window;
+#endif
     int width;
     int height;
     int menu_id;

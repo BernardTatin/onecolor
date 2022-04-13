@@ -5,6 +5,10 @@
 #include <stdbool.h>
 #include <math.h>
 #include <IL/il.h>
+#if defined(WITH_GLFW)
+#include <GLFW/glfw3.h>
+#else
+#endif
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"

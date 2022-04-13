@@ -21,6 +21,11 @@ typedef enum {
 } Menu_Values;
 
 void createMenu(void);
+#if defined(WITH_GLFW)
+void on_key(GLFWwindow* window, int key, int scancode, int action, int mods);
+#else
 void on_key(unsigned char key, int x, int y);
+#endif
+
 
 #endif //ONE_COLOR_GL_MENUS_H

@@ -7,6 +7,10 @@
 #include <string.h>
 #include <math.h>
 #include <IL/il.h>
+#if defined(WITH_GLFW)
+#include <GLFW/glfw3.h>
+#else
+#endif
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
@@ -44,9 +48,13 @@ static void exec_option(const Menu_Values option) {
             filter_average();
             break;
         case Menu_Quit:
+#if !defined(WITH_GLFW)
             glutDestroyWindow(mainWindow.window);
             exit(0);
+#else
+            glfwSetWindowShouldClose(mainWindow.window, GL_TRUE);
             break;
+#endif
         case Menu_Clear:
             memcpy(mainImage.screen_pixels,
                    mainImage.original_pixels,
@@ -58,9 +66,11 @@ static void exec_option(const Menu_Values option) {
             redraw = false;
             break;
     }
+#if !defined(WITH_GLFW)
     if (redraw) {
         glutPostRedisplay();
     }
+#endif
 }
 
 static void menuBlackAndWhite(int num) {
@@ -71,11 +81,12 @@ static void menuMain(int num) {
     exec_option((Menu_Values)num);
 }
 
-void on_key(unsigned char key, int x, int y) {
+static void exec_key(const int key, const int mods) {
     switch (key) {
         case 'c':
             exec_option(Menu_Clear);
             break;
+        case 27:
         case 'q':
             exec_option(Menu_Quit);
             break;
@@ -88,8 +99,44 @@ void on_key(unsigned char key, int x, int y) {
         case 'B':
             exec_option(Menu_BW_Hard_Blue);
             break;
+        default:
+            break;
     }
 }
+
+#if defined(WITH_GLFW)
+void on_key(GLFWwindow* window, int iKey, int scancode, int action, int mods) {
+
+    if (action == GLFW_PRESS) {
+        int key;
+        switch (iKey) {
+            case GLFW_KEY_ESCAPE:
+                key = 27;
+                break;
+            case GLFW_KEY_Q:
+                if (mods == GLFW_MOD_CONTROL) {
+                    key = 'q';
+                } else {
+                    key = 0;
+                }
+                break;
+            case GLFW_KEY_ENTER:
+                key = 13;
+                break;
+            default:
+                key = (char)iKey;
+                break;
+        }
+        exec_key(key, mods);
+        fprintf(stdout, "key pressed %c (%d) mods %04x key %c (%d)\n",
+                iKey, (int)iKey, mods, key, key);
+    }
+}
+#else
+void on_key(unsigned char key, int x, int y) {
+        exec_key(key, 0);
+}
+#endif
 
 void createMenu(void) {
     mainWindow.submenu_id = glutCreateMenu(menuBlackAndWhite);

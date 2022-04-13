@@ -7,13 +7,15 @@
 #include <stdbool.h>
 #include <math.h>
 #include <IL/il.h>
+#if defined(WITH_GLFW)
+#include <GLFW/glfw3.h>
+#else
+#endif
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "DevIL-Tools.h"
-
-int nFrames = 0;
 
 GLWindow mainWindow = {
     .width = DEFAULT_WIDTH,
@@ -60,9 +62,6 @@ static inline void unit_quad(void) {
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
 static void displayFunc() {
-
-    // printf("Frame %d ", ++nFrames);
-
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -83,7 +82,10 @@ static void displayFunc() {
     unit_quad();
     glEnd();
 
+
+#if !defined(WITH_GLFW)
     glutSwapBuffers();
+#endif
 }
 
 /* Handler for window re-size event. Called back when the window first appears and
@@ -121,6 +123,12 @@ static void initGL(int w, int h) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the window
 }
 
+static void error_callback(int error, const char* description) {
+    fputs(description, stderr);
+    fprintf(stderr, "GLFW error: %s\n",
+        description);
+}
+
 int main(int argc, char **argv) {
     GLuint texID;
 
@@ -129,34 +137,44 @@ int main(int argc, char **argv) {
 #endif
     if (argc != 2) {
         fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
-        return 0;
+        exit(EXIT_FAILURE);
+    }
+    glfwSetErrorCallback(error_callback);
+    if (!glfwInit()) {
+        exit(EXIT_FAILURE);
     }
 
-    /* GLUT init */
-    glutInit(&argc, argv);            // Initialize GLUT
-    glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-    glutInitWindowSize(mainWindow.width, mainWindow.height);   // Set the window's initial width & height
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    mainWindow.window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
+    mainWindow.window = glfwCreateWindow(640, 480, argv[1], NULL, NULL);
+    if (!mainWindow.window)
+    {
+        glfwTerminate();
+        exit(EXIT_FAILURE);
+    }
+    glfwMakeContextCurrent(mainWindow.window);
+    glfwSetKeyCallback(mainWindow.window, on_key);
 
-    createMenu();
-    glutKeyboardFunc(on_key);
+    // createMenu();
 
-    glutDisplayFunc(displayFunc);       // Register callback handler for window re-paint event
-    glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event
+    // glutDisplayFunc(displayFunc);       // Register callback handler for window re-paint event
+    // glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event
 
     /* OpenGL 2D generic init */
-//    initGL(mainWindow.width, mainWindow.height);
+    initGL(mainWindow.width, mainWindow.height);
 
     /* Initialization of DevIL */
     if (!DevIL_init()) {
-        return -1;
+        exit(EXIT_FAILURE);
     }
 
     /* load the file picture with DevIL */
     if (!LoadImage(&mainImage, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
-        return -1;
+        exit(EXIT_FAILURE);
     }
     fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
             mainImage.byte_per_pixel,
@@ -196,12 +214,19 @@ int main(int argc, char **argv) {
         }
     }
     /* Main loop */
-    glutMainLoop();
-
+//    glutMainLoop();
+    while (!glfwWindowShouldClose(mainWindow.window)) {
+        int width, height;
+        glfwGetFramebufferSize(mainWindow.window, &width, &height);
+        displayFunc();
+        glfwSwapBuffers(mainWindow.window);
+        glfwPollEvents();
+    }
     /* Delete used resources and quit */
     /* Because we have already copied mainImage data into texture data we can release memory used by mainImage. */
     ilDeleteImages(1, &mainImage.image_name);
     glDeleteTextures(1, &texID);
-
-    return 0;
+    glfwDestroyWindow(mainWindow.window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
 }
