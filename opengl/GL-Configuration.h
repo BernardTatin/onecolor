@@ -28,7 +28,6 @@
 #error "We need Open GL version 3.2 or more recent"
 #endif
 
-
 #define DEFAULT_WIDTH  640
 #define DEFAULT_HEIGHT 640
 
