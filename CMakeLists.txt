@@ -26,5 +26,5 @@ target_link_libraries(one-color jpeg m)
 
 include_directories(opengl)
 add_executable(one-color-GL
-        opengl/one-color-GL.c opengl/GL-Configuration.h opengl/GL-menus.c opengl/GL-menus.h opengl/GL-filters.c opengl/GL-filters.h)
+        opengl/one-color-GL.c opengl/GL-Configuration.h opengl/GL-menus.c opengl/GL-menus.h opengl/GL-filters.c opengl/GL-filters.h opengl/GL_filter_definitions.c)
 target_link_libraries(one-color-GL m glut GL GLU IL)
