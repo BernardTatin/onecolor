@@ -4,6 +4,8 @@ project(one-color C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
+UNSET(CMAKE_C_FLAGS CACHE)
+SET(CMAKE_C_FLAGS "-Wall -Wextra -pedantic -std=gnu11" CACHE STRING "" FORCE)
 include_directories(image-lib
         configuration)
 add_executable(opengl-load-image
@@ -24,7 +26,30 @@ add_executable(one-color
         configuration/main-configuration.c)
 target_link_libraries(one-color jpeg m)
 
-include_directories(opengl)
+include_directories(opengl DevIL)
 add_executable(one-color-GL
-        opengl/one-color-GL.c opengl/GL-Configuration.h opengl/GL-menus.c opengl/GL-menus.h opengl/GL-filters.c opengl/GL-filters.h opengl/GL_filter_definitions.c)
+        opengl/one-color-GL.c
+        opengl/GL-Configuration.h
+        opengl/GL-menus.c
+        opengl/GL-menus.h
+        opengl/GL-filters.c
+        opengl/GL-filters.h
+        opengl/GL_filter_definitions.c
+        DevIL/DevIL-Tools.c
+        DevIL/DevIL-Tools.h)
 target_link_libraries(one-color-GL m glut GL GLU IL)
+
+include_directories(glfw)
+add_executable(one-color-GLFW
+        glfw/one-color-GLFW.c
+        opengl/GL-Configuration.h
+        opengl/GL-menus.c
+        opengl/GL-menus.h
+        opengl/GL-filters.c
+        opengl/GL-filters.h
+        opengl/GL_filter_definitions.c
+        DevIL/DevIL-Tools.c
+        DevIL/DevIL-Tools.h)
+target_link_libraries(one-color-GLFW m glut GL GLU IL)
+# I hate cmake
+target_compile_definitions(one-color-GLFW PUBLIC#[[]] -DWITH_GLFW)
