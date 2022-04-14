@@ -90,12 +90,15 @@ static void exec_key(const int key, const int mods) {
         case 'q':
             exec_option(Menu_Quit);
             break;
+        case 'r':
         case 'R':
             exec_option(Menu_BW_Hard_Red);
             break;
+        case 'g':
         case 'G':
             exec_option(Menu_BW_Hard_Green);
             break;
+        case 'b':
         case 'B':
             exec_option(Menu_BW_Hard_Blue);
             break;

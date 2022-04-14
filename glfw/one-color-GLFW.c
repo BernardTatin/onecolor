@@ -103,7 +103,9 @@ static void reshapeFunc(GLsizei new_width, GLsizei new_height) {
     glOrtho(0.0, mainWindow.width, mainWindow.height, 0.0, 0.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
 
+#if !defined(WITH_GLFW)
     glutPostRedisplay();
+#endif
 }
 
 
@@ -183,41 +185,32 @@ int main(int argc, char **argv) {
             mainImage.format);
     /* OpenGL 2D generic init */
     initGL(mainWindow.width, mainWindow.height);
-    /* OpenGL texture binding of the mainImage loaded by DevIL  */
-    glGenTextures(1, &texID); /* Texture name generation */
-    glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MAG_FILTER,
-                    GL_LINEAR); /* We will use linear interpolation for magnification filter */
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR); /* We will use linear interpolation for minifying filter */
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 mainImage.byte_per_pixel,
-                 mainImage.width,
-                 mainImage.height,
-                 0,
-                 mainImage.format,
-                 GL_UNSIGNED_BYTE,
-                 mainImage.screen_pixels); /* Texture specification */
 
-    {
-        u8 *fgl_version = glGetString(GL_VERSION);
-
-        if (fgl_version != NULL) {
-            fprintf(stdout, "Current Open GL version: %s (%s)\n",
-                    gl_version, fgl_version);
-        } else {
-            fprintf(stdout, "Current Open GL version: %s (%s)\n",
-                    gl_version, "????");
-        }
-    }
     /* Main loop */
 //    glutMainLoop();
     while (!glfwWindowShouldClose(mainWindow.window)) {
         int width, height;
         glfwGetFramebufferSize(mainWindow.window, &width, &height);
+        initGL(mainWindow.width, mainWindow.height);
+        /* OpenGL texture binding of the mainImage loaded by DevIL  */
+        glGenTextures(1, &texID); /* Texture name generation */
+        glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
+        glTexParameteri(GL_TEXTURE_2D,
+                        GL_TEXTURE_MAG_FILTER,
+                        GL_LINEAR); /* We will use linear interpolation for magnification filter */
+        glTexParameteri(GL_TEXTURE_2D,
+                        GL_TEXTURE_MIN_FILTER,
+                        GL_LINEAR); /* We will use linear interpolation for minifying filter */
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     mainImage.byte_per_pixel,
+                     mainImage.width,
+                     mainImage.height,
+                     0,
+                     mainImage.format,
+                     GL_UNSIGNED_BYTE,
+                     mainImage.screen_pixels); /* Texture specification */
+        reshapeFunc(width, height);
         displayFunc();
         glfwSwapBuffers(mainWindow.window);
         glfwPollEvents();
