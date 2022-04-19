@@ -16,10 +16,10 @@ include_directories(image-lib configuration)
 #
 pkg_search_module(EVAS required ecore-evas evas  ecore eina ecore-file efl)
 
-add_executable(images
+add_executable(one-color-evas
         evas/images.c)
-target_link_libraries(images ${EVAS_LIBRARIES})
-target_include_directories(images PUBLIC ${EVAS_INCLUDE_DIRS} evas)
+target_link_libraries(one-color-evas ${EVAS_LIBRARIES})
+target_include_directories(one-color-evas PUBLIC ${EVAS_INCLUDE_DIRS} evas)
 
 #
 # openGL version
