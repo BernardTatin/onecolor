@@ -29,13 +29,42 @@ static void _on_destroy(Ecore_Evas *ee EINA_UNUSED) {
     ecore_main_loop_quit();
 }
 
+static void resize_image(const int width, const int height) {
+    int left = dx;
+    int top = dy;
+    float nh = (float)height;
+    float nw = mainImage.ratio * (float)height;
+    float fw = (float)width;
+    float fh = (float)height;
+    if (nw > fw) {
+        float fTop;
+        float r = fw / nw;
+        nh = roundf(nh * r);
+        nw = fw;
+        fTop = roundf(0.5f * (fh - nh));
+        top = (int)fTop;
+    } else {
+        float fLeft;
+        nw = roundf(nw);
+        fLeft = roundf(0.5f * (fw - nw));
+        left = (int)fLeft;
+    }
+    evas_object_move(main_data.image,
+                     left,
+                     top);
+    evas_object_resize(
+            main_data.image,
+            (int)nw,
+            (int)nh);
+}
+
 /* Keep the example's window size in sync with the background image's size */
 static void _canvas_resize_cb(Ecore_Evas *ee) {
     int w, h;
 
     ecore_evas_geometry_get(ee, NULL, NULL, &w, &h);
     evas_object_resize(main_data.background, w, h);
-    evas_object_resize(main_data.image, w - 2 * dx, h - 2 * dy);
+    resize_image(w - 2 * dx, h - 2 * dy);
 }
 
 static void _on_keydown(void *data EINA_UNUSED,
@@ -125,43 +154,30 @@ int main(const int argc, char **argv) {
     /* the canvas pointer, de facto */
     main_data.evas = ecore_evas_get(main_data.ecore_evas);
 
-    /* the white background */
+    /*
+     * the white background
+     */
     main_data.background = evas_object_rectangle_add(main_data.evas);
-    evas_object_color_set(main_data.background, 50, 50, 0, 55); /* white background */
+    evas_object_color_set(main_data.background, 250, 250, 220, 255); /* white background */
     evas_object_move(main_data.background, 0, 0); /* at canvas' origin */
     evas_object_resize(
             main_data.background,
             default_width,
             default_height); /* covers full canvas */
-    evas_object_show(main_data.background);
 
     /*
      * the image
      */
-    main_data.image = evas_object_image_filled_add(main_data.evas);
-    evas_object_image_file_set(main_data.image, img_source, NULL);
-    err = evas_object_image_load_error_get(main_data.image);
-    if (err != EVAS_LOAD_ERROR_NONE) {
-        fprintf(stderr, "could not load image '%s'. error string is \"%s\"\n",
-                img_source, evas_load_error_str(err));
-        return EXIT_FAILURE;
-    }
-    fprintf(stdout, "loaded image '%s' with success! error string is \"%s\"\n",
-           img_source, evas_load_error_str(err));
+    main_data.image = evas_object_image_add(main_data.evas);
+    evas_object_image_size_set(main_data.image, mainImage.width, mainImage.height);
+    evas_object_image_data_set(main_data.image, mainImage.screen_pixels);
+    evas_object_image_filled_set(main_data.image, EINA_TRUE);
 
-    evas_object_image_scale_hint_set(main_data.image, EMILE_IMAGE_SCALE_HINT_NONE);
-    evas_object_image_smooth_scale_set(main_data.image, EINA_TRUE);
-//        evas_object_image_filled_set(main_data.image, EINA_TRUE);
     evas_object_move(main_data.image, dx, dy);
-    evas_object_image_fill_set(
-            main_data.image,
-            dx, dy,
+    resize_image(
             default_width - 2 * dx,
             default_height - 2 * dy);
-    evas_object_resize(
-            main_data.image,
-            default_width - 2 * dx,
-            default_height - 2 * dy);
+    evas_object_show(main_data.background);
     evas_object_show(main_data.image);
 
     evas_object_focus_set(main_data.background, EINA_TRUE);
