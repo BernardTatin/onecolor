@@ -4,17 +4,28 @@
 
 #include <stdbool.h>
 #include <IL/il.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <Ecore.h>
 #include <Ecore_Evas.h>
 
 #include "evas-configuration.h"
 #include "dev-IL-tools.h"
 
 static void fill_pixels_buffers(EV_image *image) {
-    int n = image->number_of_pixels;
+    image->width = ilGetInteger(IL_IMAGE_WIDTH);
+    image->height = ilGetInteger(IL_IMAGE_HEIGHT);
+    int n = image->width * image->height;
+    image->number_of_pixels = n;
+    image->byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
+    image->format = ilGetInteger(IL_IMAGE_FORMAT);
+    image->ratio = (float)image->width / (float)image->height;
+    image->original_pixels = (RGBA *)ilGetData();
+    image->screen_pixels = (RGBA *)malloc(n * sizeof(RGBA));
+    ilCopyPixels(0, 0, 0,
+                 image->width, image->height,
+                 1,
+                 IL_RGBA, IL_UNSIGNED_BYTE,
+                 image->screen_pixels);
     image->hsv = (HSV *) malloc(n * sizeof(HSV));
     image->rgb = (fRGB *) malloc(n * sizeof(fRGB));
 
@@ -59,20 +70,6 @@ bool LoadImage(EV_image *image, char *filename) {
     } else
         return false;
 
-    image->width = ilGetInteger(IL_IMAGE_WIDTH);
-    image->height = ilGetInteger(IL_IMAGE_HEIGHT);
-    int n = image->width * image->height;
-    image->number_of_pixels = n;
-    image->byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
-    image->format = ilGetInteger(IL_IMAGE_FORMAT);
-    image->ratio = (float)image->width / (float)image->height;
-    image->original_pixels = (RGBA *)ilGetData();
-    image->screen_pixels = (RGBA *)malloc(n * sizeof(RGBA));
-    ilCopyPixels(0, 0, 0,
-                 image->width, image->height,
-                 1,
-                 IL_RGBA, IL_UNSIGNED_BYTE,
-                 image->screen_pixels);
     fill_pixels_buffers(image);
     return true;
 }

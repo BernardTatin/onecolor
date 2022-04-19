@@ -25,7 +25,7 @@ static char *get_base_name(const char *full_file_name) {
     return base_name;
 }
 
-static void _on_destroy(Ecore_Evas *ee EINA_UNUSED) {
+static void on_destroy(Ecore_Evas *ee EINA_UNUSED) {
     ecore_main_loop_quit();
 }
 
@@ -60,7 +60,7 @@ static void resize_image(const int width, const int height) {
 }
 
 /* Keep the example's window size in sync with the background image's size */
-static void _canvas_resize_cb(Ecore_Evas *ee) {
+static void canvas_resize_cb(Ecore_Evas *ee) {
     int w, h;
 
     ecore_evas_geometry_get(ee, NULL, NULL, &w, &h);
@@ -68,21 +68,21 @@ static void _canvas_resize_cb(Ecore_Evas *ee) {
     resize_image(w - 2 * dx, h - 2 * dy);
 }
 
-static void _on_keydown(void *data EINA_UNUSED,
+static void on_key_down(void *data EINA_UNUSED,
                         Evas *evas EINA_UNUSED,
                         Evas_Object *o EINA_UNUSED,
                         void *event) {
     Evas_Event_Key_Down *ev = event;
     const char *the_key = ev->key;
     Eina_Bool control = evas_key_modifier_is_set(ev->modifiers, "Control");
-    Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
-    Eina_Bool shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
+//    Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
+//    Eina_Bool shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
 
     if (*(the_key + 1) == 0) {
         switch (*the_key) {
             case 'q':
                 if (control) {
-                    _on_destroy(main_data.ecore_evas);
+                    on_destroy(main_data.ecore_evas);
                 }
                 break;
             case 's':
@@ -102,7 +102,7 @@ static void _on_keydown(void *data EINA_UNUSED,
         }
     } else {
         if (strcmp(the_key, "Escape") == 0) {
-            _on_destroy(main_data.ecore_evas);
+            on_destroy(main_data.ecore_evas);
         } else {
             fprintf(stdout, "key %d %d (%s)\n",
                     (int) *the_key, (int) *(the_key + 1), the_key);
@@ -111,8 +111,6 @@ static void _on_keydown(void *data EINA_UNUSED,
 }
 
 int main(const int argc, char **argv) {
-    int err;
-
     program_name = get_base_name(argv[0]);
     if (argc != 3) {
         fprintf(stderr, "Usage: %s image_source image_destination\n",
@@ -154,8 +152,8 @@ int main(const int argc, char **argv) {
         goto error;
     }
 
-    ecore_evas_callback_destroy_set(main_data.ecore_evas, _on_destroy);
-    ecore_evas_callback_resize_set(main_data.ecore_evas, _canvas_resize_cb);
+    ecore_evas_callback_destroy_set(main_data.ecore_evas, on_destroy);
+    ecore_evas_callback_resize_set(main_data.ecore_evas, canvas_resize_cb);
     ecore_evas_show(main_data.ecore_evas);
 
     /* the canvas pointer, de facto */
@@ -191,7 +189,7 @@ int main(const int argc, char **argv) {
     evas_object_event_callback_add(
             main_data.background,
             EVAS_CALLBACK_KEY_DOWN,
-            _on_keydown,
+            on_key_down,
             NULL);
 
     ecore_main_loop_begin();
