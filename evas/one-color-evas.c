@@ -30,6 +30,7 @@ static void _on_destroy(Ecore_Evas *ee EINA_UNUSED) {
 }
 
 static void resize_image(const int width, const int height) {
+    // c'est l'bordel, là dedans!
     int left = dx;
     int top = dy;
     float nh = (float)height;
@@ -70,37 +71,43 @@ static void _canvas_resize_cb(Ecore_Evas *ee) {
 static void _on_keydown(void *data EINA_UNUSED,
                         Evas *evas EINA_UNUSED,
                         Evas_Object *o EINA_UNUSED,
-                        void *einfo) {
-    Evas_Event_Key_Down *ev = einfo;
+                        void *event) {
+    Evas_Event_Key_Down *ev = event;
     const char *the_key = ev->key;
+    Eina_Bool control = evas_key_modifier_is_set(ev->modifiers, "Control");
+    Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
+    Eina_Bool shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
+
     if (*(the_key + 1) == 0) {
         switch (*the_key) {
-            case 27:
             case 'q':
-                _on_destroy(main_data.ecore_evas);
+                if (control) {
+                    _on_destroy(main_data.ecore_evas);
+                }
                 break;
             case 's':
-                // does not work :'
-                evas_object_image_save(main_data.image,
-                                       img_destination,
-                                       NULL,
-                                       "quality=100 compress=8");
+                if (control) {
+                    evas_object_image_save(main_data.image,
+                                           img_destination,
+                                           NULL,
+                                           "quality=100 compress=8");
+                }
                 break;
             default:
+                fprintf(stdout, "key %d (%c)\n",
+                        (int)*the_key,
+                        *the_key);
                 break;
 
         }
+    } else {
+        if (strcmp(the_key, "Escape") == 0) {
+            _on_destroy(main_data.ecore_evas);
+        } else {
+            fprintf(stdout, "key %d %d (%s)\n",
+                    (int) *the_key, (int) *(the_key + 1), the_key);
+        }
     }
-}
-
-/* Initialization of DevIL */
-static bool init_DevIL(void) {
-    if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
-        fprintf(stderr, "wrong DevIL version\n");
-        return false;
-    }
-    ilInit();
-    return true;
 }
 
 int main(const int argc, char **argv) {
@@ -192,7 +199,7 @@ int main(const int argc, char **argv) {
     ecore_evas_free(main_data.ecore_evas);
     ecore_evas_shutdown();
     return EXIT_SUCCESS;
-    error:
+error:
     fprintf(stderr, "error: Requires at least one Evas engine built and linked"
                     " to ecore-evas for this example to run properly.\n");
     ecore_evas_shutdown();

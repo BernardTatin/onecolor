@@ -28,6 +28,16 @@ static void fill_pixels_buffers(EV_image *image) {
     }
 }
 
+/* Initialization of DevIL */
+bool init_DevIL(void) {
+    if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
+        fprintf(stderr, "wrong DevIL version\n");
+        return false;
+    }
+    ilInit();
+    return true;
+}
+
 bool LoadImage(EV_image *image, char *filename) {
     ILboolean success;
 
