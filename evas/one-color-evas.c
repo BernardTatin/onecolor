@@ -29,6 +29,11 @@ static void on_destroy(Ecore_Evas *ee EINA_UNUSED) {
     ecore_main_loop_quit();
 }
 
+static void resize_text(const int width, const int height) {
+    evas_object_move(main_data.txt_key_help, dx, height - dy);
+    evas_object_resize(main_data.txt_key_help, width - 2*dx, dy);
+}
+
 static void resize_image(const int width, const int height) {
     // c'est l'bordel, là dedans!
     int left = dx;
@@ -66,6 +71,7 @@ static void canvas_resize_cb(Ecore_Evas *ee) {
     ecore_evas_geometry_get(ee, NULL, NULL, &w, &h);
     evas_object_resize(main_data.background, w, h);
     resize_image(w - 2 * dx, h - 2 * dy);
+    resize_text(w, h);
 }
 
 static void on_key_down(void *data EINA_UNUSED,
@@ -192,8 +198,34 @@ int main(const int argc, char **argv) {
             on_key_down,
             NULL);
 
+    /*
+     * text: key help at the bottom of the screen
+     */
+    main_data.txt_key_help = evas_object_text_add(main_data.evas);
+    evas_object_text_style_set(main_data.txt_key_help, EVAS_TEXT_STYLE_PLAIN);
+    evas_object_color_set(main_data.txt_key_help, 0, 0, 0, 255);
+    evas_object_text_font_set(main_data.txt_key_help, "Utopia", dy - 2);
+    evas_object_text_text_set(main_data.txt_key_help, "sample text");
+    resize_text(
+            default_width,
+            default_height);
+
+    /*
+     * we show all
+     */
+    evas_object_show(main_data.background);
+    evas_object_show(main_data.txt_key_help);
+    evas_object_show(main_data.image);
+
+
+    /*
+     * main loop
+     */
     ecore_main_loop_begin();
 
+    /*
+     * end of the world
+     */
     ecore_evas_free(main_data.ecore_evas);
     ecore_evas_shutdown();
     return EXIT_SUCCESS;

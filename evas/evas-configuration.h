@@ -18,7 +18,10 @@ extern char *img_destination;
 typedef struct _MainData {
     Ecore_Evas *ecore_evas;
     Evas *evas;
-    Evas_Object *image, *background;
+    Evas_Object *image;
+    Evas_Object *background;
+    Evas_Object *txt_key_help;
+    Evas_Object *txt_help;
 } MainData;
 
 typedef unsigned char u8;
