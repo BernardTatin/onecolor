@@ -7,34 +7,16 @@
 
 #define _GNU_SOURCE
 
+#include <stdbool.h>
+#include <IL/il.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Ecore.h>
 #include <Ecore_Evas.h>
-#include <stdio.h>
-#include <errno.h>
-#include "evas-common.h"
 
-static char *program_name = NULL;
-static char *img_source = NULL;
-static char *img_base_source = NULL;
-static char *img_destination = NULL;
-
-
-const int default_width = 320;
-const int default_height = 240;
-const int dx = 5;
-const int dy = 5;
-
-typedef struct _MainData {
-    Ecore_Evas *ecore_evas;
-    Evas *evas;
-    Evas_Object *image, *background;
-} MainData;
-
-static MainData main_data = {0};
-
+#include "evas-configuration.h"
+#include "dev-IL-tools.h"
 
 static char *get_base_name(const char *full_file_name) {
     char *tmp_file_name = strdup(full_file_name);
@@ -82,6 +64,16 @@ static void _on_keydown(void *data EINA_UNUSED,
     }
 }
 
+/* Initialization of DevIL */
+static bool init_DevIL(void) {
+    if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
+        fprintf(stderr, "wrong DevIL version\n");
+        return false;
+    }
+    ilInit();
+    return true;
+}
+
 int main(const int argc, char **argv) {
     int err;
 
@@ -95,6 +87,21 @@ int main(const int argc, char **argv) {
     img_source = argv[1];
     img_base_source = get_base_name(img_source);
     img_destination = argv[2];
+
+    if (!init_DevIL()) {
+        fprintf(stderr, "FATAL: cannot initialize DevIL!\n");
+        return EXIT_FAILURE;
+    }
+    /* load the file picture with DevIL */
+    if (!LoadImage(&mainImage, argv[1])) {
+        fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
+        return -1;
+    }
+    fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
+            mainImage.byte_per_pixel,
+            mainImage.width,
+            mainImage.height,
+            mainImage.format);
     if (!ecore_evas_init()) {
         fprintf(stderr, "FATAL: cannot initialize ecore_evas\n");
         return EXIT_FAILURE;

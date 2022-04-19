@@ -9,21 +9,29 @@ SET(CMAKE_C_FLAGS "-Wall -Wextra" CACHE STRING "" FORCE)
 
 find_package(PkgConfig)
 
-include_directories(image-lib configuration)
 
 #
 # evas version
 #
 pkg_search_module(EVAS required ecore-evas evas  ecore eina ecore-file efl)
+pkg_search_module(IL required IL)
+
 
 add_executable(one-color-evas
-        evas/images.c)
-target_link_libraries(one-color-evas ${EVAS_LIBRARIES})
-target_include_directories(one-color-evas PUBLIC ${EVAS_INCLUDE_DIRS} evas)
+        evas/one-color-evas.c evas/evas-configuration.c evas/evas-configuration.h DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h)
+target_link_libraries(one-color-evas
+        ${EVAS_LIBRARIES}
+        ${IL_LIBRARIES})
+target_include_directories(one-color-evas PUBLIC
+        evas
+        DevIL
+        ${EVAS_INCLUDE_DIRS}
+        ${IL_INCLUDE_DIRS})
 
 #
 # openGL version
 #
+pkg_search_module(GL required opengl )
 add_executable(one-color-GL
         opengl/one-color-GL.c
         opengl/GL-Configuration.h
@@ -31,8 +39,8 @@ add_executable(one-color-GL
         opengl/GL-menus.h
         opengl/GL-filters.c
         opengl/GL-filters.h
-        opengl/GL_filter_definitions.c)
-target_link_libraries(one-color-GL m glut GL GLU IL)
+        opengl/GL_filter_definitions.c DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h)
+target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC opengl)
 
 #
@@ -58,3 +66,4 @@ add_executable(one-color
         configuration/main-configuration.h
         configuration/main-configuration.c)
 target_link_libraries(one-color jpeg m)
+target_include_directories(one-color PUBLIC image-lib configuration)

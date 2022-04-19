@@ -4,8 +4,8 @@
 // Code heavily copied from The Little Body at:
 //      https://community.khronos.org/t/how-to-load-an-image-in-opengl/71231/5
 
-#include <stdbool.h>
 #include <math.h>
+#include <stdbool.h>
 #include <IL/il.h>
 #include <GL/glut.h>
 
