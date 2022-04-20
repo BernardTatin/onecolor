@@ -17,6 +17,8 @@
 
 #include "evas-configuration.h"
 #include "dev-IL-tools.h"
+#include "evas-scene.h"
+#include "widgets.h"
 
 static char *get_base_name(const char *full_file_name) {
     char *tmp_file_name = strdup(full_file_name);
@@ -69,9 +71,10 @@ static void canvas_resize_cb(Ecore_Evas *ee) {
     int w, h;
 
     ecore_evas_geometry_get(ee, NULL, NULL, &w, &h);
-    evas_object_resize(main_data.background, w, h);
-    resize_image(w - 2 * dx, h - 2 * dy);
-    resize_text(w, h);
+    resize_scene(&main_scene, w, h);
+//    evas_object_resize(main_data.background, w, h);
+//    resize_image(w - 2 * dx, h - 2 * dy);
+//    resize_text(w, h);
 }
 
 static void on_key_down(void *data EINA_UNUSED,
@@ -168,28 +171,51 @@ int main(const int argc, char **argv) {
     /*
      * the white background
      */
-    main_data.background = evas_object_rectangle_add(main_data.evas);
-    evas_object_color_set(main_data.background, 250, 250, 220, 255); /* white background */
-    evas_object_move(main_data.background, 0, 0); /* at canvas' origin */
-    evas_object_resize(
-            main_data.background,
-            default_width,
-            default_height); /* covers full canvas */
+//    main_data.background = evas_object_rectangle_add(main_data.evas);
+//    evas_object_color_set(main_data.background, 250, 250, 220, 255); /* white background */
+//    evas_object_move(main_data.background, 0, 0); /* at canvas' origin */
+//    evas_object_resize(
+//            main_data.background,
+//            default_width,
+//            default_height);
 
     /*
      * the image
      */
-    main_data.image = evas_object_image_add(main_data.evas);
-    evas_object_image_size_set(main_data.image, mainImage.width, mainImage.height);
-    evas_object_image_data_set(main_data.image, mainImage.screen_pixels);
-    evas_object_image_filled_set(main_data.image, EINA_TRUE);
+//    main_data.image = evas_object_image_add(main_data.evas);
+//    evas_object_image_size_set(main_data.image, mainImage.width, mainImage.height);
+//    evas_object_image_data_set(main_data.image, mainImage.screen_pixels);
+//    evas_object_image_filled_set(main_data.image, EINA_TRUE);
+//
+//    evas_object_move(main_data.image, dx, dy);
+//    resize_image(
+//            default_width - 2 * dx,
+//            default_height - 2 * dy);
+//    evas_object_show(main_data.background);
+//    evas_object_show(main_data.image);
 
-    evas_object_move(main_data.image, dx, dy);
-    resize_image(
-            default_width - 2 * dx,
-            default_height - 2 * dy);
-    evas_object_show(main_data.background);
-    evas_object_show(main_data.image);
+    /*
+     * text: key help at the bottom of the screen
+     */
+//    main_data.txt_key_help = evas_object_text_add(main_data.evas);
+//    evas_object_text_style_set(main_data.txt_key_help, EVAS_TEXT_STYLE_PLAIN);
+//    evas_object_color_set(main_data.txt_key_help, 0, 0, 0, 255);
+//    evas_object_text_font_set(main_data.txt_key_help, "Utopia", dy - 2);
+//    evas_object_text_text_set(main_data.txt_key_help, "sample text");
+//    resize_text(
+//            default_width,
+//            default_height);
+//
+    /*
+     * we show all
+     */
+//    evas_object_show(main_data.background);
+//    evas_object_show(main_data.txt_key_help);
+//    evas_object_show(main_data.image);
+
+    main_data.background = widget_background(main_data.evas)->evas_object;
+    main_data.image = widget_picture(main_data.evas)->evas_object;
+    main_data.txt_key_help = widget_key_text(main_data.evas)->evas_object;
 
     evas_object_focus_set(main_data.background, EINA_TRUE);
     evas_object_event_callback_add(
@@ -198,25 +224,8 @@ int main(const int argc, char **argv) {
             on_key_down,
             NULL);
 
-    /*
-     * text: key help at the bottom of the screen
-     */
-    main_data.txt_key_help = evas_object_text_add(main_data.evas);
-    evas_object_text_style_set(main_data.txt_key_help, EVAS_TEXT_STYLE_PLAIN);
-    evas_object_color_set(main_data.txt_key_help, 0, 0, 0, 255);
-    evas_object_text_font_set(main_data.txt_key_help, "Utopia", dy - 2);
-    evas_object_text_text_set(main_data.txt_key_help, "sample text");
-    resize_text(
-            default_width,
-            default_height);
-
-    /*
-     * we show all
-     */
-    evas_object_show(main_data.background);
-    evas_object_show(main_data.txt_key_help);
-    evas_object_show(main_data.image);
-
+    resize_scene(&main_scene, default_width, default_height);
+    show_scene(&main_scene);
 
     /*
      * main loop

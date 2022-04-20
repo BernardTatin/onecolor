@@ -18,7 +18,7 @@ pkg_search_module(IL required IL)
 
 
 add_executable(one-color-evas
-        evas/one-color-evas.c evas/evas-configuration.c evas/evas-configuration.h DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h)
+        evas/one-color-evas.c evas/evas-configuration.c evas/evas-configuration.h DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h evas/evas-scene.c evas/evas-scene.h evas/widgets.c evas/widgets.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
