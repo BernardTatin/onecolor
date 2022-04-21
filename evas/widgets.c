@@ -3,11 +3,8 @@
 //
 
 #include <stdbool.h>
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <IL/il.h>
-#include <Ecore.h>
 #include <Ecore_Evas.h>
 
 #include "evas-configuration.h"
@@ -38,28 +35,27 @@ EWidget *widget_background(Evas *evas) {
     return widget;
 }
 
-static void resize_image(EWidget *widget, const int width, const int height) {
-    // c'est l'bordel, là dedans!
+static void resize_image(EWidget *widget, const int _width, const int _height) {
     Evas_Object *obj = widget->evas_object;
     int left = dx;
     int top = dy;
-    float nh = (float)height;
-    float nw = mainImage.ratio * (float)height;
-    float fw = (float)width;
-    float fh = (float)height;
-    if (nw > fw) {
-        float fTop;
-        float r = fw / nw;
-        nh = roundf(nh * r);
-        nw = fw;
-        fTop = roundf(0.5f * (fh - nh));
-        top = (int)fTop;
-    } else {
-        float fLeft;
-        nw = roundf(nw);
-        fLeft = roundf(0.5f * (fw - nw));
-        left = (int)fLeft;
+    int width = _width - 2*dx;
+    int height = _height - 2*dy;
+    float ratio = mainImage.ratio;
+    float nw = (float)width;
+    float nh = nw / ratio;
+
+    if (nh > (float)height) {
+        nh = (float)height;
+        nw = (float)nh * ratio;
+        if (nw > (float)width) {
+            fprintf(stderr, "Resize image: nw > width (%d > %d)\n",
+                    (int)roundf(nw), width);
+        }
     }
+    left = (int)fabsf(roundf(0.5f * (nw - (float)_width)));
+    top = (int)fabsf(roundf(0.5f * (nh - (float)_height)));
+
     evas_object_move(obj,
                      left,
                      top);

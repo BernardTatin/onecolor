@@ -20,7 +20,7 @@ EScene main_scene = {
 
 void add_to_scene(EScene *scene, EWidget *widget) {
     SceneElement *elt = new_scene_element(widget);
-    fprintf(stdout, "Add to scene %s\n", widget->name);
+
     if (scene->first == NULL) {
         scene->first = elt;
         scene->last = elt;
@@ -36,9 +36,6 @@ void show_scene(EScene *scene) {
         EWidget *widget = elt->widget;
         if (widget->enabled) {
             evas_object_show(widget->evas_object);
-            fprintf(stdout, "Show widget %s\n", widget->name);
-        } else {
-            fprintf(stdout, "NO Show widget %s\n", widget->name);
         }
         elt = elt->next;
     }
@@ -50,9 +47,6 @@ void resize_scene(EScene *scene, const int width, const int height) {
         EWidget *widget = elt->widget;
         if (widget->enabled) {
             widget->resize(widget, width, height);
-            fprintf(stdout, "Resize widget %s\n", widget->name);
-        } else {
-            fprintf(stdout, "NO Resize widget %s\n", widget->name);
         }
         elt = elt->next;
     }
