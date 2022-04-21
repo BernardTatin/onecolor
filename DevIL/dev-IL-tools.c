@@ -36,6 +36,10 @@ static void fill_pixels_buffers(EV_image *image) {
         rgb->r = (float)pixels->r / 255.0f;
         rgb->g = (float)pixels->g / 255.0f;
         rgb->b = (float)pixels->b / 255.0f;
+        evas_color_rgb_to_hsv(
+                rgb->r, rgb->g, rgb->b,
+                &hsv->h, &hsv->s, &hsv->v
+                );
     }
 }
 
