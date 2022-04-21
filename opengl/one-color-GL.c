@@ -19,7 +19,7 @@ GLWindow mainWindow = {
     .height = DEFAULT_HEIGHT,
     .value = 2
 };
-GLImage mainImage;
+GLImage main_image;
 
 
 static inline void quad_vertex(const int tx, const int ty,
@@ -34,7 +34,7 @@ static inline void unit_quad(void) {
     int left = 0;
     int top = 0;
     float nh = (float)height;
-    float nw = mainImage.ratio * (float)height;
+    float nw = main_image.ratio * (float)height;
     if (nw > (float)width) {
         float fTop;
         float r = (float)width / nw;
@@ -70,13 +70,13 @@ static void displayFunc() {
 
     glTexImage2D(GL_TEXTURE_2D,
                  0,
-                 mainImage.byte_per_pixel,
-                 mainImage.width,
-                 mainImage.height,
+                 main_image.byte_per_pixel,
+                 main_image.width,
+                 main_image.height,
                  0,
-                 mainImage.format,
+                 main_image.format,
                  GL_UNSIGNED_BYTE,
-                 mainImage.screen_pixels); /* Texture specification */
+                 main_image.screen_pixels); /* Texture specification */
     /* Draw a full screen mapped quad */
     glBegin(GL_QUADS);
     unit_quad();
@@ -207,18 +207,18 @@ int main(int argc, char **argv) {
 
 
     /* load the file picture with DevIL */
-    if (!LoadImage(&mainImage, argv[1])) {
+    if (!LoadImage(&main_image, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
     fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
-            mainImage.byte_per_pixel,
-            mainImage.width,
-            mainImage.height,
-            mainImage.format);
+            main_image.byte_per_pixel,
+            main_image.width,
+            main_image.height,
+            main_image.format);
     /* OpenGL 2D generic init */
     initGL(mainWindow.width, mainWindow.height);
-    /* OpenGL texture binding of the mainImage loaded by DevIL  */
+    /* OpenGL texture binding of the main_image loaded by DevIL  */
     glGenTextures(1, &texID); /* Texture name generation */
     glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
     glTexParameteri(GL_TEXTURE_2D,
@@ -229,13 +229,13 @@ int main(int argc, char **argv) {
                     GL_LINEAR); /* We will use linear interpolation for minifying filter */
     glTexImage2D(GL_TEXTURE_2D,
                  0,
-                 mainImage.byte_per_pixel,
-                 mainImage.width,
-                 mainImage.height,
+                 main_image.byte_per_pixel,
+                 main_image.width,
+                 main_image.height,
                  0,
-                 mainImage.format,
+                 main_image.format,
                  GL_UNSIGNED_BYTE,
-                 mainImage.screen_pixels); /* Texture specification */
+                 main_image.screen_pixels); /* Texture specification */
 
     {
         u8 *fgl_version = glGetString(GL_VERSION);
@@ -252,8 +252,8 @@ int main(int argc, char **argv) {
     glutMainLoop();
 
     /* Delete used resources and quit */
-    /* Because we have already copied mainImage data into texture data we can release memory used by mainImage. */
-    ilDeleteImages(1, &mainImage.image_name);
+    /* Because we have already copied main_image data into texture data we can release memory used by main_image. */
+    ilDeleteImages(1, &main_image.image_name);
     glDeleteTextures(1, &texID);
 
     return 0;

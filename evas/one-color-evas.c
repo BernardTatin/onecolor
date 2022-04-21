@@ -19,6 +19,7 @@
 #include "evas-scene.h"
 #include "widgets.h"
 #include "evas-tools.h"
+#include "grey-filter.h"
 
 static void on_key_down(void *data EINA_UNUSED,
                         Evas *evas EINA_UNUSED,
@@ -48,7 +49,13 @@ static void on_key_down(void *data EINA_UNUSED,
                     break;
             }
         } else if (no_modifiers) {
-
+            switch(*the_key) {
+                case 'g':
+                    apply_grey_filter();
+                    break;
+                default:
+                    break;
+            }
         } else {
             fprintf(stdout, "key %d (%c)\n",
                     (int)*the_key,
@@ -81,15 +88,15 @@ int main(const int argc, char **argv) {
         return EXIT_FAILURE;
     }
     /* load the file picture with DevIL */
-    if (!LoadImage(&mainImage, argv[1])) {
+    if (!LoadImage(&main_image, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
     fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
-            mainImage.byte_per_pixel,
-            mainImage.width,
-            mainImage.height,
-            mainImage.format);
+            main_image.byte_per_pixel,
+            main_image.width,
+            main_image.height,
+            main_image.format);
 
     if (!init_evas()) {
         goto error;

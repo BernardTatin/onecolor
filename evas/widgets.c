@@ -41,7 +41,7 @@ static void resize_image(EWidget *widget, const int _width, const int _height) {
     int top = dy;
     int width = _width - 2*dx;
     int height = _height - 2*dy;
-    float ratio = mainImage.ratio;
+    float ratio = main_image.ratio;
     float nw = (float)width;
     float nh = nw / ratio;
 
@@ -73,8 +73,8 @@ EWidget *widget_picture(Evas *evas) {
     widget->evas_object = obj;
     widget->resize = resize_image;
 
-    evas_object_image_size_set(obj, mainImage.width, mainImage.height);
-    evas_object_image_data_set(obj, mainImage.screen_pixels);
+    evas_object_image_size_set(obj, main_image.width, main_image.height);
+    evas_object_image_data_set(obj, main_image.screen_pixels);
     evas_object_image_filled_set(obj, EINA_TRUE);
 
     add_to_scene(&main_scene, widget);

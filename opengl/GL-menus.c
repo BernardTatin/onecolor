@@ -48,9 +48,9 @@ static void exec_option(const Menu_Values option) {
             exit(0);
             break;
         case Menu_Clear:
-            memcpy(mainImage.screen_pixels,
-                   mainImage.original_pixels,
-                   mainImage.number_of_pixels * sizeof(RGBA));
+            memcpy(main_image.screen_pixels,
+                   main_image.original_pixels,
+                   main_image.number_of_pixels * sizeof(RGBA));
             glutPostRedisplay();
             break;
         default:

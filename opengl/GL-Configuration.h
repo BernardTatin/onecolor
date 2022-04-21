@@ -80,6 +80,6 @@ typedef struct {
 } GLImage;
 
 extern GLWindow mainWindow;
-extern GLImage mainImage;
+extern GLImage main_image;
 
 #endif //ONE_COLOR_GL_CONFIGURATION_H

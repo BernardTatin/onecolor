@@ -28,7 +28,11 @@ add_executable(one-color-evas
         evas/widgets.c
         evas/widgets.h
         tools/file-tools.c
-        tools/file-tools.h evas/evas-tools.c evas/evas-tools.h)
+        tools/file-tools.h
+        evas/evas-tools.c
+        evas/evas-tools.h
+        evas-filtering/grey-filter.c
+        evas-filtering/grey-filter.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -36,6 +40,7 @@ target_include_directories(one-color-evas PUBLIC
         evas
         DevIL
         tools
+        evas-filtering
         ${EVAS_INCLUDE_DIRS}
         ${IL_INCLUDE_DIRS})
 
@@ -75,6 +80,6 @@ add_executable(one-color
         image-lib/hsv-filter.c
         image-lib/hsv-filter.h
         configuration/main-configuration.h
-        configuration/main-configuration.c)
+        configuration/main-configuration.c evas-filtering/grey-filter.c evas-filtering/grey-filter.h)
 target_link_libraries(one-color jpeg m)
 target_include_directories(one-color PUBLIC image-lib configuration)

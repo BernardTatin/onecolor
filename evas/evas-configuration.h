@@ -63,6 +63,6 @@ typedef struct {
 } EV_image;
 
 extern MainData main_data;
-extern EV_image mainImage;
+extern EV_image main_image;
 
 #endif //ONE_COLOR_EVAS_CONFIGURATION_H

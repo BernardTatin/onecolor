@@ -12,9 +12,9 @@
 
 void bw_normal_function(struct _GLFilter *_parameters) {
     GLPFilterBWNormal *parameters = (GLPFilterBWNormal *)_parameters->parameters;
-    int n = mainImage.number_of_pixels;
-    fRGB *rgb = mainImage.rgb;
-    RGBA *rgba = mainImage.screen_pixels;
+    int n = main_image.number_of_pixels;
+    fRGB *rgb = main_image.rgb;
+    RGBA *rgba = main_image.screen_pixels;
     const float KlR = parameters->KlR;
     const float KlG = parameters->KlG;
     const float KlB = parameters->KlB;
@@ -46,9 +46,9 @@ void filter_bw_normal3(void) {
 
 void bw_hard_function(struct _GLFilter *_parameters) {
     GLPFilterBWHard *parameters = (GLPFilterBWHard *)_parameters->parameters;
-    int n = mainImage.number_of_pixels;
-    fRGB *rgb = mainImage.rgb;
-    RGBA *rgba = mainImage.screen_pixels;
+    int n = main_image.number_of_pixels;
+    fRGB *rgb = main_image.rgb;
+    RGBA *rgba = main_image.screen_pixels;
     const float KlR = 0.2627f;
     const float KlG = 0.6780f;
     const float KlB = 0.0593f;
@@ -128,9 +128,9 @@ void filter_bw_hard_green(void) {
 }
 
 void filter_average(void) {
-    int n = mainImage.number_of_pixels;
-    fRGB *rgb = mainImage.rgb;
-    RGBA *rgba = mainImage.screen_pixels;
+    int n = main_image.number_of_pixels;
+    fRGB *rgb = main_image.rgb;
+    RGBA *rgba = main_image.screen_pixels;
     const float k = 255.0f / 3.0f;
 
     for (int i=0; i<n; i++, rgb++, rgba++) {

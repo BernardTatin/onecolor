@@ -18,4 +18,4 @@ char *img_base_source = NULL;
 char *img_destination = NULL;
 
 MainData main_data = {0};
-EV_image mainImage;
+EV_image main_image;
