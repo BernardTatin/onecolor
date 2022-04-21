@@ -37,9 +37,6 @@ static void canvas_resize_cb(Ecore_Evas *ee) {
 
     ecore_evas_geometry_get(ee, NULL, NULL, &w, &h);
     resize_scene(&main_scene, w, h);
-//    evas_object_resize(main_data.background, w, h);
-//    resize_image(w - 2 * dx, h - 2 * dy);
-//    resize_text(w, h);
 }
 
 static void on_key_down(void *data EINA_UNUSED,
@@ -49,30 +46,29 @@ static void on_key_down(void *data EINA_UNUSED,
     Evas_Event_Key_Down *ev = event;
     const char *the_key = ev->key;
     Eina_Bool control = evas_key_modifier_is_set(ev->modifiers, "Control");
-//    Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
-//    Eina_Bool shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
+    Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
+    Eina_Bool shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
+    bool ctrl_only = control && (!alt) && !shift;
 
     if (*(the_key + 1) == 0) {
-        switch (*the_key) {
-            case 'q':
-                if (control) {
+        if (ctrl_only) {
+            switch (*the_key) {
+                case 'q':
                     on_destroy(main_data.ecore_evas);
-                }
-                break;
-            case 's':
-                if (control) {
+                    break;
+                case 's':
                     evas_object_image_save(main_data.image,
                                            img_destination,
                                            NULL,
                                            "quality=100 compress=8");
-                }
-                break;
-            default:
-                fprintf(stdout, "key %d (%c)\n",
-                        (int)*the_key,
-                        *the_key);
-                break;
-
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            fprintf(stdout, "key %d (%c)\n",
+                    (int)*the_key,
+                    *the_key);
         }
     } else {
         if (strcmp(the_key, "Escape") == 0) {
