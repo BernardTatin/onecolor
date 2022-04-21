@@ -83,8 +83,8 @@ EWidget *widget_picture(Evas *evas) {
 
 static void resize_text(EWidget *widget, const int width, const int height) {
     Evas_Object *obj = widget->evas_object;
-    evas_object_move(obj, dx, height - dy);
-    evas_object_resize(obj, width - 2*dx, dy);
+    evas_object_move(obj, dx, height - (dy-2));
+    evas_object_resize(obj, width - 2*dx, (dy-2));
 }
 
 EWidget *widget_key_text(Evas *evas) {
@@ -98,8 +98,8 @@ EWidget *widget_key_text(Evas *evas) {
 
     evas_object_text_style_set(obj, EVAS_TEXT_STYLE_PLAIN);
     evas_object_color_set(obj, 0, 0, 0, 255);
-    evas_object_text_font_set(obj, "Utopia", dy - 2);
-    evas_object_text_text_set(obj, "sample text");
+    evas_object_text_font_set(obj, "Utopia", 14);
+    evas_object_text_text_set(obj, "Ctrl+Q: Quit, Ctrl+S: Save, H: Hard black filter menu");
 
     add_to_scene(&main_scene, widget);
     return widget;

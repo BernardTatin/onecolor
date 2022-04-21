@@ -10,7 +10,7 @@
 const int default_width = 640;
 const int default_height = 480;
 const int dx = 5;
-const int dy = 25;
+const int dy = 32;
 
 char *program_name = NULL;
 char *img_source = NULL;
