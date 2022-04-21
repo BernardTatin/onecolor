@@ -5,39 +5,20 @@
 // from the source code of evas-images.c
 //
 
-#define _GNU_SOURCE
 
 #include <stdbool.h>
 #include <IL/il.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Ecore.h>
 #include <Ecore_Evas.h>
 
+#include "file-tools.h"
 #include "evas-configuration.h"
 #include "dev-IL-tools.h"
 #include "evas-scene.h"
 #include "widgets.h"
-
-static char *get_base_name(const char *full_file_name) {
-    char *tmp_file_name = strdup(full_file_name);
-    char *base_name = strdup(basename(tmp_file_name));
-    free(tmp_file_name);
-    return base_name;
-}
-
-static void on_destroy(Ecore_Evas *ee EINA_UNUSED) {
-    ecore_main_loop_quit();
-}
-
-/* Keep the example's window size in sync with the background image's size */
-static void canvas_resize_cb(Ecore_Evas *ee) {
-    int w, h;
-
-    ecore_evas_geometry_get(ee, NULL, NULL, &w, &h);
-    resize_scene(&main_scene, w, h);
-}
+#include "evas-tools.h"
 
 static void on_key_down(void *data EINA_UNUSED,
                         Evas *evas EINA_UNUSED,
@@ -48,7 +29,8 @@ static void on_key_down(void *data EINA_UNUSED,
     Eina_Bool control = evas_key_modifier_is_set(ev->modifiers, "Control");
     Eina_Bool alt = evas_key_modifier_is_set(ev->modifiers, "Alt");
     Eina_Bool shift = evas_key_modifier_is_set(ev->modifiers, "Shift");
-    bool ctrl_only = control && (!alt) && !shift;
+    bool ctrl_only = control && !alt && !shift;
+    bool no_modifiers = !control && !alt && !shift;
 
     if (*(the_key + 1) == 0) {
         if (ctrl_only) {
@@ -65,6 +47,8 @@ static void on_key_down(void *data EINA_UNUSED,
                 default:
                     break;
             }
+        } else if (no_modifiers) {
+
         } else {
             fprintf(stdout, "key %d (%c)\n",
                     (int)*the_key,
@@ -72,10 +56,10 @@ static void on_key_down(void *data EINA_UNUSED,
         }
     } else {
         if (strcmp(the_key, "Escape") == 0) {
-            on_destroy(main_data.ecore_evas);
+
         } else {
-            fprintf(stdout, "key %d %d (%s)\n",
-                    (int) *the_key, (int) *(the_key + 1), the_key);
+            fprintf(stdout, "key <%s>\n",
+                    the_key);
         }
     }
 }
@@ -106,29 +90,10 @@ int main(const int argc, char **argv) {
             mainImage.width,
             mainImage.height,
             mainImage.format);
-    if (!ecore_evas_init()) {
-        fprintf(stderr, "FATAL: cannot initialize ecore_evas\n");
-        return EXIT_FAILURE;
-    }
 
-    /* this will give you a window with an Evas canvas under the first
-     * engine available */
-    main_data.ecore_evas = ecore_evas_new(
-            NULL,
-            10, 10,
-            default_width, default_height,
-            NULL);
-    if (!main_data.ecore_evas) {
+    if (!init_evas()) {
         goto error;
     }
-
-    ecore_evas_callback_destroy_set(main_data.ecore_evas, on_destroy);
-    ecore_evas_callback_resize_set(main_data.ecore_evas, canvas_resize_cb);
-    ecore_evas_show(main_data.ecore_evas);
-
-    /* the canvas pointer, de facto */
-    main_data.evas = ecore_evas_get(main_data.ecore_evas);
-
 
     main_data.background = widget_background(main_data.evas)->evas_object;
     main_data.image = widget_picture(main_data.evas)->evas_object;
@@ -142,6 +107,7 @@ int main(const int argc, char **argv) {
             NULL);
 
     resize_scene(&main_scene, default_width, default_height);
+    ecore_evas_show(main_data.ecore_evas);
     show_scene(&main_scene);
 
     /*
