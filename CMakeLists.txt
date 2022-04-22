@@ -43,6 +43,7 @@ target_include_directories(one-color-evas PUBLIC
         evas-filtering
         ${EVAS_INCLUDE_DIRS}
         ${IL_INCLUDE_DIRS})
+target_compile_definitions(one-color-evas PUBLIC WITH_EVAS)
 
 #
 # openGL version

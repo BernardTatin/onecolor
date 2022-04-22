@@ -5,6 +5,10 @@
 // from the source code of evas-images.c
 //
 
+#if !defined(WITH_EVAS)
+#error "WITH_EVAS must be defined"
+#endif
+
 
 #include <stdbool.h>
 #include <IL/il.h>
