@@ -51,3 +51,10 @@ void resize_scene(EScene *scene, const int width, const int height) {
         elt = elt->next;
     }
 }
+
+void redraw_scene(EScene *scene) {
+    int w, h;
+
+    ecore_evas_geometry_get(main_data.ecore_evas, NULL, NULL, &w, &h);
+    resize_scene(scene, w, h);
+}

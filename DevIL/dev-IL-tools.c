@@ -31,15 +31,16 @@ static void fill_pixels_buffers(EV_image *image) {
 #if defined(WITH_EVAS)
 #endif
 #if defined(WITH_EVAS)
-    image->screen_pixels = (ARGB *)malloc(n * sizeof(ARGB));
-    ARGB *screen_pixels = image->screen_pixels;
+    image->screen_pixels = (BGRA *)malloc(n * sizeof(BGRA));
+    BGRA *screen_pixels = image->screen_pixels;
     for (int i=0; i<n; i++, pixels++, screen_pixels++, hsv++) {
-        screen_pixels->a = pixels->b;
-        screen_pixels->r = pixels->g;
-        screen_pixels->g = pixels->r;
-        screen_pixels->b = pixels->a;
+        screen_pixels->a = pixels->a;
+        screen_pixels->r = pixels->r;
+        screen_pixels->g = pixels->g;
+        screen_pixels->b = pixels->b;
+//        screen_pixels->b = 255;
         evas_color_rgb_to_hsv(
-                screen_pixels->r, screen_pixels->g, screen_pixels->b,
+                screen_pixels->b, screen_pixels->g, screen_pixels->g,
                 &hsv->h, &hsv->s, &hsv->v
         );
     }

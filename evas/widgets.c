@@ -74,6 +74,7 @@ EWidget *widget_picture(Evas *evas) {
     widget->resize = resize_image;
 
     evas_object_image_size_set(obj, main_image.width, main_image.height);
+    evas_object_image_colorspace_set(obj,   EMILE_COLORSPACE_ARGB8888);
     evas_object_image_data_set(obj, main_image.screen_pixels);
     evas_object_image_filled_set(obj, EINA_TRUE);
 

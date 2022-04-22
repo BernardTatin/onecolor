@@ -56,6 +56,9 @@ static void on_key_down(void *data EINA_UNUSED,
             switch(*the_key) {
                 case 'g':
                     apply_grey_filter();
+//                    redraw_scene(&main_scene);
+//                    show_scene(&main_scene);
+                    evas_object_show(main_data.image);
                     break;
                 default:
                     break;

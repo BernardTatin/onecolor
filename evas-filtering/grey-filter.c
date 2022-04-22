@@ -19,17 +19,19 @@ void apply_grey_filter(void) {
     Evas_Object *image = main_data.image;
     int n = main_image.number_of_pixels;
 #if defined(WITH_EVAS)
-    ARGB *rgb = evas_object_image_data_get(image, EINA_TRUE);
+    BGRA *bgra = evas_object_image_data_get(image, EINA_TRUE);
 #else
-    RGBA *rgb = main_image.screen_pixels;
+    RGBA *bgra = main_image.screen_pixels;
 #endif
     HSV *hsv = main_image.hsv;
+    RGBA *original = main_image.original_pixels;
 
-    for (int i=0; i<n; i++, rgb++, hsv++) {
-        u8 value = (int)roundf(hsv->v * 255.0f);
-        rgb->r = value;
-        rgb->g = value;
-        rgb->b = value;
+    for (int i=0; i<n; i++, bgra++, hsv++, original++) {
+        u8 value = float_to_u8(hsv->v * 255.0f);
+        bgra->r = value;     // green
+        bgra->g = value;     // red
+        bgra->b = value;     // blue
+        bgra->a = original->a;
     }
 //    evas_object_image_size_set(image, main_image.width, main_image.height);
 //    evas_object_image_data_set(image, main_image.screen_pixels);

@@ -42,7 +42,7 @@ typedef struct {
 #if !defined(WITH_EVAS)
     RGBA *screen_pixels;
 #else
-    ARGB *screen_pixels;
+    BGRA *screen_pixels;
 #endif
     HSV *hsv;
     fRGB *rgb;

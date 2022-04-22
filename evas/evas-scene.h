@@ -34,5 +34,6 @@ static inline SceneElement *new_scene_element(EWidget *widget) {
 void add_to_scene(EScene *scene, EWidget *widget);
 void show_scene(EScene *scene);
 void resize_scene(EScene *scene, const int width, const int height);
+void redraw_scene(EScene *scene);
 
 #endif //ONE_COLOR_EVAS_SCENE_H
