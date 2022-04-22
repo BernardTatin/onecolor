@@ -20,27 +20,43 @@ static void fill_pixels_buffers(EV_image *image) {
     image->format = ilGetInteger(IL_IMAGE_FORMAT);
     image->ratio = (float)image->width / (float)image->height;
     image->original_pixels = (RGBA *)ilGetData();
+#if !defined(WITH_EVAS)
+#else
+#endif
+    image->hsv = (HSV *) malloc(n * sizeof(HSV));
+    image->rgb = (fRGB *) malloc(n * sizeof(fRGB));
+
+    RGBA *pixels = image->original_pixels;
+    HSV *hsv = image->hsv;
+#if defined(WITH_EVAS)
+#endif
+#if defined(WITH_EVAS)
+    image->screen_pixels = (ARGB *)malloc(n * sizeof(ARGB));
+    ARGB *screen_pixels = image->screen_pixels;
+    for (int i=0; i<n; i++, pixels++, screen_pixels++, hsv++) {
+        screen_pixels->a = pixels->b;
+        screen_pixels->r = pixels->g;
+        screen_pixels->g = pixels->r;
+        screen_pixels->b = pixels->a;
+        evas_color_rgb_to_hsv(
+                screen_pixels->r, screen_pixels->g, screen_pixels->b,
+                &hsv->h, &hsv->s, &hsv->v
+        );
+    }
+#else
+    fRGB *rgb = image->rgb;
     image->screen_pixels = (RGBA *)malloc(n * sizeof(RGBA));
     ilCopyPixels(0, 0, 0,
                  image->width, image->height,
                  1,
                  IL_RGBA, IL_UNSIGNED_BYTE,
                  image->screen_pixels);
-    image->hsv = (HSV *) malloc(n * sizeof(HSV));
-    image->rgb = (fRGB *) malloc(n * sizeof(fRGB));
-
-    RGBA *pixels = image->original_pixels;
-    HSV *hsv = image->hsv;
-    fRGB *rgb = image->rgb;
     for (int i=0; i<n; i++, pixels++, rgb++, hsv++) {
         rgb->r = (float)pixels->r / 255.0f;
         rgb->g = (float)pixels->g / 255.0f;
         rgb->b = (float)pixels->b / 255.0f;
-        evas_color_rgb_to_hsv(
-                rgb->r, rgb->g, rgb->b,
-                &hsv->h, &hsv->s, &hsv->v
-                );
     }
+#endif
 }
 
 /* Initialization of DevIL */

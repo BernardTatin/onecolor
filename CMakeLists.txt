@@ -32,7 +32,7 @@ add_executable(one-color-evas
         evas/evas-tools.c
         evas/evas-tools.h
         evas-filtering/grey-filter.c
-        evas-filtering/grey-filter.h)
+        evas-filtering/grey-filter.h image-library/basic-data.c image-library/basic-data.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -41,6 +41,7 @@ target_include_directories(one-color-evas PUBLIC
         DevIL
         tools
         evas-filtering
+        image-library
         ${EVAS_INCLUDE_DIRS}
         ${IL_INCLUDE_DIRS})
 target_compile_definitions(one-color-evas PUBLIC WITH_EVAS)
@@ -56,7 +57,7 @@ add_executable(one-color-GL
         opengl/GL-menus.h
         opengl/GL-filters.c
         opengl/GL-filters.h
-        opengl/GL_filter_definitions.c DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h)
+        opengl/GL_filter_definitions.c DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h image-library/basic-data.c image-library/basic-data.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC opengl)
 

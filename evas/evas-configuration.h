@@ -24,25 +24,7 @@ typedef struct _MainData {
     Evas_Object *txt_help;
 } MainData;
 
-typedef unsigned char u8;
-typedef struct __attribute__((__packed__)) {
-    u8 r;
-    u8 g;
-    u8 b;
-    u8 a;
-} RGBA;
-
-typedef struct {
-    float r;
-    float g;
-    float b;
-} fRGB;
-
-typedef struct {
-    float h;
-    float s;
-    float v;
-} HSV;
+#include "basic-data.h"
 
 typedef struct {
     ILuint image_name;
@@ -57,7 +39,11 @@ typedef struct {
     float ratio;
 
     RGBA *original_pixels;
+#if !defined(WITH_EVAS)
     RGBA *screen_pixels;
+#else
+    ARGB *screen_pixels;
+#endif
     HSV *hsv;
     fRGB *rgb;
 } EV_image;
