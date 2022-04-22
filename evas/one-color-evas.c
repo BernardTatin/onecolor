@@ -25,6 +25,14 @@
 #include "evas-tools.h"
 #include "grey-filter.h"
 
+// on_show_image
+static void on_show_image(void *data EINA_UNUSED,
+                          Evas *evas EINA_UNUSED,
+                          Evas_Object *o EINA_UNUSED,
+                          void *event) {
+    fprintf(stdout, "Image show\n");
+}
+
 static void on_key_down(void *data EINA_UNUSED,
                         Evas *evas EINA_UNUSED,
                         Evas_Object *o EINA_UNUSED,
@@ -58,8 +66,8 @@ static void on_key_down(void *data EINA_UNUSED,
                     apply_grey_filter();
 //                    redraw_scene(&main_scene);
 //                    show_scene(&main_scene);
-                    evas_object_show(main_data.image);
-                    break;
+//                    evas_object_show(main_data.image);
+                    return;
                 default:
                     break;
             }
@@ -118,6 +126,11 @@ int main(const int argc, char **argv) {
             main_data.background,
             EVAS_CALLBACK_KEY_DOWN,
             on_key_down,
+            NULL);
+    evas_object_event_callback_add(
+            main_data.image,
+            EVAS_CALLBACK_SHOW,
+            on_show_image,
             NULL);
 
     resize_scene(&main_scene, default_width, default_height);

@@ -32,7 +32,7 @@ add_executable(one-color-evas
         evas/evas-tools.c
         evas/evas-tools.h
         evas-filtering/grey-filter.c
-        evas-filtering/grey-filter.h image-library/basic-data.c image-library/basic-data.h)
+        evas-filtering/grey-filter.h image-library/basic-data.c image-library/basic-data.h image-library/debug.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})

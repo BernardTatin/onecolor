@@ -20,16 +20,11 @@ static void fill_pixels_buffers(EV_image *image) {
     image->format = ilGetInteger(IL_IMAGE_FORMAT);
     image->ratio = (float)image->width / (float)image->height;
     image->original_pixels = (RGBA *)ilGetData();
-#if !defined(WITH_EVAS)
-#else
-#endif
     image->hsv = (HSV *) malloc(n * sizeof(HSV));
     image->rgb = (fRGB *) malloc(n * sizeof(fRGB));
 
     RGBA *pixels = image->original_pixels;
     HSV *hsv = image->hsv;
-#if defined(WITH_EVAS)
-#endif
 #if defined(WITH_EVAS)
     image->screen_pixels = (BGRA *)malloc(n * sizeof(BGRA));
     BGRA *screen_pixels = image->screen_pixels;
@@ -40,7 +35,7 @@ static void fill_pixels_buffers(EV_image *image) {
         screen_pixels->b = pixels->b;
 //        screen_pixels->b = 255;
         evas_color_rgb_to_hsv(
-                screen_pixels->b, screen_pixels->g, screen_pixels->g,
+                screen_pixels->r, screen_pixels->g, screen_pixels->b,
                 &hsv->h, &hsv->s, &hsv->v
         );
     }
