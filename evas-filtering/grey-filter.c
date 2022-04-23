@@ -2,17 +2,13 @@
 // Created by bernard on 21/04/22.
 //
 
-#include <stdbool.h>
 #include <IL/il.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <Ecore.h>
-#include <math.h>
 #include <Ecore_Evas.h>
 
 #include "debug.h"
 #include "evas-configuration.h"
-#include "evas-scene.h"
 #include "evas-tools.h"
 #include "grey-filter.h"
 

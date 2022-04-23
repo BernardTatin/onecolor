@@ -7,7 +7,6 @@
 #include <IL/il.h>
 #include <Ecore_Evas.h>
 
-#include "debug.h"
 #include "evas-configuration.h"
 #include "evas-scene.h"
 
@@ -46,7 +45,6 @@ static void resize_image(EWidget *widget, const int _width, const int _height) {
     float nw = (float)width;
     float nh = nw / ratio;
 
-    DBG();
     if (nh > (float)height) {
         nh = (float)height;
         nw = (float)nh * ratio;
@@ -58,16 +56,13 @@ static void resize_image(EWidget *widget, const int _width, const int _height) {
     left = (int)fabsf(roundf(0.5f * (nw - (float)_width)));
     top = (int)fabsf(roundf(0.5f * (nh - (float)_height)));
 
-    DBG();
     evas_object_move(obj,
                      left,
                      top);
-    DBG();
     evas_object_resize(
             obj,
             (int)nw,
             (int)nh);
-    DBG();
 }
 EWidget *widget_picture(Evas *evas) {
     EWidget *widget = (EWidget *) malloc(sizeof (EWidget));

@@ -4,7 +4,6 @@
 
 #include <stdbool.h>
 #include <IL/il.h>
-#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <Ecore.h>
