@@ -15,6 +15,8 @@ extern char *img_source;
 extern char *img_base_source;
 extern char *img_destination;
 
+#include "basic-data.h"
+
 typedef struct _MainData {
     Ecore_Evas *ecore_evas;
     Evas *evas;
@@ -24,31 +26,9 @@ typedef struct _MainData {
     Evas_Object *txt_help;
 } MainData;
 
-#include "basic-data.h"
 
-typedef struct {
-    ILuint image_name;
-
-    int width;
-    int height;
-    int number_of_pixels;
-
-    int byte_per_pixel;
-    int format;
-
-    float ratio;
-
-    RGBA *original_pixels;
-#if !defined(WITH_EVAS)
-    RGBA *screen_pixels;
-#else
-    BGRA *screen_pixels;
-#endif
-    HSV *hsv;
-    fRGB *rgb;
-} EV_image;
 
 extern MainData main_data;
-extern EV_image main_image;
+extern TheImage main_image;
 
 #endif //ONE_COLOR_EVAS_CONFIGURATION_H

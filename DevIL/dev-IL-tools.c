@@ -6,12 +6,20 @@
 #include <IL/il.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(WITH_EVAS)
 #include <Ecore_Evas.h>
+#elif defined(WITH_GL)
+#include <GL/glut.h>
+#endif
 
+#if defined(WITH_EVAS)
 #include "evas-configuration.h"
+#elif defined(WITH_GL)
+#include "GL-Configuration.h"
+#endif
 #include "dev-IL-tools.h"
 
-static void fill_pixels_buffers(EV_image *image) {
+static void fill_pixels_buffers(TheImage *image) {
     image->width = ilGetInteger(IL_IMAGE_WIDTH);
     image->height = ilGetInteger(IL_IMAGE_HEIGHT);
     int n = image->width * image->height;
@@ -65,7 +73,7 @@ bool init_DevIL(void) {
     return true;
 }
 
-bool LoadImage(EV_image *image, char *filename) {
+bool LoadImage(TheImage *image, char *filename) {
     ILboolean success;
 
     ilGenImages(1, &(image->image_name));    /* Generation of one image name */
@@ -87,5 +95,10 @@ bool LoadImage(EV_image *image, char *filename) {
         return false;
 
     fill_pixels_buffers(image);
+    fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
+            main_image.byte_per_pixel,
+            main_image.width,
+            main_image.height,
+            main_image.format);
     return true;
 }

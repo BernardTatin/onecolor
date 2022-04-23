@@ -32,7 +32,10 @@ add_executable(one-color-evas
         evas/evas-tools.c
         evas/evas-tools.h
         evas-filtering/grey-filter.c
-        evas-filtering/grey-filter.h image-library/basic-data.c image-library/basic-data.h image-library/debug.h)
+        evas-filtering/grey-filter.h
+        image-library/basic-data.c
+        image-library/basic-data.h
+        image-library/debug.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -57,9 +60,18 @@ add_executable(one-color-GL
         opengl/GL-menus.h
         opengl/GL-filters.c
         opengl/GL-filters.h
-        opengl/GL_filter_definitions.c DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h image-library/basic-data.c image-library/basic-data.h)
+        opengl/GL_filter_definitions.c
+        DevIL/dev-IL-tools.c
+        DevIL/dev-IL-tools.h
+        image-library/basic-data.c
+        image-library/basic-data.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
-target_include_directories(one-color-GL PUBLIC opengl)
+target_include_directories(one-color-GL PUBLIC
+        opengl
+        DevIL
+        image-library
+        )
+target_compile_definitions(one-color-GL PUBLIC WITH_GL)
 
 #
 # test openGL

@@ -107,11 +107,6 @@ int main(const int argc, char **argv) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
-    fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
-            main_image.byte_per_pixel,
-            main_image.width,
-            main_image.height,
-            main_image.format);
 
     if (!init_evas()) {
         goto error;
@@ -145,6 +140,7 @@ int main(const int argc, char **argv) {
     /*
      * end of the world
      */
+    ilDeleteImages(1, &main_image.image_name);
     ecore_evas_free(main_data.ecore_evas);
     ecore_evas_shutdown();
     return EXIT_SUCCESS;

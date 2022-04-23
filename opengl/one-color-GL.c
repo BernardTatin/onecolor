@@ -11,6 +11,7 @@
 
 #include "GL-Configuration.h"
 #include "GL-menus.h"
+#include "dev-IL-tools.h"
 
 int nFrames = 0;
 
@@ -19,7 +20,7 @@ GLWindow mainWindow = {
     .height = DEFAULT_HEIGHT,
     .value = 2
 };
-GLImage main_image;
+TheImage main_image;
 
 
 static inline void quad_vertex(const int tx, const int ty,
@@ -120,59 +121,6 @@ static void initGL(int w, int h) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the window
 }
 
-static void fill_pixels_buffers(GLImage *image) {
-    int n = image->number_of_pixels;
-    image->hsv = (HSV *) malloc(n * sizeof(HSV));
-    image->rgb = (fRGB *) malloc(n * sizeof(fRGB));
-
-    RGBA *pixels = image->original_pixels;
-    HSV *hsv = image->hsv;
-    fRGB *rgb = image->rgb;
-    for (int i=0; i<n; i++, pixels++, rgb++, hsv++) {
-        rgb->r = (float)pixels->r / 255.0f;
-        rgb->g = (float)pixels->g / 255.0f;
-        rgb->b = (float)pixels->b / 255.0f;
-    }
-}
-/* Load an image using DevIL and return the devIL handle (-1 if failure) */
-static bool LoadImage(GLImage *image, char *filename) {
-    ILboolean success;
-
-    ilGenImages(1, &(image->image_name));    /* Generation of one image name */
-    ilBindImage(image->image_name);        /* Binding of image name */
-
-
-    /* Loading of the image filename by DevIL */
-    success = ilLoadImage(filename);
-    if (success) {
-        /* Convert every colour component into unsigned byte */
-        /* You can replace IL_RGB with IL_RGBA if your image contains alpha channel */
-
-        success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-
-        if (!success) {
-            return false;
-        }
-    } else
-        return false;
-
-    image->width = ilGetInteger(IL_IMAGE_WIDTH);
-    image->height = ilGetInteger(IL_IMAGE_HEIGHT);
-    int n = image->width * image->height;
-    image->number_of_pixels = n;
-    image->byte_per_pixel = ilGetInteger(IL_IMAGE_BPP);
-    image->format = ilGetInteger(IL_IMAGE_FORMAT);
-    image->ratio = (float)image->width / (float)image->height;
-    image->original_pixels = (RGBA *)ilGetData();
-    image->screen_pixels = (RGBA *)malloc(n * sizeof(RGBA));
-    ilCopyPixels(0, 0, 0,
-                 image->width, image->height,
-                 1,
-                 IL_RGBA, IL_UNSIGNED_BYTE,
-                 image->screen_pixels);
-    fill_pixels_buffers(image);
-    return true;
-}
 
 int main(int argc, char **argv) {
     GLuint texID;
@@ -199,23 +147,16 @@ int main(int argc, char **argv) {
 //    initGL(mainWindow.width, mainWindow.height);
 
     /* Initialization of DevIL */
-    if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
+    if (!init_DevIL()) {
         fprintf(stderr, "wrong DevIL version\n");
         return -1;
     }
-    ilInit();
-
 
     /* load the file picture with DevIL */
     if (!LoadImage(&main_image, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
         return -1;
     }
-    fprintf(stdout, "\nImage bits/pix: %d, width: %d, height: %d, format: %d\n",
-            main_image.byte_per_pixel,
-            main_image.width,
-            main_image.height,
-            main_image.format);
     /* OpenGL 2D generic init */
     initGL(mainWindow.width, mainWindow.height);
     /* OpenGL texture binding of the main_image loaded by DevIL  */
@@ -238,7 +179,7 @@ int main(int argc, char **argv) {
                  main_image.screen_pixels); /* Texture specification */
 
     {
-        u8 *fgl_version = glGetString(GL_VERSION);
+        const u8 *fgl_version = glGetString(GL_VERSION);
 
         if (fgl_version != NULL) {
             fprintf(stdout, "Current Open GL version: %s (%s)\n",
