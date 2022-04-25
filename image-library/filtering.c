@@ -12,6 +12,8 @@
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
+#elif defined(WITH_NUKE)
+#include "ocn-configuration.h"
 #endif
 
 #include "debug.h"

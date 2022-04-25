@@ -64,6 +64,8 @@ typedef struct {
     fRGB *rgb;
 }  TheImage;
 
+extern TheImage main_image;
+
 static inline u8 float_to_u8(const float x) {
     int ix = (int) roundf(x);
     if (ix > 255) {

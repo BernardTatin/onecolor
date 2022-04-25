@@ -21,7 +21,6 @@ GLWindow mainWindow = {
     .height = DEFAULT_HEIGHT,
     .value = 2
 };
-TheImage main_image;
 
 
 static inline void quad_vertex(const int tx, const int ty,

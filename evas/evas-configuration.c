@@ -14,4 +14,3 @@ const int dx = 5;
 const int dy = 32;
 
 MainData main_data = {0};
-TheImage main_image;

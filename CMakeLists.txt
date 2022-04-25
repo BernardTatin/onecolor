@@ -17,12 +17,19 @@ pkg_search_module(GL required opengl )
 
 add_executable(one-color-nuke
         Nuklear/one-color-nuk.c
+        Nuklear/ocn-configuration.c Nuklear/ocn-configuration.h
         Nuklear/Nuklear-src/nuklear.h
         Nuklear/Nuklear-src/full-nuklear.c
         Nuklear/Nuklear-src/nuklear_glfw_gl3.h
         Nuklear/Nuklear-src/nuklear-config.h
-        image-library/colors.c
-        image-library/colors.h image-library/filtering.c image-library/filtering.h image-library/file-data.c image-library/file-data.h)
+        DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h
+        tools/file-tools.c tools/file-tools.h
+        image-library/basic-data.c image-library/basic-data.h
+        image-library/colors.c image-library/colors.h
+        image-library/filtering.c image-library/filtering.h
+        image-library/file-data.c image-library/file-data.h
+        Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
+        )
 target_link_libraries(one-color-nuke m  ${GLFW_LIBRARIES} ${IL_LIBRARIES}  GL m GLU GLEW)
 target_include_directories(one-color-nuke PUBLIC
         DevIL
@@ -37,24 +44,19 @@ target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
 # evas version
 #
 add_executable(one-color-evas
+        DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h
+        tools/file-tools.c tools/file-tools.h
         evas/one-color-evas.c
-        evas/evas-configuration.c
-        evas/evas-configuration.h
-        DevIL/dev-IL-tools.c
-        DevIL/dev-IL-tools.h
-        evas/evas-scene.c
-        evas/evas-scene.h
-        evas/widgets.c
-        evas/widgets.h
-        tools/file-tools.c
-        tools/file-tools.h
-        evas/evas-tools.c
-        evas/evas-tools.h
-        image-library/basic-data.c
-        image-library/basic-data.h
+        evas/evas-configuration.c evas/evas-configuration.h
+        evas/evas-scene.c evas/evas-scene.h
+        evas/widgets.c evas/widgets.h
+        evas/evas-tools.c evas/evas-tools.h
+        image-library/basic-data.c image-library/basic-data.h
         image-library/debug.h
-        image-library/colors.c
-        image-library/colors.h image-library/filtering.c image-library/filtering.h image-library/file-data.c image-library/file-data.h)
+        image-library/colors.c image-library/colors.h
+        image-library/filtering.c image-library/filtering.h
+        image-library/file-data.c image-library/file-data.h
+        )
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -73,23 +75,16 @@ target_compile_definitions(one-color-evas PUBLIC WITH_EVAS)
 add_executable(one-color-GL
         opengl/one-color-GL.c
         opengl/GL-Configuration.h
-        opengl/GL-menus.c
-        opengl/GL-menus.h
-        opengl/GL-filters.c
-        opengl/GL-filters.h
+        opengl/GL-menus.c opengl/GL-menus.h
+        opengl/GL-filters.c opengl/GL-filters.h
         opengl/GL_filter_definitions.c
-        DevIL/dev-IL-tools.c
-        DevIL/dev-IL-tools.h
-        tools/file-tools.c
-        tools/file-tools.h
-        image-library/basic-data.c
-        image-library/basic-data.h
-        image-library/colors.c
-        image-library/colors.h
-        image-library/filtering.c
-        image-library/filtering.h
-        image-library/file-data.c
-        image-library/file-data.h)
+        DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h
+        tools/file-tools.c tools/file-tools.h
+        image-library/basic-data.c image-library/basic-data.h
+        image-library/colors.c image-library/colors.h
+        image-library/filtering.c image-library/filtering.h
+        image-library/file-data.c image-library/file-data.h
+        )
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC
         opengl

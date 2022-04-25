@@ -4,3 +4,5 @@
 
 #include <stdbool.h>
 #include "basic-data.h"
+
+TheImage main_image;
