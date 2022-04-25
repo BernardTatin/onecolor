@@ -11,6 +11,7 @@
 #elif defined(WITH_GL)
 #include <GL/glut.h>
 #endif
+#include "convert-colors.h"
 
 #if defined(WITH_EVAS)
 #include "evas-configuration.h"
@@ -41,11 +42,7 @@ static void fill_pixels_buffers(TheImage *image) {
         screen_pixels->r = pixels->r;
         screen_pixels->g = pixels->g;
         screen_pixels->b = pixels->b;
-//        screen_pixels->b = 255;
-        evas_color_rgb_to_hsv(
-                screen_pixels->r, screen_pixels->g, screen_pixels->b,
-                &hsv->h, &hsv->s, &hsv->v
-        );
+        evas_color_BGRA_to_hsv(screen_pixels, hsv);
     }
 #else
     fRGB *rgb = image->rgb;
@@ -59,6 +56,7 @@ static void fill_pixels_buffers(TheImage *image) {
         rgb->r = (float)pixels->r / 255.0f;
         rgb->g = (float)pixels->g / 255.0f;
         rgb->b = (float)pixels->b / 255.0f;
+        evas_color_RGBA_to_hsv(pixels, hsv);
     }
 #endif
 }
