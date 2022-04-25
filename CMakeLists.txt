@@ -22,7 +22,7 @@ add_executable(one-color-nuke
         Nuklear/Nuklear-src/nuklear_glfw_gl3.h
         Nuklear/Nuklear-src/nuklear-config.h
         image-library/colors.c
-        image-library/colors.h image-library/filtering.c image-library/filtering.h)
+        image-library/colors.h image-library/filtering.c image-library/filtering.h image-library/file-data.c image-library/file-data.h)
 target_link_libraries(one-color-nuke m  ${GLFW_LIBRARIES} ${IL_LIBRARIES}  GL m GLU GLEW)
 target_include_directories(one-color-nuke PUBLIC
         DevIL
@@ -54,7 +54,7 @@ add_executable(one-color-evas
         image-library/basic-data.h
         image-library/debug.h
         image-library/colors.c
-        image-library/colors.h image-library/filtering.c image-library/filtering.h)
+        image-library/colors.h image-library/filtering.c image-library/filtering.h image-library/file-data.c image-library/file-data.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -80,15 +80,22 @@ add_executable(one-color-GL
         opengl/GL_filter_definitions.c
         DevIL/dev-IL-tools.c
         DevIL/dev-IL-tools.h
+        tools/file-tools.c
+        tools/file-tools.h
         image-library/basic-data.c
         image-library/basic-data.h
         image-library/colors.c
-        image-library/colors.h image-library/filtering.c image-library/filtering.h)
+        image-library/colors.h
+        image-library/filtering.c
+        image-library/filtering.h
+        image-library/file-data.c
+        image-library/file-data.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC
         opengl
         DevIL
         image-library
+        tools
         )
 target_compile_definitions(one-color-GL PUBLIC WITH_GL)
 

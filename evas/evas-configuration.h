@@ -10,11 +10,6 @@ extern const int default_height;
 extern const int dx;
 extern const int dy;
 
-extern char *program_name;
-extern char *img_source;
-extern char *img_base_source;
-extern char *img_destination;
-
 #include "basic-data.h"
 
 typedef struct _MainData {

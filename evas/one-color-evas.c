@@ -17,7 +17,7 @@
 #include <Ecore.h>
 #include <Ecore_Evas.h>
 
-#include "file-tools.h"
+#include "file-data.h"
 #include "evas-configuration.h"
 #include "dev-IL-tools.h"
 #include "evas-scene.h"
@@ -87,16 +87,9 @@ static void on_key_down(void *data EINA_UNUSED,
 }
 
 int main(const int argc, char **argv) {
-    program_name = get_base_name(argv[0]);
-    if (argc != 3) {
-        fprintf(stderr, "Usage: %s image_source image_destination\n",
-                program_name);
+    if (!init_file_data(argc, argv)) {
         return EXIT_FAILURE;
     }
-
-    img_source = argv[1];
-    img_base_source = get_base_name(img_source);
-    img_destination = argv[2];
 
     if (!init_DevIL()) {
         fprintf(stderr, "FATAL: cannot initialize DevIL!\n");

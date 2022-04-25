@@ -16,6 +16,7 @@
 
 #include "nuklear.h"
 #include "nuklear_glfw_gl3.h"
+#include "file-tools.h"
 
 #define WINDOW_WIDTH 1200
 #define WINDOW_HEIGHT 800
@@ -30,7 +31,7 @@
  * ===============================================================*/
 /* This are some code examples to provide a small overview of what can be
  * done with this library. To try out an example uncomment the defines */
-#define INCLUDE_ALL
+//#define INCLUDE_ALL
 #define INCLUDE_STYLE
 /*#define INCLUDE_CALCULATOR */
 /*#define INCLUDE_CANVAS */

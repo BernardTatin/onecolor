@@ -9,6 +9,7 @@
 #include <IL/il.h>
 #include <GL/glut.h>
 
+#include "file-data.h"
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "dev-IL-tools.h"
@@ -125,9 +126,8 @@ static void initGL(int w, int h) {
 int main(int argc, char **argv) {
     GLuint texID;
 
-    if (argc != 2) {
-        fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
-        return 0;
+    if (!init_file_data(argc, argv)) {
+        return EXIT_FAILURE;
     }
 
     /* GLUT init */
@@ -149,13 +149,13 @@ int main(int argc, char **argv) {
     /* Initialization of DevIL */
     if (!init_DevIL()) {
         fprintf(stderr, "wrong DevIL version\n");
-        return -1;
+        return EXIT_FAILURE;
     }
 
     /* load the file picture with DevIL */
     if (!LoadImage(&main_image, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
-        return -1;
+        return EXIT_FAILURE;
     }
     /* OpenGL 2D generic init */
     initGL(mainWindow.width, mainWindow.height);
