@@ -19,25 +19,21 @@ void bw_normal_function(struct _GLFilter *_parameters) {
     const float KlG = parameters->KlG;
     const float KlB = parameters->KlB;
 
-
     for (int i=0; i<n; i++, rgb++, rgba++) {
-        float luma = roundf(255.0f * (KlR * rgb->r + KlG * rgb->g + KlB * rgb->b));
-        if (luma > 255.0f) {
-            luma = 255.0f;
-        }
-        u8 cLuma = (u8)luma;
+        u8 cLuma = float_to_u8(255.0f * (KlR * rgb->r + KlG * rgb->g + KlB * rgb->b));
         rgba->r = cLuma;
         rgba->g = cLuma;
         rgba->b = cLuma;
     }
     fprintf(stdout, "End of filter 'normal'\n");
 }
+
 void filter_bw_normal1(void) {
     bw_normal_function(&bw_normal1);
 }
 
 void filter_bw_normal2(void) {
-    bw_normal_function(&bw_normal2);
+    bw_normal_function(&bw_normal1);
 }
 
 void filter_bw_normal3(void) {
@@ -58,20 +54,19 @@ void bw_hard_function(struct _GLFilter *_parameters) {
     float *greys = (float *) malloc(n * sizeof(float));
     float *pGreys = greys;
     float mid;
-    float lr = roundf(255.0f * parameters->lightR),
-            lg = roundf(255.0f * parameters->lightG),
-            lb = roundf(255.0f * parameters->lightB),
-            dr = roundf(255.0f * parameters->darkR),
-            dg = roundf(255.0f * parameters->darkG),
-            db = roundf(255.0f * parameters->darkB);
+    u8 lr = float_to_u8(255.0f * parameters->lightR),
+            lg = float_to_u8(255.0f * parameters->lightG),
+            lb = float_to_u8(255.0f * parameters->lightB),
+            dr = float_to_u8(255.0f * parameters->darkR),
+            dg = float_to_u8(255.0f * parameters->darkG),
+            db = float_to_u8(255.0f * parameters->darkB);
 
 
     if (parameters->type == BWH_median) {
         for (int i=0; i<n; i++, rgb++, pGreys++) {
-            float luma = roundf(255.0f * (KlR * rgb->r + KlG * rgb->g + KlB * rgb->b));
-            if (luma > 255.0f) {
-                luma = 255.0f;
-            }
+            float luma = squeeze_round_float(
+                    KlR * rgb->r + KlG * rgb->g + KlB * rgb->b,
+                    0.0f, 1.0f);
             *pGreys = luma;
             if (luma > maxLuma) {
                 maxLuma = luma;
@@ -82,25 +77,31 @@ void bw_hard_function(struct _GLFilter *_parameters) {
         mid = 0.5f * (maxLuma + minLuma);
     } else {
         for (int i=0; i<n; i++, rgb++, pGreys++) {
-            float luma = roundf(255.0f * (KlR * rgb->r + KlG * rgb->g + KlB * rgb->b));
-            if (luma > 255.0f) {
-                luma = 255.0f;
-            }
+            float luma = squeeze_round_float(
+                    KlR * rgb->r + KlG * rgb->g + KlB * rgb->b,
+                    0.0f, 1.0f);
             *pGreys = luma;
             average += luma;
+            if (luma > maxLuma) {
+                maxLuma = luma;
+            } else if (luma < minLuma) {
+                minLuma = luma;
+            }
         }
         mid = average / (float)n;
     }
+    fprintf(stdout, "luma: %5.3f, %5.3f, %5.3f\n",
+            minLuma, mid, maxLuma);
     pGreys = greys;
     for (int i=0; i<n; i++, pGreys++, rgba++) {
         if (*pGreys > mid) {
-            rgba->r = (u8)lr;
-            rgba->g = (u8)lg;
-            rgba->b = (u8)lb;
+            rgba->r = lr;
+            rgba->g = lg;
+            rgba->b = lb;
         } else {
-            rgba->r = (u8)dr;
-            rgba->g = (u8)dg;
-            rgba->b = (u8)db;
+            rgba->r = dr;
+            rgba->g = dg;
+            rgba->b = db;
         }
     }
     free(greys);

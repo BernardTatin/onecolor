@@ -4,7 +4,7 @@
 //      ./src/lib/evas/common/evas_convert_color.c
 //
 
-#include "convert-colors.h"
+#include "colors.h"
 
 void evas_color_rgb_to_hsv_k(int r, int g, int b, float *h, float *s, float *v) {
     int max, min, d = r - g;

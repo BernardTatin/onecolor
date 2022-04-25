@@ -12,12 +12,14 @@
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "GL-filters.h"
+#include "filtering.h"
 
 static void exec_option(const Menu_Values option) {
     bool redraw = true;
     switch (option) {
         case Menu_BW_Normal1:
-            filter_bw_normal1();
+//            filter_bw_normal1();
+            apply_grey_filter();
             break;
         case Menu_BW_Normal2:
             filter_bw_normal2();

@@ -11,7 +11,7 @@
 #elif defined(WITH_GL)
 #include <GL/glut.h>
 #endif
-#include "convert-colors.h"
+#include "colors.h"
 
 #if defined(WITH_EVAS)
 #include "evas-configuration.h"
@@ -34,31 +34,31 @@ static void fill_pixels_buffers(TheImage *image) {
 
     RGBA *pixels = image->original_pixels;
     HSV *hsv = image->hsv;
+    fRGB *rgb = image->rgb;
 #if defined(WITH_EVAS)
     image->screen_pixels = (BGRA *)malloc(n * sizeof(BGRA));
     BGRA *screen_pixels = image->screen_pixels;
-    for (int i=0; i<n; i++, pixels++, screen_pixels++, hsv++) {
-        screen_pixels->a = pixels->a;
-        screen_pixels->r = pixels->r;
-        screen_pixels->g = pixels->g;
-        screen_pixels->b = pixels->b;
-        evas_color_BGRA_to_hsv(screen_pixels, hsv);
-    }
 #else
-    fRGB *rgb = image->rgb;
     image->screen_pixels = (RGBA *)malloc(n * sizeof(RGBA));
+    RGBA *screen_pixels = image->screen_pixels;
     ilCopyPixels(0, 0, 0,
                  image->width, image->height,
                  1,
                  IL_RGBA, IL_UNSIGNED_BYTE,
                  image->screen_pixels);
-    for (int i=0; i<n; i++, pixels++, rgb++, hsv++) {
+#endif
+    for (int i=0; i<n; i++, rgb++, pixels++, screen_pixels++, hsv++) {
+#if defined(WITH_EVAS)
+        screen_pixels->a = pixels->a;
+        screen_pixels->r = pixels->r;
+        screen_pixels->g = pixels->g;
+        screen_pixels->b = pixels->b;
+#endif
         rgb->r = (float)pixels->r / 255.0f;
         rgb->g = (float)pixels->g / 255.0f;
         rgb->b = (float)pixels->b / 255.0f;
         evas_color_RGBA_to_hsv(pixels, hsv);
     }
-#endif
 }
 
 /* Initialization of DevIL */

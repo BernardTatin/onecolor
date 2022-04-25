@@ -2,8 +2,8 @@
 // Created by bernard on 25/04/22.
 //
 
-#ifndef ONE_COLOR_CONVERT_COLORS_H
-#define ONE_COLOR_CONVERT_COLORS_H
+#ifndef ONE_COLOR_COLORS_H
+#define ONE_COLOR_COLORS_H
 
 #include "basic-data.h"
 
@@ -27,4 +27,4 @@ static inline void evas_color_BGRA_to_hsv(BGRA *bgra, HSV *hsv) {
                             &hsv->s,
                             &hsv->v);
 }
-#endif //ONE_COLOR_CONVERT_COLORS_H
+#endif //ONE_COLOR_COLORS_H

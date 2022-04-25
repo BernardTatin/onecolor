@@ -23,7 +23,7 @@
 #include "evas-scene.h"
 #include "widgets.h"
 #include "evas-tools.h"
-#include "grey-filter.h"
+#include "filtering.h"
 
 // on_show_image
 static void on_show_image(void *data EINA_UNUSED,

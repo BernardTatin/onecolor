@@ -21,8 +21,8 @@ add_executable(one-color-nuke
         Nuklear/Nuklear-src/full-nuklear.c
         Nuklear/Nuklear-src/nuklear_glfw_gl3.h
         Nuklear/Nuklear-src/nuklear-config.h
-        image-library/convert-colors.c
-        image-library/convert-colors.h)
+        image-library/colors.c
+        image-library/colors.h image-library/filtering.c image-library/filtering.h)
 target_link_libraries(one-color-nuke m  ${GLFW_LIBRARIES} ${IL_LIBRARIES}  GL m GLU GLEW)
 target_include_directories(one-color-nuke PUBLIC
         DevIL
@@ -50,13 +50,11 @@ add_executable(one-color-evas
         tools/file-tools.h
         evas/evas-tools.c
         evas/evas-tools.h
-        evas-filtering/grey-filter.c
-        evas-filtering/grey-filter.h
         image-library/basic-data.c
         image-library/basic-data.h
         image-library/debug.h
-        image-library/convert-colors.c
-        image-library/convert-colors.h)
+        image-library/colors.c
+        image-library/colors.h image-library/filtering.c image-library/filtering.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -64,7 +62,6 @@ target_include_directories(one-color-evas PUBLIC
         evas
         DevIL
         tools
-        evas-filtering
         image-library
         ${EVAS_INCLUDE_DIRS}
         ${IL_INCLUDE_DIRS})
@@ -85,8 +82,8 @@ add_executable(one-color-GL
         DevIL/dev-IL-tools.h
         image-library/basic-data.c
         image-library/basic-data.h
-        image-library/convert-colors.c
-        image-library/convert-colors.h)
+        image-library/colors.c
+        image-library/colors.h image-library/filtering.c image-library/filtering.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC
         opengl
@@ -116,6 +113,6 @@ add_executable(one-color
         image-lib/hsv-filter.c
         image-lib/hsv-filter.h
         configuration/main-configuration.h
-        configuration/main-configuration.c evas-filtering/grey-filter.c evas-filtering/grey-filter.h Nuklear/Nuklear-src/full-nuklear.c)
+        configuration/main-configuration.c)
 target_link_libraries(one-color jpeg m)
 target_include_directories(one-color PUBLIC image-lib configuration)

@@ -13,6 +13,7 @@
 #include <GL/glut.h>
 #endif
 
+#include <math.h>
 
 typedef unsigned char u8;
 typedef struct __attribute__((__packed__)) {
@@ -63,5 +64,29 @@ typedef struct {
     fRGB *rgb;
 }  TheImage;
 
+static inline u8 float_to_u8(const float x) {
+    int ix = (int) roundf(x);
+    if (ix > 255) {
+        return (u8)255;
+    } else if (ix < 0) {
+        return (u8)0;
+    } else {
+        return (u8)ix;
+    }
+}
+
+static inline float squeeze_float(const float x, const float min, const float max) {
+    if (x < min) {
+        return min;
+    } else if (x > max) {
+        return max;
+    } else {
+        return x;
+    }
+}
+
+static inline float squeeze_round_float(const float x, const float min, const float max) {
+    return squeeze_float(roundf(x), min, max);
+}
 
 #endif //ONE_COLOR_BASIC_DATA_H

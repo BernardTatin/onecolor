@@ -1,42 +1,50 @@
 //
-// Created by bernard on 21/04/22.
+// Created by bernard on 25/04/22.
 //
 
 #include <IL/il.h>
 #include <stdio.h>
 #include <stdlib.h>
+#if defined(WITH_EVAS)
 #include <Ecore_Evas.h>
 
-#include "debug.h"
 #include "evas-configuration.h"
 #include "evas-tools.h"
-#include "grey-filter.h"
+#elif defined(WITH_GL)
+#include <GL/glut.h>
+
+#include "GL-Configuration.h"
+#include "GL-filters.h"
+#endif
+
+#include "debug.h"
+#include "filtering.h"
 
 void apply_grey_filter(void) {
     int n = main_image.number_of_pixels;
 #if defined(WITH_EVAS)
     Evas_Object *image = main_data.image;
     static BGRA *p_bgra = NULL;
-    BGRA *bgra = NULL;
+    BGRA *screen_pixels = NULL;
     if (p_bgra == NULL) {
         DBG();
         p_bgra = (BGRA *) malloc(sizeof(BGRA) * n);
         DBG();
     }
-    bgra = p_bgra;
+    screen_pixels = p_bgra;
 #else
-    RGBA *p_bgra = main_image.screen_pixels;
+    RGBA *screen_pixels = main_image.screen_pixels;
 #endif
     HSV *hsv = main_image.hsv;
     RGBA *original = main_image.original_pixels;
 
     DBG();
-    for (int i=0; i<n; i++, bgra++, hsv++, original++) {
+    for (int i=0; i<n; i++, screen_pixels++, hsv++, original++) {
         u8 value = float_to_u8(hsv->v * 255.0f);
-        bgra->r = value;     // green
-        bgra->g = value;     // red
-        bgra->b = value;     // blue
-        bgra->a = original->a;
+        screen_pixels->r = value;     // green
+        screen_pixels->g = value;     // red
+        screen_pixels->b = value;     // blue
+        screen_pixels->a = original->a;
     }
 #if defined(WITH_EVAS)
 //    evas_object_image_size_set(image, main_image.width, main_image.height);
