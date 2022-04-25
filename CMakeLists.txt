@@ -10,13 +10,30 @@ SET(CMAKE_C_FLAGS "-Wall -Wextra" CACHE STRING "" FORCE)
 find_package(PkgConfig)
 
 
+pkg_search_module(IL required IL)
+pkg_search_module(EVAS required ecore-evas evas  ecore eina ecore-file efl)
+pkg_search_module(GLFW required  glfw3)
+pkg_search_module(GL required opengl )
+
+add_executable(one-color-nuke
+        Nuklear/one-color-nuk.c
+        Nuklear/Nuklear-src/nuklear.h
+        Nuklear/Nuklear-src/full-nuklear.c
+        Nuklear/Nuklear-src/nuklear_glfw_gl3.h
+        Nuklear/Nuklear-src/nuklear-config.h)
+target_link_libraries(one-color-nuke m  ${GLFW_LIBRARIES} ${IL_LIBRARIES}  GL m GLU GLEW)
+target_include_directories(one-color-nuke PUBLIC
+        DevIL
+        tools
+        image-library
+        Nuklear
+        Nuklear/Nuklear-src
+        ${IL_INCLUDE_DIRS})
+target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
+
 #
 # evas version
 #
-pkg_search_module(EVAS required ecore-evas evas  ecore eina ecore-file efl)
-pkg_search_module(IL required IL)
-
-
 add_executable(one-color-evas
         evas/one-color-evas.c
         evas/evas-configuration.c
@@ -52,7 +69,6 @@ target_compile_definitions(one-color-evas PUBLIC WITH_EVAS)
 #
 # openGL version
 #
-pkg_search_module(GL required opengl )
 add_executable(one-color-GL
         opengl/one-color-GL.c
         opengl/GL-Configuration.h
@@ -94,6 +110,6 @@ add_executable(one-color
         image-lib/hsv-filter.c
         image-lib/hsv-filter.h
         configuration/main-configuration.h
-        configuration/main-configuration.c evas-filtering/grey-filter.c evas-filtering/grey-filter.h)
+        configuration/main-configuration.c evas-filtering/grey-filter.c evas-filtering/grey-filter.h Nuklear/Nuklear-src/full-nuklear.c)
 target_link_libraries(one-color jpeg m)
 target_include_directories(one-color PUBLIC image-lib configuration)
