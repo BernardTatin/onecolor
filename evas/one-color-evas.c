@@ -29,7 +29,7 @@
 static void on_show_image(void *data EINA_UNUSED,
                           Evas *evas EINA_UNUSED,
                           Evas_Object *o EINA_UNUSED,
-                          void *event) {
+                          void *event EINA_UNUSED) {
     fprintf(stdout, "Image show\n");
 }
 

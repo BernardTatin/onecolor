@@ -139,6 +139,7 @@ int main(int argc, char **argv) {
 
     createMenu();
     glutKeyboardFunc(on_key);
+    glutSpecialFunc(on_special_keys);
 
     glutDisplayFunc(displayFunc);       // Register callback handler for window re-paint event
     glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event

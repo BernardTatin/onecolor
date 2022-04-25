@@ -22,5 +22,6 @@ typedef enum {
 
 void createMenu(void);
 void on_key(unsigned char key, int x, int y);
+void on_special_keys(int key, int x, int y);
 
 #endif //ONE_COLOR_GL_MENUS_H

@@ -2,9 +2,7 @@
 // Created by bernard on 25/04/22.
 //
 
-#include <IL/il.h>
 #include <stdio.h>
-#include <stdlib.h>
 #if defined(WITH_EVAS)
 #include <Ecore_Evas.h>
 
@@ -14,7 +12,6 @@
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
-#include "GL-filters.h"
 #endif
 
 #include "debug.h"
