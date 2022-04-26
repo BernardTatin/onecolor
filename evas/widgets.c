@@ -10,6 +10,8 @@
 #include "evas-configuration.h"
 #include "evas-scene.h"
 
+#include "basic-geometry.h"
+#include "image-tools.h"
 #include "widgets.h"
 
 static void redraw_background(EWidget *widget, const int width, const int height) {
@@ -37,33 +39,21 @@ EWidget *widget_background(Evas *evas) {
 
 static void resize_image(EWidget *widget, const int _width, const int _height) {
     Evas_Object *obj = widget->evas_object;
-    int left = dx;
-    int top = dy;
-    int width = _width - 2*dx;
-    int height = _height - 2*dy;
-    float ratio = main_image.ratio;
-    float nw = (float)width;
-    float nh = nw / ratio;
-
-    if (nh > (float)height) {
-        nh = (float)height;
-        nw = (float)nh * ratio;
-        if (nw > (float)width) {
-            fprintf(stderr, "Resize image: nw > width (%d > %d)\n",
-                    (int)roundf(nw), width);
-        }
-    }
-    left = (int)fabsf(roundf(0.5f * (nw - (float)_width)));
-    top = (int)fabsf(roundf(0.5f * (nh - (float)_height)));
-
+    OCDimensions dimensions = {
+            .width = _width - 2*dx,
+            .height = _height - 2*dy
+    };
+    OCRectangle rectangle;
+    scale_mage(dimensions, &rectangle);
     evas_object_move(obj,
-                     left,
-                     top);
+                     rectangle.left,
+                     rectangle.top);
     evas_object_resize(
             obj,
-            (int)nw,
-            (int)nh);
+            rectangle.width,
+            rectangle.height);
 }
+
 EWidget *widget_picture(Evas *evas) {
     EWidget *widget = (EWidget *) malloc(sizeof (EWidget));
     Evas_Object *obj = evas_object_image_add(evas);

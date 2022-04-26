@@ -13,6 +13,8 @@
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "dev-IL-tools.h"
+#include "basic-geometry.h"
+#include "image-tools.h"
 
 int nFrames = 0;
 
@@ -30,32 +32,17 @@ static inline void quad_vertex(const int tx, const int ty,
 }
 
 static inline void unit_quad(void) {
-    int width = mainWindow.width;
-    int height = mainWindow.height;
-    int left = 0;
-    int top = 0;
-    float nh = (float)height;
-    float nw = main_image.ratio * (float)height;
-    if (nw > (float)width) {
-        float fTop;
-        float r = (float)width / nw;
-        nh = roundf(nh * r);
-        nw = (float)width;
-        fTop = roundf(0.5f * ((float)mainWindow.height - nh));
-        top = (int)fTop;
-    } else {
-        float fLeft;
-        nw = roundf(nw);
-        fLeft = roundf(0.5f * ((float)mainWindow.width - nw));
-        left = (int)fLeft;
-    }
-    width = (int)nw + left;
-    height = (int)nh + top;
+    OCDimensions dimensions = {
+            .width = mainWindow.width,
+            .height = mainWindow.height
+    };
+    OCRectangle rectangle;
+    scale_mage(dimensions, &rectangle);
 
-    quad_vertex(0, 0, left, top);
-    quad_vertex(0, 1, left, height);
-    quad_vertex(1, 1, width, height);
-    quad_vertex(1, 0, width, top);
+    quad_vertex(0, 0, rectangle.left,  rectangle.top);
+    quad_vertex(0, 1, rectangle.left,  rectangle.height);
+    quad_vertex(1, 1, rectangle.width, rectangle.height);
+    quad_vertex(1, 0, rectangle.width, rectangle.top);
 }
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */

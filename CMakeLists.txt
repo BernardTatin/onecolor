@@ -29,7 +29,7 @@ add_executable(one-color-nuke
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
         Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
-        Nuklear/main-dialog.c Nuklear/main-dialog.h Nuklear/picture-window.c)
+        Nuklear/main-dialog.c Nuklear/main-dialog.h Nuklear/picture-window.c image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h)
 target_link_libraries(one-color-nuke m  ${GLFW_LIBRARIES} ${IL_LIBRARIES}  GL m GLU GLEW)
 target_include_directories(one-color-nuke PUBLIC
         DevIL
@@ -56,7 +56,7 @@ add_executable(one-color-evas
         image-library/colors.c image-library/colors.h
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
-        )
+        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -84,7 +84,7 @@ add_executable(one-color-GL
         image-library/colors.c image-library/colors.h
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
-        )
+        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC
         opengl
