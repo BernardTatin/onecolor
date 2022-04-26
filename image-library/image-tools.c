@@ -6,7 +6,7 @@
 #include "basic-geometry.h"
 #include "image-tools.h"
 
-// FIXME: ya1BUGGG le redimensionnement n'est pas bon
+// FIXME: ya1BUGGG le redimensionnement n'est pas bon AVEC OenGL
 void scale_mage(const OCDimensions dimensions, OCRectangle *rectangle) {
     int left = 0;
     int top = 0;

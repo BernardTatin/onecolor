@@ -17,10 +17,10 @@ typedef struct _nk_canvas {
     struct nk_style_item window_background;
 } nk_canvas;
 
-bool create_picture_window(void) {
+bool show_picture_window(OCDimensions win_dimensions) {
 
     if (nk_begin(main_data.ctx, "Picture",
-                 nk_rect(MAIN_DIALOG_WIDTH, 0, PIC_WINDOW_WIDTH, PIC_WINDOW_HEIGHT),
+                 nk_rect(MAIN_DIALOG_WIDTH, 0, win_dimensions.width-MAIN_DIALOG_WIDTH, win_dimensions.height),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
     }

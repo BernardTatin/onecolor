@@ -22,4 +22,19 @@ typedef struct {
     int height;
 } OCRectangle;
 
+static inline int mini(const int j, const int k) {
+    if (j < k) {
+        return j;
+    } else {
+        return k;
+    }
+}
+
+static inline int maxi(const int j, const int k) {
+    if (j > k) {
+        return j;
+    } else {
+        return k;
+    }
+}
 #endif //ONE_COLOR_BASIC_GEOMETRY_H

@@ -9,9 +9,9 @@
 #include "main-dialog.h"
 
 
-bool create_main_dialog(void) {
+bool show_main_dialog(OCDimensions win_dimensions) {
 
-    if (nk_begin(main_data.ctx, "Filtering", nk_rect(0, 0, MAIN_DIALOG_WIDTH, MAIN_DIALOG_HEIGHT),
+    if (nk_begin(main_data.ctx, "Filtering", nk_rect(0, 0, MAIN_DIALOG_WIDTH, win_dimensions.height),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
         enum {

@@ -14,6 +14,7 @@
 #include "file-data.h"
 #include "ocn-glfw3.h"
 #include "ocn-configuration.h"
+#include "basic-geometry.h"
 #include "main-dialog.h"
 #include "dev-IL-tools.h"
 #include "file-tools.h"
@@ -103,26 +104,16 @@ int main(int argc, char **argv) {
     main_data.bg.b = 0.24f;
     main_data.bg.a = 1.00f;
     while (!glfwWindowShouldClose(main_data.win)) {
+        OCDimensions win_dimensions;
         /* Input */
         glfwPollEvents();
         nk_glfw3_new_frame(&main_data.glfw);
+        glfwGetWindowSize(main_data.win, &win_dimensions.width, &win_dimensions.height);
 
         /* GUI */
-        create_main_dialog();
-        create_picture_window();
+        show_main_dialog(win_dimensions);
+        show_picture_window(win_dimensions);
         /* -------------- EXAMPLES ---------------- */
-#ifdef INCLUDE_CALCULATOR
-        calculator(main_data.ctx);
-#endif
-#ifdef INCLUDE_CANVAS
-        canvas(main_data.ctx);
-#endif
-#ifdef INCLUDE_OVERVIEW
-        overview(main_data.ctx);
-#endif
-#ifdef INCLUDE_NODE_EDITOR
-        node_editor(main_data.ctx);
-#endif
         /* ----------------------------------------- */
 
         /* Draw */
