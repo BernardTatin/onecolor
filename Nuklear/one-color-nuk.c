@@ -103,6 +103,10 @@ int main(int argc, char **argv) {
     main_data.bg.g = 0.18f;
     main_data.bg.b = 0.24f;
     main_data.bg.a = 1.00f;
+    main_data.pic_bg.r = float_to_u8(255.0f * 0.10f);
+    main_data.pic_bg.g = float_to_u8(255.0f * 0.18f);
+    main_data.pic_bg.b = float_to_u8(255.0f * 0.24f);
+    main_data.pic_bg.a = float_to_u8(255.0f * 1.00f);
     while (!glfwWindowShouldClose(main_data.win)) {
         OCDimensions win_dimensions;
         /* Input */

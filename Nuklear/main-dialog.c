@@ -22,21 +22,22 @@ bool show_main_dialog(OCDimensions win_dimensions) {
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
         nk_layout_row_dynamic(main_data.ctx, 20, 1);
-        nk_label(main_data.ctx, "background:", NK_TEXT_LEFT);
+        nk_label(main_data.ctx, "Picture background:", NK_TEXT_LEFT);
         nk_layout_row_dynamic(main_data.ctx, 25, 1);
-        if (nk_combo_begin_color(main_data.ctx, nk_rgb_cf(main_data.bg),
+        if (nk_combo_begin_color(main_data.ctx, main_data.pic_bg,
                                  nk_vec2(nk_widget_width(main_data.ctx), 400))) {
             nk_layout_row_dynamic(main_data.ctx, 120, 1);
-            main_data.bg = nk_color_picker(main_data.ctx, main_data.bg, NK_RGBA);
-            nk_layout_row_dynamic(main_data.ctx, 25, 1);
-            main_data.bg.r = nk_propertyf(main_data.ctx, "#R:", 0,
-                                          main_data.bg.r, 1.0f, 0.01f, 0.005f);
-            main_data.bg.g = nk_propertyf(main_data.ctx, "#G:", 0,
-                                          main_data.bg.g, 1.0f, 0.01f, 0.005f);
-            main_data.bg.b = nk_propertyf(main_data.ctx, "#B:", 0,
-                                          main_data.bg.b, 1.0f, 0.01f, 0.005f);
-            main_data.bg.a = nk_propertyf(main_data.ctx, "#A:", 0,
-                                          main_data.bg.a, 1.0f, 0.01f, 0.005f);
+            struct nk_colorf fbg = {
+                    .r = u8_to_unit(main_data.pic_bg.r),
+                    .g = u8_to_unit(main_data.pic_bg.g),
+                    .b = u8_to_unit(main_data.pic_bg.b),
+                    .a = u8_to_unit(main_data.pic_bg.a),
+            };
+            nk_color_pick(main_data.ctx, &fbg, NK_RGBA);
+            main_data.pic_bg.r = unit_to_u8(fbg.r);
+            main_data.pic_bg.g = unit_to_u8(fbg.g);
+            main_data.pic_bg.b = unit_to_u8(fbg.b);
+            main_data.pic_bg.a = unit_to_u8(fbg.a);
             nk_combo_end(main_data.ctx);
         }
         nk_layout_row_dynamic(main_data.ctx, 20, 1);

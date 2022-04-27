@@ -77,6 +77,15 @@ static inline u8 float_to_u8(const float x) {
     }
 }
 
+static inline float u8_to_unit(u8 v) {
+    static const float u_factor = 1.0f / 255.0f;
+    return (float)v * u_factor;
+}
+
+static inline float unit_to_u8(float v) {
+    return float_to_u8(v * 255.0f);
+}
+
 static inline float squeeze_float(const float x, const float min, const float max) {
     if (x < min) {
         return min;

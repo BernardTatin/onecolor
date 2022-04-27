@@ -18,6 +18,7 @@ typedef struct MainData {
     int width, height;
     struct nk_context *ctx;
     struct nk_colorf bg;
+    struct nk_color pic_bg;
 } MainData;
 
 extern MainData main_data;
