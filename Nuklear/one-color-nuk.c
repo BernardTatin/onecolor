@@ -35,6 +35,7 @@
  *
  * ===============================================================*/
 static void error_callback(int e, const char *d) { printf("Error %d: %s\n", e, d); }
+struct nk_image image_create(void);
 
 int main(int argc, char **argv) {
     /* Platform */
@@ -66,7 +67,7 @@ int main(int argc, char **argv) {
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    main_data.win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Demo", NULL, NULL);
+    main_data.win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OneColor", NULL, NULL);
     glfwMakeContextCurrent(main_data.win);
     glfwGetWindowSize(main_data.win, &main_data.width, &main_data.height);
 
@@ -94,10 +95,10 @@ int main(int argc, char **argv) {
         /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
         /*nk_style_set_font(ctx, &droid->handle);*/}
 
-    set_style(main_data.ctx, THEME_WHITE);
+//    set_style(main_data.ctx, THEME_WHITE);
     set_style(main_data.ctx, THEME_RED);
-    set_style(main_data.ctx, THEME_BLUE);
-    set_style(main_data.ctx, THEME_DARK);
+//    set_style(main_data.ctx, THEME_BLUE);
+//    set_style(main_data.ctx, THEME_DARK);
 
     main_data.bg.r = 0.10f;
     main_data.bg.g = 0.18f;
@@ -107,10 +108,10 @@ int main(int argc, char **argv) {
     main_data.pic_bg.g = float_to_u8(255.0f * 0.18f);
     main_data.pic_bg.b = float_to_u8(255.0f * 0.24f);
     main_data.pic_bg.a = float_to_u8(255.0f * 1.00f);
+    image_create();
     while (!glfwWindowShouldClose(main_data.win)) {
         OCDimensions win_dimensions;
         /* Input */
-        glfwPollEvents();
         nk_glfw3_new_frame(&main_data.glfw);
         glfwGetWindowSize(main_data.win, &win_dimensions.width, &win_dimensions.height);
 
@@ -121,8 +122,7 @@ int main(int argc, char **argv) {
         /* ----------------------------------------- */
 
         /* Draw */
-        glfwGetWindowSize(main_data.win, &main_data.width, &main_data.height);
-        glViewport(0, 0, main_data.width, main_data.height);
+        glViewport(0, 0, win_dimensions.width, win_dimensions.height);
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(main_data.bg.r, main_data.bg.g, main_data.bg.b, main_data.bg.a);
         /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
@@ -132,6 +132,7 @@ int main(int argc, char **argv) {
          * rendering the UI. */
         nk_glfw3_render(&main_data.glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
         glfwSwapBuffers(main_data.win);
+        glfwPollEvents();
     }
     nk_glfw3_shutdown(&main_data.glfw);
     glfwTerminate();

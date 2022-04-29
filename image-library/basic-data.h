@@ -6,16 +6,20 @@
 #define ONE_COLOR_BASIC_DATA_H
 
 #include <IL/il.h>
+
 #if defined(WITH_EVAS)
+
 #include <Ecore.h>
 #include <Ecore_Evas.h>
+
 #elif defined(WITH_GL)
 #include <GL/glut.h>
 #endif
 
 #include <math.h>
 
-typedef unsigned char u8;
+#include "basic-types.h"
+
 typedef struct __attribute__((__packed__)) {
     u8 r;
     u8 g;

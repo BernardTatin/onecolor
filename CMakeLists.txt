@@ -11,9 +11,11 @@ find_package(PkgConfig)
 
 
 pkg_search_module(IL required IL)
-pkg_search_module(EVAS required ecore-evas evas  ecore eina ecore-file efl)
-pkg_search_module(GLFW required  glfw3)
-pkg_search_module(GL required opengl )
+pkg_search_module(EVAS required ecore-evas evas ecore eina ecore-file efl)
+pkg_search_module(GLFW required glfw3)
+pkg_search_module(GL required opengl)
+
+pkg_search_module(SDL2 REQUIRED sdl2 SDL2_image)
 
 add_executable(one-color-nuke
         Nuklear/one-color-nuk.c
@@ -29,8 +31,8 @@ add_executable(one-color-nuke
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
         Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
-        Nuklear/main-dialog.c Nuklear/main-dialog.h Nuklear/picture-window.c image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h)
-target_link_libraries(one-color-nuke m  ${GLFW_LIBRARIES} ${IL_LIBRARIES}  GL m GLU GLEW)
+        Nuklear/main-dialog.c Nuklear/main-dialog.h Nuklear/picture-window.c image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h Nuklear/nk_tools.h)
+target_link_libraries(one-color-nuke m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
 target_include_directories(one-color-nuke PUBLIC
         DevIL
         tools
@@ -40,6 +42,15 @@ target_include_directories(one-color-nuke PUBLIC
         ${IL_INCLUDE_DIRS})
 target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
 
+add_executable(sdl-gl Nuklear/Nuklear-src/tests/sdl-gl.c)
+target_link_libraries(sdl-gl
+        glut
+        ${SDL2_LIBRARIES}
+        SDL2_image-2.0
+        ${GLFW_LIBRARIES}
+        GL m GLU GLEW)
+target_include_directories(sdl-gl PUBLIC Nuklear/Nuklear-src ${SDL2_INCLUDE_DIRS}
+        )
 #
 # evas version
 #
@@ -56,7 +67,7 @@ add_executable(one-color-evas
         image-library/colors.c image-library/colors.h
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
-        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h)
+        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h)
 target_link_libraries(one-color-evas
         ${EVAS_LIBRARIES}
         ${IL_LIBRARIES})
@@ -84,7 +95,7 @@ add_executable(one-color-GL
         image-library/colors.c image-library/colors.h
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
-        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h)
+        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
 target_include_directories(one-color-GL PUBLIC
         opengl

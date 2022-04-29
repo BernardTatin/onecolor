@@ -7,6 +7,7 @@
 
 #include "file-data.h"
 #include "ocn-glfw3.h"
+#include <GL/glut.h>
 #include "ocn-configuration.h"
 #include "main-dialog.h"
 
@@ -55,81 +56,62 @@ static void canvas_end(struct nk_context *ctx, nk_canvas *canvas) {
     ctx->style.window.fixed_background = canvas->window_background;
 }
 
+static struct nk_image main_nk_image;
+
+struct nk_image image_create(void) {
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 GL_RGBA8,
+                 main_image.width,
+                 main_image.height,
+                 0,
+                 GL_RGBA,
+                 GL_UNSIGNED_BYTE,
+                 main_image.screen_pixels);
+
+    main_nk_image = nk_image_id((int) tex);
+    return main_nk_image;
+}
+
+
 static void canvas(struct nk_context *ctx, OCDimensions win_dimensions) {
     nk_canvas canvas;
+    struct nk_rect img_rect = {
+            MAIN_DIALOG_WIDTH,
+            0,
+            win_dimensions.width - MAIN_DIALOG_WIDTH,
+            win_dimensions.height
+    };
 //    nk_rect(MAIN_DIALOG_WIDTH, 0, win_dimensions.width-MAIN_DIALOG_WIDTH, win_dimensions.height),
     if (canvas_begin(ctx, &canvas, NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                                    NK_WINDOW_CLOSABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE,
-                     MAIN_DIALOG_WIDTH,
-                     0,
-                     win_dimensions.width - MAIN_DIALOG_WIDTH,
-                     win_dimensions.height,
+                     img_rect.x,
+                     img_rect.y,
+                     img_rect.w,
+                     img_rect.h,
                      main_data.pic_bg)) {
         float x = canvas.painter->clip.x, y = canvas.painter->clip.y;
 
-        nk_fill_rect(canvas.painter, nk_rect(x + 15, y + 15, 210, 210), 5, nk_rgb(247, 230, 154));
-        nk_fill_rect(canvas.painter, nk_rect(x + 20, y + 20, 200, 200), 5, nk_rgb(188, 174, 118));
-        /* nk_draw_text(canvas.painter, nk_rect(x + 30, y + 30, 150, 20), "Text to draw", 12, &font->handle, nk_rgb(188,174,118), nk_rgb(0,0,0)); */
-        nk_fill_rect(canvas.painter, nk_rect(x + 250, y + 20, 100, 100), 0, nk_rgb(0, 0, 255));
-        nk_fill_circle(canvas.painter, nk_rect(x + 20, y + 250, 100, 100), nk_rgb(255, 0, 0));
-        nk_fill_triangle(canvas.painter, x + 250, y + 250, x + 350, y + 250, x + 300, y + 350, nk_rgb(0, 255, 0));
-        nk_fill_arc(canvas.painter, x + 300, y + 420, 50, 0, 3.141592654f * 3.0f / 4.0f, nk_rgb(255, 255, 0));
-
-        {
-            float points[12];
-            points[0] = x + 200;
-            points[1] = y + 250;
-            points[2] = x + 250;
-            points[3] = y + 350;
-            points[4] = x + 225;
-            points[5] = y + 350;
-            points[6] = x + 200;
-            points[7] = y + 300;
-            points[8] = x + 175;
-            points[9] = y + 350;
-            points[10] = x + 150;
-            points[11] = y + 350;
-            nk_fill_polygon(canvas.painter, points, 6, nk_rgb(0, 0, 0));
-        }
-
-        {
-            float points[12];
-            points[0] = x + 200;
-            points[1] = y + 370;
-            points[2] = x + 250;
-            points[3] = y + 470;
-            points[4] = x + 225;
-            points[5] = y + 470;
-            points[6] = x + 200;
-            points[7] = y + 420;
-            points[8] = x + 175;
-            points[9] = y + 470;
-            points[10] = x + 150;
-            points[11] = y + 470;
-            nk_stroke_polygon(canvas.painter, points, 6, 4, nk_rgb(0, 0, 0));
-        }
-
-        {
-            float points[8];
-            points[0] = x + 250;
-            points[1] = y + 200;
-            points[2] = x + 275;
-            points[3] = y + 220;
-            points[4] = x + 325;
-            points[5] = y + 170;
-            points[6] = x + 350;
-            points[7] = y + 200;
-            nk_stroke_polyline(canvas.painter, points, 4, 2, nk_rgb(255, 128, 0));
-        }
-
-        nk_stroke_line(canvas.painter, x + 15, y + 10, x + 200, y + 10, 2.0f, nk_rgb(189, 45, 75));
-        nk_stroke_rect(canvas.painter, nk_rect(x + 370, y + 20, 100, 100), 10, 3, nk_rgb(0, 0, 255));
-        nk_stroke_curve(canvas.painter, x + 380, y + 200, x + 405, y + 270, x + 455, y + 120, x + 480, y + 200, 2,
-                        nk_rgb(0, 150, 220));
-        nk_stroke_circle(canvas.painter, nk_rect(x + 20, y + 370, 100, 100), 5, nk_rgb(0, 255, 120));
-        nk_stroke_triangle(canvas.painter, x + 370, y + 250, x + 470, y + 250, x + 420, y + 350, 6,
-                           nk_rgb(255, 0, 143));
-        nk_stroke_arc(canvas.painter, x + 420, y + 420, 50, 0, 3.141592654f * 3.0f / 4.0f, 5, nk_rgb(0, 255, 255));
+        nk_fill_rect(canvas.painter, img_rect, 5, main_data.pic_bg);
+// nk_draw_image
+//        NK_API void nk_draw_image(struct nk_command_buffer*,
+//        struct nk_rect,
+//        const struct nk_image*,
+//        struct nk_color);
+#if 1
+        nk_draw_image(canvas.painter,
+                      img_rect,
+                      &main_nk_image,
+                      main_data.pic_bg);
+#else
+        nk_image(ctx, main_nk_image);
+#endif
     }
     canvas_end(ctx, &canvas);
 }
@@ -139,9 +121,19 @@ bool show_picture_window(OCDimensions win_dimensions) {
     canvas(main_data.ctx, win_dimensions);
 #else
     if (nk_begin(main_data.ctx, "Picture",
-                 nk_rect(MAIN_DIALOG_WIDTH, 0, win_dimensions.width-MAIN_DIALOG_WIDTH, win_dimensions.height),
+                 nk_rect(
+                         MAIN_DIALOG_WIDTH,
+                         0,
+                         win_dimensions.width - MAIN_DIALOG_WIDTH,
+                         win_dimensions.height
+                         ),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
+        nk_layout_row_dynamic(main_data.ctx, win_dimensions.height, 1);
+
+        nk_image_color(main_data.ctx, main_nk_image, main_data.pic_bg);
+        nk_image(main_data.ctx, main_nk_image);
+//        nk_draw_image();
     }
     nk_end(main_data.ctx);
 #endif

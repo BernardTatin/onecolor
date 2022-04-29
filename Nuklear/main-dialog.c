@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 #include "ocn-glfw3.h"
+#include "nk_tools.h"
 #include "main-dialog.h"
 
 static const char *filter_names[] = {
@@ -17,6 +18,8 @@ static const char *filter_names[] = {
 bool show_main_dialog(OCDimensions win_dimensions) {
 
     static int selected_filter = 0;
+    static struct nk_colorf fbg;
+
     if (nk_begin(main_data.ctx, "Filtering", nk_rect(0, 0, MAIN_DIALOG_WIDTH, win_dimensions.height),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
@@ -27,17 +30,9 @@ bool show_main_dialog(OCDimensions win_dimensions) {
         if (nk_combo_begin_color(main_data.ctx, main_data.pic_bg,
                                  nk_vec2(nk_widget_width(main_data.ctx), 400))) {
             nk_layout_row_dynamic(main_data.ctx, 120, 1);
-            struct nk_colorf fbg = {
-                    .r = u8_to_unit(main_data.pic_bg.r),
-                    .g = u8_to_unit(main_data.pic_bg.g),
-                    .b = u8_to_unit(main_data.pic_bg.b),
-                    .a = u8_to_unit(main_data.pic_bg.a),
-            };
+            ocnk_color_i2f(main_data.pic_bg, &fbg);
             nk_color_pick(main_data.ctx, &fbg, NK_RGBA);
-            main_data.pic_bg.r = unit_to_u8(fbg.r);
-            main_data.pic_bg.g = unit_to_u8(fbg.g);
-            main_data.pic_bg.b = unit_to_u8(fbg.b);
-            main_data.pic_bg.a = unit_to_u8(fbg.a);
+            main_data.pic_bg = ocnk_color_f2i(&fbg);
             nk_combo_end(main_data.ctx);
         }
         nk_layout_row_dynamic(main_data.ctx, 20, 1);
