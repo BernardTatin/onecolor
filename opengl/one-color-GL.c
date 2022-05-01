@@ -37,7 +37,7 @@ static inline void unit_quad(void) {
             .height = mainWindow.height
     };
     OCRectangle rectangle;
-    scale_mage(dimensions, &rectangle);
+    scale_image(dimensions, &rectangle);
 
     quad_vertex(0, 0, rectangle.left,  rectangle.top);
     quad_vertex(0, 1, rectangle.left,  rectangle.height);

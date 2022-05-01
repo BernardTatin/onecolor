@@ -44,7 +44,7 @@ static void resize_image(EWidget *widget, const int _width, const int _height) {
             .height = _height - 2*dy
     };
     OCRectangle rectangle;
-    scale_mage(dimensions, &rectangle);
+    scale_image(dimensions, &rectangle);
     evas_object_move(obj,
                      rectangle.left,
                      rectangle.top);

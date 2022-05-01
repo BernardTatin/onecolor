@@ -6,6 +6,6 @@
 #define ONE_COLOR_IMAGE_TOOLS_H
 
 #include "basic-data.h"
-void scale_mage(const OCDimensions dimensions, OCRectangle *rectangle);
+void scale_image(const OCDimensions canvas_dimensions, const float ratio, OCRectangle *pict_rectangle);
 
 #endif //ONE_COLOR_IMAGE_TOOLS_H

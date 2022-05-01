@@ -31,7 +31,11 @@ add_executable(one-color-nuke
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
         Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
-        Nuklear/main-dialog.c Nuklear/main-dialog.h Nuklear/picture-window.c image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h Nuklear/nk_tools.h)
+        Nuklear/main-dialog.c Nuklear/main-dialog.h
+        Nuklear/picture-window.c
+        image-library/image-tools.c image-library/image-tools.h
+        image-library/basic-geometry.c image-library/basic-geometry.h
+        image-library/basic-types.h Nuklear/nk_tools.h)
 target_link_libraries(one-color-nuke m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
 target_include_directories(one-color-nuke PUBLIC
         DevIL
@@ -42,14 +46,20 @@ target_include_directories(one-color-nuke PUBLIC
         ${IL_INCLUDE_DIRS})
 target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
 
-add_executable(sdl-gl Nuklear/Nuklear-src/tests/sdl-gl.c)
+add_executable(sdl-gl
+        Nuklear/Nuklear-src/tests/sdl-gl.c
+        image-library/image-tools.c image-library/image-tools.h
+        )
 target_link_libraries(sdl-gl
         glut
         ${SDL2_LIBRARIES}
         SDL2_image-2.0
         ${GLFW_LIBRARIES}
         GL m GLU GLEW)
-target_include_directories(sdl-gl PUBLIC Nuklear/Nuklear-src ${SDL2_INCLUDE_DIRS}
+target_include_directories(sdl-gl PUBLIC
+        Nuklear/Nuklear-src
+        ${SDL2_INCLUDE_DIRS}
+        image-library
         )
 #
 # evas version
