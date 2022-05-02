@@ -18,7 +18,7 @@ pkg_search_module(GL required opengl)
 pkg_search_module(SDL2 REQUIRED sdl2 SDL2_image)
 
 add_executable(one-color-nuke
-        Nuklear/one-color-nuk.c
+        Nuklear/one-color-nuk-old.c
         Nuklear/ocn-configuration.c Nuklear/ocn-configuration.h
         Nuklear/Nuklear-src/nuklear.h
         Nuklear/Nuklear-src/full-nuklear.c
@@ -47,7 +47,7 @@ target_include_directories(one-color-nuke PUBLIC
 target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
 
 add_executable(sdl-gl
-        Nuklear/Nuklear-src/tests/sdl-gl.c
+        Nuklear/one-color-nuke.c
         image-library/image-tools.c image-library/image-tools.h
         )
 target_link_libraries(sdl-gl

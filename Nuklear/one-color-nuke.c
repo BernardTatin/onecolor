@@ -24,7 +24,8 @@
 
 //
 // Created by bernard on 29/04/22.
-// TODO: add a reference to the repo where I found this
+// base code from:
+//      https://github.com/cxong/nuklear_cmake_demo
 //
 
 #define WITH_GL2
