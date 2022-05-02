@@ -32,6 +32,7 @@
 
 /* nuklear - 1.32.0 - public domain */
 #include <stdio.h>
+#include <stdbool.h>
 #include <string.h>
 #include <math.h>
 
@@ -64,14 +65,10 @@
 
 #endif
 
+#include "basic-data.h"
 #include "basic-geometry.h"
 #include "image-tools.h"
-
-#define WINDOW_WIDTH 1200
-#define WINDOW_HEIGHT 720
-
-#define MAX_VERTEX_MEMORY (512 * 1024)
-#define MAX_ELEMENT_MEMORY (128 * 1024)
+#include "main-dialog.h"
 
 #define UNUSED(a) (void)a
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
@@ -100,6 +97,18 @@ static inline struct nk_color ocnk_color_f2i(struct nk_colorf *fcolor) {
  *                          DEMO
  *
  * ===============================================================*/
+RGBA *pixels = NULL;
+
+void bad_grey_filter(const int img_width, const int img_height) {
+    const int n  = img_width * img_height;
+    RGBA      *p = pixels;
+    for (int  i  = 0; i < n; i++, p++) {
+        u8 v = p->r;
+        p->g = v;
+        p->b = v;
+    }
+}
+
 static struct nk_image load_image(const char *filename, int *w, int *h, float *ratio);
 
 static void draw_tex(
@@ -141,7 +150,8 @@ main(int argc, char *argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #endif
     win = SDL_CreateWindow("OneColor Filtering",
-                           SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            //SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                           50, 50,
                            WINDOW_WIDTH, WINDOW_HEIGHT,
                            SDL_WINDOW_RESIZABLE | // SDL_WINDOW_ALLOW_HIGHDPI | // SDL_WINDOW_METAL |
                            SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
@@ -175,55 +185,37 @@ main(int argc, char *argv[]) {
         SDL_Event evt;
         nk_input_begin(ctx);
         while (SDL_PollEvent(&evt)) {
-            if (evt.type == SDL_QUIT) { goto cleanup; }
+            if (evt.type == SDL_QUIT) {
+                goto cleanup;
+            }
             nk_sdl_handle_event(&evt);
         }
         nk_input_end(ctx);
 
         SDL_GetWindowSize(win, &win_width, &win_height);
+        OCDimensions win_dimensions = {
+                .width = win_width,
+                .height = win_height
+        };
         /* GUI */
-#if 1
-        if (nk_begin(ctx, "Filters", nk_rect(0, 0, 230, win_height),
-                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-                     NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
-            enum {
-                EASY, HARD
-            };
-            static int op       = EASY;
-            static int property = 20;
-
-            nk_layout_row_static(ctx, 30, 80, 1);
-            if (nk_button_label(ctx, "button")) {
-                fprintf(stdout, "button pressed\n");
-            }
-            nk_layout_row_dynamic(ctx, 30, 2);
-            if (nk_option_label(ctx, "easy", op == EASY)) { op = EASY; }
-            if (nk_option_label(ctx, "hard", op == HARD)) { op = HARD; }
-            nk_layout_row_dynamic(ctx, 25, 1);
-            nk_property_int(ctx, "Compression:", 0, &property, 100, 10, 1);
-
-            nk_layout_row_dynamic(ctx, 20, 1);
-            nk_label(ctx, "background:", NK_TEXT_LEFT);
-            nk_layout_row_dynamic(ctx, 25, 1);
-            if (nk_combo_begin_color(ctx, background, nk_vec2(nk_widget_width(ctx), 400))) {
-                static struct nk_colorf fbg;
-                nk_layout_row_dynamic(ctx, 120, 1);
-                ocnk_color_i2f(background, &fbg);
-                nk_color_pick(ctx, &fbg, NK_RGBA);
-                background = ocnk_color_f2i(&fbg);
-                nk_layout_row_dynamic(ctx, 25, 1);
-                background.r = (nk_byte) nk_propertyi(ctx, "#R:", 0, background.r, 255, 1, 1);
-                background.g = (nk_byte) nk_propertyi(ctx, "#G:", 0, background.g, 255, 1, 1);
-                background.b = (nk_byte) nk_propertyi(ctx, "#B:", 0, background.b, 255, 1, 1);
-                background.a = (nk_byte) nk_propertyi(ctx, "#A:", 0, background.a, 255, 1, 1);
-                nk_combo_end(ctx);
-            }
+        FilterType   filter         = show_main_dialog(ctx, win_dimensions);
+        switch (filter) {
+            case Filter_None:
+                bad_grey_filter(tex_w, tex_h);
+                break;
+            case Filter_Grey:
+                break;
+            case Filter_2_Colors:
+            case Filter_More:
+                fprintf(stdout, "Selected filter %d\n", (int) filter);
+                break;
+            default:
+                fprintf(stderr, "Unknown filter %d\n", filter);
+                break;
         }
-        nk_end(ctx);
-#endif
         OCDimensions win_size = {
-                .width = win_width - 231,
-                .height= win_height
+                .width = win_width - 231 - 40,
+                .height= win_height - 60
         };
         OCRectangle  pict_rect;
         scale_image(win_size, ratio, &pict_rect);
@@ -277,9 +269,9 @@ static struct nk_image load_image(const char *filename, int *w, int *h, float *r
         printf("Failed to load image from file %s\n", filename);
         goto cleanup;
     }
-    fprintf(stdout, "Image %s w, h= %d, %d\n",
-            filename, s->w, s->h);
-    *ratio = roundf((float) s->w / (float) s->h);
+    *ratio = (float) s->w / (float) s->h;
+    fprintf(stdout, "Image %s w, h= %d, %d ratio %5.3f\n",
+            filename, s->w, s->h, *ratio);
     // Convert to RGBA
     SDL_Surface *tmp = SDL_ConvertSurfaceFormat(s, SDL_PIXELFORMAT_ABGR8888, 0);
     if (tmp == NULL) {
@@ -299,6 +291,7 @@ static struct nk_image load_image(const char *filename, int *w, int *h, float *r
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     *w = s->w;
     *h = s->h;
+    //pixels = s->pixels;
 
 cleanup:
     SDL_FreeSurface(s);

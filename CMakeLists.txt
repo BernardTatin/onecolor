@@ -17,7 +17,30 @@ pkg_search_module(GL required opengl)
 
 pkg_search_module(SDL2 REQUIRED sdl2 SDL2_image)
 
+#
+# one-color-nuke, current version
+#
 add_executable(one-color-nuke
+        Nuklear/one-color-nuke.c
+        Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
+        Nuklear/main-dialog.c Nuklear/main-dialog.h
+        image-library/image-tools.c image-library/image-tools.h
+        )
+target_link_libraries(one-color-nuke
+        glut
+        ${SDL2_LIBRARIES}
+        SDL2_image-2.0
+        ${GLFW_LIBRARIES}
+        GL m GLU GLEW)
+target_include_directories(one-color-nuke PUBLIC
+        Nuklear/Nuklear-src
+        ${SDL2_INCLUDE_DIRS}
+        image-library
+        )
+#
+# one-color-nuke-old, first version
+#
+add_executable(one-color-nuke-old
         Nuklear/one-color-nuk-old.c
         Nuklear/ocn-configuration.c Nuklear/ocn-configuration.h
         Nuklear/Nuklear-src/nuklear.h
@@ -36,31 +59,16 @@ add_executable(one-color-nuke
         image-library/image-tools.c image-library/image-tools.h
         image-library/basic-geometry.c image-library/basic-geometry.h
         image-library/basic-types.h Nuklear/nk_tools.h)
-target_link_libraries(one-color-nuke m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
-target_include_directories(one-color-nuke PUBLIC
+target_link_libraries(one-color-nuke-old m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
+target_include_directories(one-color-nuke-old PUBLIC
         DevIL
         tools
         image-library
         Nuklear
         Nuklear/Nuklear-src
         ${IL_INCLUDE_DIRS})
-target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
+target_compile_definitions(one-color-nuke-old PUBLIC WITH_NUKE)
 
-add_executable(sdl-gl
-        Nuklear/one-color-nuke.c
-        image-library/image-tools.c image-library/image-tools.h
-        )
-target_link_libraries(sdl-gl
-        glut
-        ${SDL2_LIBRARIES}
-        SDL2_image-2.0
-        ${GLFW_LIBRARIES}
-        GL m GLU GLEW)
-target_include_directories(sdl-gl PUBLIC
-        Nuklear/Nuklear-src
-        ${SDL2_INCLUDE_DIRS}
-        image-library
-        )
 #
 # evas version
 #

@@ -30,7 +30,7 @@
 #include "basic-geometry.h"
 #include "image-tools.h"
 
-#define _dbg_
+//#define _dbg_
 
 // FIXME: ya1BUGGG le redimensionnement n'est pas bon AVEC OenGL
 void scale_image(const OCDimensions canvas_dimensions, const float ratio, OCRectangle *pict_rectangle) {
