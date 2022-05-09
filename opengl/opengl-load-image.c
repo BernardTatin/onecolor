@@ -1,3 +1,27 @@
+/******************************************************************************
+ * MIT License                                                                *
+ *                                                                            *
+ * Copyright (c) 2022.  Bernard Tatin                                         *
+ *                                                                            *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  *
+ * copies of the Software, and to permit persons to whom the Software is      *
+ * furnished to do so, subject to the following conditions:                   *
+ *                                                                            *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.                            *
+ *                                                                            *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR *
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,   *
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE*
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.                                                                  *
+ ******************************************************************************/
+
 //
 // Created by bernard on 06/04/2022.
 //
@@ -11,7 +35,7 @@
 #define DEFAULT_WIDTH  640
 #define DEFAULT_HEIGHT 480
 
-int width = DEFAULT_WIDTH;
+int width  = DEFAULT_WIDTH;
 int height = DEFAULT_HEIGHT;
 
 int nFrames = 0;
@@ -60,7 +84,7 @@ void createMenu(void) {
    whenever the window needs to be re-painted. */
 void displayFunc() {
 
-    printf("Frame %d ", ++nFrames);
+    //printf("Frame %d \n", ++nFrames);
 
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -87,7 +111,7 @@ void displayFunc() {
    whenever the window is re-sized with its new width and height */
 void reshapeFunc(GLsizei newwidth, GLsizei newheight) {
 
-    printf("reshape(%d, %d) ", newwidth, newheight );
+    //printf("reshape(%d, %d) \n", newwidth, newheight);
 
     // Set the viewport to cover the new window
     glViewport(0, 0, width = newwidth, height = newheight);
@@ -118,7 +142,7 @@ void initGL(int w, int h) {
 
 /* Load an image using DevIL and return the devIL handle (-1 if failure) */
 int LoadImage(char *filename) {
-    ILuint image;
+    ILuint    image;
     ILboolean success;
 
     ilGenImages(1, &image);    /* Generation of one image name */
@@ -126,7 +150,8 @@ int LoadImage(char *filename) {
 
 
     /* Loading of the image filename by DevIL */
-    if (success = ilLoadImage(filename)) {
+    success = ilLoadImage(filename);
+    if (success) {
         /* Convert every colour component into unsigned byte */
         /* You can replace IL_RGB with IL_RGBA if your image contains alpha channel */
 
@@ -135,8 +160,9 @@ int LoadImage(char *filename) {
         if (!success) {
             return -1;
         }
-    } else
+    } else {
         return -1;
+    }
 
     return image;
 }
@@ -144,10 +170,10 @@ int LoadImage(char *filename) {
 int main(int argc, char **argv) {
 
     GLuint texid;
-    int image;
+    int    image;
 
     if (argc < 2) {
-        printf("%s image1.[jpg,bmp,tga,...] ", argv[0] );
+        printf("%s image1.[jpg,bmp,tga,...] \n", argv[0]);
         return 0;
     }
 
@@ -168,7 +194,7 @@ int main(int argc, char **argv) {
 
     /* Initialization of DevIL */
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
-        printf("wrong DevIL version ");
+        printf("wrong DevIL version \n");
         return -1;
     }
     ilInit();
@@ -177,7 +203,7 @@ int main(int argc, char **argv) {
     /* load the file picture with DevIL */
     image = LoadImage(argv[1]);
     if (image == -1) {
-        printf("Can't load picture file %s by DevIL ", argv[1]);
+        printf("Can't load picture file %s by DevIL \n", argv[1]);
         return -1;
     }
 
@@ -192,9 +218,35 @@ int main(int argc, char **argv) {
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for minifying filter */
-    glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH),
+    /*
+     * <PLAY>
+     * playing with texture parameters
+     */
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S,
+                    GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_BORDER);
+    /* gives some color to the border */
+    float borderColor[] = {
+            0.6f, 0.5f, 0.4f, 1.0f
+    };
+    glTexParameterfv(GL_TEXTURE_2D,
+                     GL_TEXTURE_BORDER_COLOR,
+                     borderColor);
+    /*
+     * </PLAY>
+     */
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 ilGetInteger(IL_IMAGE_BPP),
+                 ilGetInteger(IL_IMAGE_WIDTH),
                  ilGetInteger(IL_IMAGE_HEIGHT),
-                 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData()); /* Texture specification */
+                 1,
+                 ilGetInteger(IL_IMAGE_FORMAT),
+                 GL_UNSIGNED_BYTE,
+                 ilGetData()); /* Texture specification */
 
     /* Main loop */
     glutMainLoop();
