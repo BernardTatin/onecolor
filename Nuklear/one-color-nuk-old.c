@@ -58,6 +58,7 @@
  *
  * ===============================================================*/
 static void error_callback(int e, const char *d) { printf("Error %d: %s\n", e, d); }
+
 struct nk_image image_create(void);
 
 int main(int argc, char **argv) {
@@ -119,9 +120,9 @@ int main(int argc, char **argv) {
         /*nk_style_set_font(ctx, &droid->handle);*/}
 
     //    set_style(main_data.ctx, THEME_WHITE);
-    set_style(main_data.ctx, THEME_RED);
-//    set_style(main_data.ctx, THEME_BLUE);
-//    set_style(main_data.ctx, THEME_DARK);
+    //set_style(main_data.ctx, THEME_RED);
+    //    set_style(main_data.ctx, THEME_BLUE);
+    //    set_style(main_data.ctx, THEME_DARK);
 
     main_data.bg.r     = 0.10f;
     main_data.bg.g     = 0.18f;
@@ -139,7 +140,7 @@ int main(int argc, char **argv) {
         glfwGetWindowSize(main_data.win, &win_dimensions.width, &win_dimensions.height);
 
         /* GUI */
-        show_main_dialog(win_dimensions);
+        show_main_dialog(main_data.ctx, win_dimensions);
         show_picture_window(win_dimensions);
         /* -------------- EXAMPLES ---------------- */
         /* ----------------------------------------- */
@@ -147,13 +148,19 @@ int main(int argc, char **argv) {
         /* Draw */
         glViewport(0, 0, win_dimensions.width, win_dimensions.height);
         glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(main_data.bg.r, main_data.bg.g, main_data.bg.b, main_data.bg.a);
+        glClearColor(main_data.bg.r,
+                     main_data.bg.g,
+                     main_data.bg.b,
+                     main_data.bg.a);
         /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
          * with blending, scissor, face culling, depth test and viewport and
          * defaults everything back into a default state.
          * Make sure to either a.) save and restore or b.) reset your own state after
          * rendering the UI. */
-        nk_glfw3_render(&main_data.glfw, NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+        nk_glfw3_render(&main_data.glfw,
+                        NK_ANTI_ALIASING_ON,
+                        MAX_VERTEX_BUFFER,
+                        MAX_ELEMENT_BUFFER);
         glfwSwapBuffers(main_data.win);
         glfwPollEvents();
     }

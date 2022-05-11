@@ -199,11 +199,13 @@ main(int argc, char *argv[]) {
         };
         /* GUI */
         FilterType   filter         = show_main_dialog(ctx, win_dimensions);
+        //FilterType   filter         = Filter_Grey;
         switch (filter) {
             case Filter_None:
-                bad_grey_filter(tex_w, tex_h);
                 break;
             case Filter_Grey:
+                //bad_grey_filter(tex_w, tex_h);
+                fprintf(stdout, "Selected filter %d, grey\n", (int) filter);
                 break;
             case Filter_2_Colors:
             case Filter_More:

@@ -80,8 +80,8 @@ void createMenu(void) {
 }
 
 
-static inline void tex_coord_to_vertex(const float s, const float t,
-                                       const int x, const int y) {
+static inline void map_tex_2_vertex(const float s, const float t,
+                                    const int x, const int y) {
     glTexCoord2f(s, t);
     glVertex2i(x, y);
 }
@@ -100,10 +100,14 @@ void displayFunc() {
 
     /* Draw a fullscreen mapped quad */
     glBegin(GL_QUADS);
-    tex_coord_to_vertex(-0.1f, -0.1f, 0, 0);
-    tex_coord_to_vertex(-0.1f, 1.1f, 0, height);
-    tex_coord_to_vertex(1.1f, 1.1f, width, height);
-    tex_coord_to_vertex(1.1f, -0.1f, width, 0);
+    map_tex_2_vertex(-0.1f, -0.1f,
+                     0, 0);
+    map_tex_2_vertex(-0.1f, 1.1f,
+                     0, height);
+    map_tex_2_vertex(1.1f, 1.1f,
+                     width, height);
+    map_tex_2_vertex(1.1f, -0.1f,
+                     width, 0);
     glEnd();
 
     glutSwapBuffers();
@@ -213,10 +217,13 @@ int main(int argc, char **argv) {
            ilGetInteger(IL_IMAGE_HEIGHT));
     /* OpenGL texture binding of the image loaded by DevIL  */
     glGenTextures(1, &texid); /* Texture name generation */
-    glBindTexture(GL_TEXTURE_2D, texid); /* Binding of texture name */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+    glBindTexture(GL_TEXTURE_2D,
+                  texid); /* Binding of texture name */
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for minifying filter */
     /*
      * <PLAY>
@@ -230,7 +237,7 @@ int main(int argc, char **argv) {
                     GL_CLAMP_TO_BORDER);
     /* gives some color to the border */
     float borderColor[] = {
-            0.6f, 0.5f, 0.4f, 1.0f
+            0.6f, 0.3f, 0.4f, 1.0f
     };
     glTexParameterfv(GL_TEXTURE_2D,
                      GL_TEXTURE_BORDER_COLOR,
