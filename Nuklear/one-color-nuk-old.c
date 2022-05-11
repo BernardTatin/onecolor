@@ -124,20 +124,27 @@ int main(int argc, char **argv) {
     //    set_style(main_data.ctx, THEME_BLUE);
     //    set_style(main_data.ctx, THEME_DARK);
 
-    main_data.bg.r     = 0.10f;
-    main_data.bg.g     = 0.18f;
-    main_data.bg.b     = 0.24f;
-    main_data.bg.a     = 1.00f;
-    main_data.pic_bg.r = float_to_u8(255.0f * 0.10f);
-    main_data.pic_bg.g = float_to_u8(255.0f * 0.18f);
-    main_data.pic_bg.b = float_to_u8(255.0f * 0.24f);
-    main_data.pic_bg.a = float_to_u8(255.0f * 1.00f);
+    main_data.bg.r     = 1.0f;
+    main_data.bg.g     = 1.0f;
+    main_data.bg.b     = 1.0f;
+    main_data.bg.a     = 1.0f;
+    main_data.pic_bg.r = 255;
+    main_data.pic_bg.g = 255;
+    main_data.pic_bg.b = 255;
+    main_data.pic_bg.a = 255;
     image_create();
     while (!glfwWindowShouldClose(main_data.win)) {
         OCDimensions win_dimensions;
         /* Input */
         nk_glfw3_new_frame(&main_data.glfw);
         glfwGetWindowSize(main_data.win, &win_dimensions.width, &win_dimensions.height);
+
+        glViewport(0, 0, win_dimensions.width, win_dimensions.height);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glClearColor(main_data.bg.r,
+                     main_data.bg.g,
+                     main_data.bg.b,
+                     main_data.bg.a);
 
         /* GUI */
         show_main_dialog(main_data.ctx, win_dimensions);
@@ -146,12 +153,12 @@ int main(int argc, char **argv) {
         /* ----------------------------------------- */
 
         /* Draw */
-        glViewport(0, 0, win_dimensions.width, win_dimensions.height);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(main_data.bg.r,
-                     main_data.bg.g,
-                     main_data.bg.b,
-                     main_data.bg.a);
+        //glViewport(0, 0, win_dimensions.width, win_dimensions.height);
+        //glClear(GL_COLOR_BUFFER_BIT);
+        //glClearColor(main_data.bg.r,
+        //             main_data.bg.g,
+        //             main_data.bg.b,
+        //             main_data.bg.a);
         /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
          * with blending, scissor, face culling, depth test and viewport and
          * defaults everything back into a default state.

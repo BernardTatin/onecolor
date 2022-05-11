@@ -107,7 +107,7 @@ struct nk_image image_create(void) {
                  main_image.width,
                  main_image.height,
                  0,
-                 GL_RGBA,
+                 main_image.format,
                  GL_UNSIGNED_BYTE,
                  main_image.screen_pixels);
 
