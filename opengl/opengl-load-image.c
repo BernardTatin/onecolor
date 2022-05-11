@@ -80,6 +80,12 @@ void createMenu(void) {
 }
 
 
+static inline void tex_coord_to_vertex(const float s, const float t,
+                                       const int x, const int y) {
+    glTexCoord2f(s, t);
+    glVertex2i(x, y);
+}
+
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
 void displayFunc() {
@@ -94,14 +100,10 @@ void displayFunc() {
 
     /* Draw a fullscreen mapped quad */
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0);
-    glVertex2i(0, 0);
-    glTexCoord2i(0, 1);
-    glVertex2i(0, height);
-    glTexCoord2i(1, 1);
-    glVertex2i(width, height);
-    glTexCoord2i(1, 0);
-    glVertex2i(width, 0);
+    tex_coord_to_vertex(-0.1f, -0.1f, 0, 0);
+    tex_coord_to_vertex(-0.1f, 1.1f, 0, height);
+    tex_coord_to_vertex(1.1f, 1.1f, width, height);
+    tex_coord_to_vertex(1.1f, -0.1f, width, 0);
     glEnd();
 
     glutSwapBuffers();
@@ -141,12 +143,11 @@ void initGL(int w, int h) {
 }
 
 /* Load an image using DevIL and return the devIL handle (-1 if failure) */
-int LoadImage(char *filename) {
-    ILuint    image;
+ILboolean LoadImage(char *filename, ILuint *image) {
     ILboolean success;
 
-    ilGenImages(1, &image);    /* Generation of one image name */
-    ilBindImage(image);        /* Binding of image name */
+    ilGenImages(1, image);    /* Generation of one image name */
+    ilBindImage(*image);        /* Binding of image name */
 
 
     /* Loading of the image filename by DevIL */
@@ -158,23 +159,23 @@ int LoadImage(char *filename) {
         success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
         if (!success) {
-            return -1;
+            return IL_FALSE;
         }
     } else {
-        return -1;
+        return IL_FALSE;
     }
 
-    return image;
+    return IL_TRUE;
 }
 
 int main(int argc, char **argv) {
 
     GLuint texid;
-    int    image;
+    ILuint image;
 
     if (argc < 2) {
         printf("%s image1.[jpg,bmp,tga,...] \n", argv[0]);
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     /* GLUT init */
@@ -195,16 +196,15 @@ int main(int argc, char **argv) {
     /* Initialization of DevIL */
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
         printf("wrong DevIL version \n");
-        return -1;
+        return EXIT_FAILURE;
     }
     ilInit();
 
 
     /* load the file picture with DevIL */
-    image = LoadImage(argv[1]);
-    if (image == -1) {
+    if (!LoadImage(argv[1], &image)) {
         printf("Can't load picture file %s by DevIL \n", argv[1]);
-        return -1;
+        return EXIT_FAILURE;
     }
 
     printf("\nImage bits/pix: %d, width: %d, height: %d\n",
@@ -256,5 +256,5 @@ int main(int argc, char **argv) {
                    &image); /* Because we have already copied image data into texture data we can release memory used by image. */
     glDeleteTextures(1, &texid);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
