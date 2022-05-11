@@ -41,6 +41,7 @@
 #include "main-dialog.h"
 #include "dev-IL-tools.h"
 #include "file-tools.h"
+#include "filtering.h"
 
 /* ===============================================================
  *
@@ -139,26 +140,31 @@ int main(int argc, char **argv) {
         nk_glfw3_new_frame(&main_data.glfw);
         glfwGetWindowSize(main_data.win, &win_dimensions.width, &win_dimensions.height);
 
-        glViewport(0, 0, win_dimensions.width, win_dimensions.height);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(main_data.bg.r,
-                     main_data.bg.g,
-                     main_data.bg.b,
-                     main_data.bg.a);
-
         /* GUI */
-        show_main_dialog(main_data.ctx, win_dimensions);
+        FilterType filter = show_main_dialog(main_data.ctx, win_dimensions);
+        switch (filter) {
+            case Filter_None:
+                break;
+            case Filter_Grey:
+                apply_grey_filter();
+                image_create();
+                break;
+            default:
+                fprintf(stderr, "Unknown filter %d\n", filter);
+                break;
+        }
         show_picture_window(win_dimensions);
         /* -------------- EXAMPLES ---------------- */
         /* ----------------------------------------- */
 
         /* Draw */
-        //glViewport(0, 0, win_dimensions.width, win_dimensions.height);
-        //glClear(GL_COLOR_BUFFER_BIT);
-        //glClearColor(main_data.bg.r,
-        //             main_data.bg.g,
-        //             main_data.bg.b,
-        //             main_data.bg.a);
+        glViewport(0, 0, win_dimensions.width, win_dimensions.height);
+        glClearColor(main_data.bg.r,
+                     main_data.bg.g,
+                     main_data.bg.b,
+                     main_data.bg.a);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
          * with blending, scissor, face culling, depth test and viewport and
          * defaults everything back into a default state.
