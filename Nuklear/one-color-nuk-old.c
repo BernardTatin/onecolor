@@ -110,29 +110,18 @@ int main(int argc, char **argv) {
     {
         struct nk_font_atlas *atlas;
         nk_glfw3_font_stash_begin(&main_data.glfw, &atlas);
-        /*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
-        /*struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Roboto-Regular.ttf", 14, 0);*/
-        /*struct nk_font *future = nk_font_atlas_add_from_file(atlas, "../../../extra_font/kenvector_future_thin.ttf", 13, 0);*/
-        /*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
-        /*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
-        /*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
+        /*
+         * TODO: font path must be computed
+         */
+        struct nk_font *gillius = nk_font_atlas_add_from_file(atlas,
+                                                              "/home/bernard/git/onecolor/fonts/GilliusADF/GilliusADFNo2-Regular.otf",
+                                                              20, 0);
         nk_glfw3_font_stash_end(&main_data.glfw);
-        /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
-        /*nk_style_set_font(ctx, &droid->handle);*/}
+        nk_style_set_font(main_data.ctx, &gillius->handle);
+    }
 
-    //    set_style(main_data.ctx, THEME_WHITE);
-    //set_style(main_data.ctx, THEME_RED);
-    //    set_style(main_data.ctx, THEME_BLUE);
-    //    set_style(main_data.ctx, THEME_DARK);
+    set_style(main_data.ctx, THEME_RED);
 
-    main_data.bg.r     = 1.0f;
-    main_data.bg.g     = 1.0f;
-    main_data.bg.b     = 1.0f;
-    main_data.bg.a     = 1.0f;
-    main_data.pic_bg.r = 255;
-    main_data.pic_bg.g = 255;
-    main_data.pic_bg.b = 255;
-    main_data.pic_bg.a = 255;
     image_create();
     while (!glfwWindowShouldClose(main_data.win)) {
         OCDimensions win_dimensions;
@@ -154,8 +143,6 @@ int main(int argc, char **argv) {
                 break;
         }
         show_picture_window(win_dimensions);
-        /* -------------- EXAMPLES ---------------- */
-        /* ----------------------------------------- */
 
         /* Draw */
         glViewport(0, 0, win_dimensions.width, win_dimensions.height);
