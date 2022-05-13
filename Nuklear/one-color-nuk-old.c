@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
     glfwGetWindowSize(main_data.win, &main_data.width, &main_data.height);
 
     /* OpenGL */
-    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    glViewport(0, 0, main_data.width, main_data.height);
     glewExperimental = 1;
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to setup GLEW\n");
@@ -142,6 +142,10 @@ int main(int argc, char **argv) {
                 fprintf(stderr, "Unknown filter %d\n", filter);
                 break;
         }
+        OCDimensions canvas_dim = {
+                .width = win_dimensions.width - MAIN_DIALOG_WIDTH,
+                .height= win_dimensions.height
+        };
         show_picture_window(win_dimensions);
 
         /* Draw */
@@ -151,6 +155,9 @@ int main(int argc, char **argv) {
                      main_data.bg.b,
                      main_data.bg.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        /*
+                map_texture(canvas_dim);
+        */
 
         /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
          * with blending, scissor, face culling, depth test and viewport and

@@ -71,14 +71,18 @@ static inline float compute_delta(const int dim) {
     }
 }
 
-static void map_texture(const OCDimensions canvas_dim) {
-    const int   width   = canvas_dim.width;
-    const int   height  = canvas_dim.height;
-    const float ratio   = main_image.ratio;
-    int         max_dim = width;
-    int         min_dim = width;
-    float       delta_x, delta_y;
-    float       w_dim, h_dim;
+void map_texture(OCDimensions *canvas_dim) {
+    const int   width  = canvas_dim->width;
+    const int   height = canvas_dim->height;
+    const float ratio  = main_image.ratio;
+
+    static float old_w = 0.0f;
+    static float old_h = 0.0f;
+
+    int   max_dim = width;
+    int   min_dim = width;
+    float delta_x, delta_y;
+    float w_dim, h_dim;
 
     if (height > max_dim) {
         max_dim = height;
@@ -96,9 +100,20 @@ static void map_texture(const OCDimensions canvas_dim) {
         h_dim = (float) height;
         w_dim = roundf(h_dim * ratio);
     }
-    fprintf(stdout, "%-10s: x2 %4d y2 %4d r %5.3f -> %5.3f\n",
-            "landscape", (int) w_dim, (int) h_dim, ratio, w_dim / h_dim);
+    if (old_h != h_dim || old_w != w_dim) {
+        fprintf(stdout, "%-10s: x2 %4d y2 %4d r %5.3f -> %5.3f\n",
+                "landscape", (int) w_dim, (int) h_dim, ratio, w_dim / h_dim);
+        old_w = w_dim;
+        old_h = h_dim;
+    }
+    const int new_w = (int) roundf(w_dim);
+    const int new_h = (int) roundf(h_dim);
 
+    glViewport(0, 0, new_w, new_h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, (double) new_w, (double) new_h, 0.0, 0.0, 100.0);
+    glMatrixMode(GL_MODELVIEW);
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -110,10 +125,11 @@ static void map_texture(const OCDimensions canvas_dim) {
     {
         map_tex_square(delta_x, delta_y,
                        0, 0,
-                       (int) w_dim, (int) h_dim);
+                       new_w, new_h);
     }
     glEnd();
-
+    canvas_dim->width  = new_w;
+    canvas_dim->height = new_h;
 }
 
 static nk_bool canvas_begin(struct nk_context *ctx,
@@ -132,7 +148,10 @@ static nk_bool canvas_begin(struct nk_context *ctx,
     ctx->style.window.fixed_background = nk_style_item_color(background_color);
 
     /* create/update window and set position + size */
-    if (!nk_begin(ctx, "Picture", nk_rect(x, y, width, height), NK_WINDOW_NO_SCROLLBAR | flags)) {
+    if (!nk_begin(ctx, "Picture",
+                  nk_rect(x, y, width, height),
+                  flags)) {
+        //NK_WINDOW_NO_SCROLLBAR | flags)) {
         return nk_false;
     }
 
@@ -215,7 +234,9 @@ static void canvas(struct nk_context *ctx, OCDimensions canvas_dim) {
         //        const struct nk_image*,
         //        struct nk_color);
 #if 1
-        map_texture(canvas_dim);
+        map_texture(&canvas_dim);
+        img_rect.w = canvas_dim.width;
+        img_rect.h = canvas_dim.height;
         nk_draw_image(canvas.painter,
                       img_rect,
                       &main_nk_image,
@@ -230,7 +251,7 @@ static void canvas(struct nk_context *ctx, OCDimensions canvas_dim) {
 bool show_picture_window(OCDimensions win_dimensions) {
     OCDimensions canvas_dim = {
             .width = win_dimensions.width - MAIN_DIALOG_WIDTH,
-            .height= win_dimensions.height
+            .height= win_dimensions.height - 48
     };
 #if 1
     canvas(main_data.ctx, canvas_dim);
@@ -245,15 +266,15 @@ bool show_picture_window(OCDimensions win_dimensions) {
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
+        // sadly, it does nothing at all
+        map_texture(&canvas_dim);
         nk_layout_row_static(
                 main_data.ctx,
                 canvas_dim.height,
                 canvas_dim.width,
                 1);
+        // Note: nk_image is the same but with the backgroud set to white
         nk_image_color(main_data.ctx, main_nk_image, main_data.pic_bg);
-        map_texture(canvas_dim);
-        nk_image(main_data.ctx, main_nk_image);
-        //        nk_draw_image();
     }
     nk_end(main_data.ctx);
 #endif
