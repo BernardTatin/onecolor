@@ -12,12 +12,14 @@
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "GL-filters.h"
+#include "filtering.h"
 
 static void exec_option(const Menu_Values option) {
     bool redraw = true;
     switch (option) {
         case Menu_BW_Normal1:
-            filter_bw_normal1();
+//            filter_bw_normal1();
+            apply_grey_filter();
             break;
         case Menu_BW_Normal2:
             filter_bw_normal2();
@@ -71,7 +73,18 @@ static void menuMain(int num) {
     exec_option((Menu_Values)num);
 }
 
-void on_key(unsigned char key, int x, int y) {
+void on_special_keys(int key, int x __attribute__((unused)), int y __attribute__((unused))) {
+    switch (key) {
+        case GLUT_KEY_F1:
+            fprintf(stdout, "F1 pressed\n");
+            break;
+        default:
+            fprintf(stdout, "Special key %d pressed\n", key);
+            break;
+    }
+}
+
+void on_key(unsigned char key, int x __attribute__((unused)), int y __attribute__((unused))) {
     switch (key) {
         case 'c':
             exec_option(Menu_Clear);

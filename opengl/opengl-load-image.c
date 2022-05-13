@@ -1,3 +1,27 @@
+/******************************************************************************
+ * MIT License                                                                *
+ *                                                                            *
+ * Copyright (c) 2022.  Bernard Tatin                                         *
+ *                                                                            *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  *
+ * copies of the Software, and to permit persons to whom the Software is      *
+ * furnished to do so, subject to the following conditions:                   *
+ *                                                                            *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.                            *
+ *                                                                            *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR *
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,   *
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE*
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.                                                                  *
+ ******************************************************************************/
+
 //
 // Created by bernard on 06/04/2022.
 //
@@ -6,12 +30,13 @@
 
 #include <IL/il.h>
 #include <GL/glut.h>
+#include <math.h>
 
 
 #define DEFAULT_WIDTH  640
 #define DEFAULT_HEIGHT 480
 
-int width = DEFAULT_WIDTH;
+int width  = DEFAULT_WIDTH;
 int height = DEFAULT_HEIGHT;
 
 int nFrames = 0;
@@ -22,6 +47,20 @@ static int menu_id;
 static int submenu_id;
 static int value = 2;
 
+typedef enum {
+    OR_Landscape,           // width > height, ratio > 1.0
+    OR_Square,              // width = height, ratio = 1.0
+    OR_Portrait             // width < height, ratio < 1.0
+}          TEOrientation;
+
+typedef struct {
+    int           width;    // real image dimension
+    int           height;
+    float         ratio;    // width / height
+    TEOrientation orientation;
+}          TSImage;
+
+TSImage image_dims;
 
 void menuFunc0(int num) {
     value = num;
@@ -56,11 +95,60 @@ void createMenu(void) {
 }
 
 
+static inline void map_tex_point(const float s, const float t,
+                                 const int x, const int y) {
+    glTexCoord2f(s, t);
+    glVertex2i(x, y);
+}
+
+static inline void map_tex_square(const float delta_x, const float delta_y,
+                                  const int x1, const int y1,
+                                  const int x2, const int y2) {
+    map_tex_point(0.0f - delta_x, 0.0f - delta_y,
+                  x1, y1);
+    map_tex_point(1.0f + delta_x, 0.0f - delta_y,
+                  x2, y1);
+    map_tex_point(1.0f + delta_x, 1.0f + delta_y,
+                  x2, y2);
+    map_tex_point(0.0f - delta_x, 1.0f + delta_y,
+                  x1, y2);
+}
+
+static inline float compute_delta(const int dim) {
+    const float f_dim = (float) dim;
+    if (dim > 128) {
+        return 24.0f / f_dim;
+    } else {
+        return 0.0f;
+    }
+}
+
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
 void displayFunc() {
+    int   max_dim = width;
+    int   min_dim = width;
+    float delta_x, delta_y;
+    float w_dim, h_dim;
 
-    printf("Frame %d ", ++nFrames);
+    if (height > max_dim) {
+        max_dim = height;
+    } else if (height < min_dim) {
+        min_dim = height;
+    } else {
+    }
+
+    delta_x = compute_delta(width);
+    delta_y = compute_delta(height);
+
+    w_dim = (float) width;
+    h_dim = roundf((float) width / image_dims.ratio);
+    if (h_dim > (float) height) {
+        h_dim = (float) height;
+        w_dim = roundf(h_dim * image_dims.ratio);
+    }
+    fprintf(stdout, "%-10s: x2 %4d y2 %4d r %5.3f -> %5.3f\n",
+            "landscape", (int) w_dim, (int) h_dim, image_dims.ratio, w_dim / h_dim);
 
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -70,14 +158,11 @@ void displayFunc() {
 
     /* Draw a fullscreen mapped quad */
     glBegin(GL_QUADS);
-    glTexCoord2i(0, 0);
-    glVertex2i(0, 0);
-    glTexCoord2i(0, 1);
-    glVertex2i(0, height);
-    glTexCoord2i(1, 1);
-    glVertex2i(width, height);
-    glTexCoord2i(1, 0);
-    glVertex2i(width, 0);
+    {
+        map_tex_square(delta_x, delta_y,
+                       0, 0,
+                       (int) w_dim, (int) h_dim);
+    }
     glEnd();
 
     glutSwapBuffers();
@@ -87,7 +172,7 @@ void displayFunc() {
    whenever the window is re-sized with its new width and height */
 void reshapeFunc(GLsizei newwidth, GLsizei newheight) {
 
-    printf("reshape(%d, %d) ", newwidth, newheight );
+    //printf("reshape(%d, %d) \n", newwidth, newheight);
 
     // Set the viewport to cover the new window
     glViewport(0, 0, width = newwidth, height = newheight);
@@ -117,38 +202,50 @@ void initGL(int w, int h) {
 }
 
 /* Load an image using DevIL and return the devIL handle (-1 if failure) */
-int LoadImage(char *filename) {
-    ILuint image;
+ILboolean LoadImage(char *filename, ILuint *image) {
     ILboolean success;
 
-    ilGenImages(1, &image);    /* Generation of one image name */
-    ilBindImage(image);        /* Binding of image name */
+    ilGenImages(1, image);    /* Generation of one image name */
+    ilBindImage(*image);        /* Binding of image name */
 
 
     /* Loading of the image filename by DevIL */
-    if (success = ilLoadImage(filename)) {
+    success = ilLoadImage(filename);
+    if (success) {
         /* Convert every colour component into unsigned byte */
         /* You can replace IL_RGB with IL_RGBA if your image contains alpha channel */
 
         success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
 
         if (!success) {
-            return -1;
+            return IL_FALSE;
         }
-    } else
-        return -1;
+    } else {
+        return IL_FALSE;
+    }
 
-    return image;
+    image_dims.width  = ilGetInteger(IL_IMAGE_WIDTH);
+    image_dims.height = ilGetInteger(IL_IMAGE_HEIGHT);
+    image_dims.ratio  = (float) image_dims.width / (float) image_dims.height;
+    if (image_dims.width < image_dims.height) {
+        image_dims.orientation = OR_Portrait;
+    } else if (image_dims.height == image_dims.width) {
+        image_dims.orientation = OR_Square;
+        image_dims.ratio       = 1.0f;
+    } else {
+        image_dims.orientation = OR_Landscape;
+    }
+    return IL_TRUE;
 }
 
 int main(int argc, char **argv) {
 
     GLuint texid;
-    int image;
+    ILuint image;
 
     if (argc < 2) {
-        printf("%s image1.[jpg,bmp,tga,...] ", argv[0] );
-        return 0;
+        printf("%s image1.[jpg,bmp,tga,...] \n", argv[0]);
+        return EXIT_SUCCESS;
     }
 
     /* GLUT init */
@@ -168,17 +265,16 @@ int main(int argc, char **argv) {
 
     /* Initialization of DevIL */
     if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION) {
-        printf("wrong DevIL version ");
-        return -1;
+        printf("wrong DevIL version \n");
+        return EXIT_FAILURE;
     }
     ilInit();
 
 
     /* load the file picture with DevIL */
-    image = LoadImage(argv[1]);
-    if (image == -1) {
-        printf("Can't load picture file %s by DevIL ", argv[1]);
-        return -1;
+    if (!LoadImage(argv[1], &image)) {
+        printf("Can't load picture file %s by DevIL \n", argv[1]);
+        return EXIT_FAILURE;
     }
 
     printf("\nImage bits/pix: %d, width: %d, height: %d\n",
@@ -187,14 +283,43 @@ int main(int argc, char **argv) {
            ilGetInteger(IL_IMAGE_HEIGHT));
     /* OpenGL texture binding of the image loaded by DevIL  */
     glGenTextures(1, &texid); /* Texture name generation */
-    glBindTexture(GL_TEXTURE_2D, texid); /* Binding of texture name */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+    glBindTexture(GL_TEXTURE_2D,
+                  texid); /* Binding of texture name */
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_MIN_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for minifying filter */
-    glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH),
+    /*
+     * <PLAY>
+     * playing with texture parameters
+     */
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_S,
+                    GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_BORDER);
+    /* gives some color to the border */
+    float borderColor[] = {
+            0.6f, 0.3f, 0.4f, 1.0f
+    };
+    glTexParameterfv(GL_TEXTURE_2D,
+                     GL_TEXTURE_BORDER_COLOR,
+                     borderColor);
+    /*
+     * </PLAY>
+     */
+    glTexImage2D(GL_TEXTURE_2D,
+                 0,
+                 ilGetInteger(IL_IMAGE_BPP),
+                 ilGetInteger(IL_IMAGE_WIDTH),
                  ilGetInteger(IL_IMAGE_HEIGHT),
-                 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData()); /* Texture specification */
+                 1,
+                 ilGetInteger(IL_IMAGE_FORMAT),
+                 GL_UNSIGNED_BYTE,
+                 ilGetData()); /* Texture specification */
 
     /* Main loop */
     glutMainLoop();
@@ -204,5 +329,5 @@ int main(int argc, char **argv) {
                    &image); /* Because we have already copied image data into texture data we can release memory used by image. */
     glDeleteTextures(1, &texid);
 
-    return 0;
+    return EXIT_SUCCESS;
 }

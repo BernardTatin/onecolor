@@ -9,9 +9,12 @@
 #include <IL/il.h>
 #include <GL/glut.h>
 
+#include "file-data.h"
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "dev-IL-tools.h"
+#include "basic-geometry.h"
+#include "image-tools.h"
 
 int nFrames = 0;
 
@@ -20,7 +23,6 @@ GLWindow mainWindow = {
     .height = DEFAULT_HEIGHT,
     .value = 2
 };
-TheImage main_image;
 
 
 static inline void quad_vertex(const int tx, const int ty,
@@ -30,32 +32,17 @@ static inline void quad_vertex(const int tx, const int ty,
 }
 
 static inline void unit_quad(void) {
-    int width = mainWindow.width;
-    int height = mainWindow.height;
-    int left = 0;
-    int top = 0;
-    float nh = (float)height;
-    float nw = main_image.ratio * (float)height;
-    if (nw > (float)width) {
-        float fTop;
-        float r = (float)width / nw;
-        nh = roundf(nh * r);
-        nw = (float)width;
-        fTop = roundf(0.5f * ((float)mainWindow.height - nh));
-        top = (int)fTop;
-    } else {
-        float fLeft;
-        nw = roundf(nw);
-        fLeft = roundf(0.5f * ((float)mainWindow.width - nw));
-        left = (int)fLeft;
-    }
-    width = (int)nw + left;
-    height = (int)nh + top;
+    OCDimensions dimensions = {
+            .width = mainWindow.width,
+            .height = mainWindow.height
+    };
+    OCRectangle rectangle;
+    scale_image(dimensions, &rectangle);
 
-    quad_vertex(0, 0, left, top);
-    quad_vertex(0, 1, left, height);
-    quad_vertex(1, 1, width, height);
-    quad_vertex(1, 0, width, top);
+    quad_vertex(0, 0, rectangle.left,  rectangle.top);
+    quad_vertex(0, 1, rectangle.left,  rectangle.height);
+    quad_vertex(1, 1, rectangle.width, rectangle.height);
+    quad_vertex(1, 0, rectangle.width, rectangle.top);
 }
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
@@ -125,9 +112,8 @@ static void initGL(int w, int h) {
 int main(int argc, char **argv) {
     GLuint texID;
 
-    if (argc != 2) {
-        fprintf(stderr,"%s image1.[jpg,bmp,tga,...]\n", argv[0] );
-        return 0;
+    if (!init_file_data(argc, argv)) {
+        return EXIT_FAILURE;
     }
 
     /* GLUT init */
@@ -139,6 +125,7 @@ int main(int argc, char **argv) {
 
     createMenu();
     glutKeyboardFunc(on_key);
+    glutSpecialFunc(on_special_keys);
 
     glutDisplayFunc(displayFunc);       // Register callback handler for window re-paint event
     glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event
@@ -149,13 +136,13 @@ int main(int argc, char **argv) {
     /* Initialization of DevIL */
     if (!init_DevIL()) {
         fprintf(stderr, "wrong DevIL version\n");
-        return -1;
+        return EXIT_FAILURE;
     }
 
     /* load the file picture with DevIL */
     if (!LoadImage(&main_image, argv[1])) {
         fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
-        return -1;
+        return EXIT_FAILURE;
     }
     /* OpenGL 2D generic init */
     initGL(mainWindow.width, mainWindow.height);
