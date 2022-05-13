@@ -42,6 +42,80 @@ typedef struct _nk_canvas {
     struct nk_style_item     window_background;
 } nk_canvas;
 
+
+static inline void map_tex_point(const float s, const float t,
+                                 const int x, const int y) {
+    glTexCoord2f(s, t);
+    glVertex2i(x, y);
+}
+
+static inline void map_tex_square(const float delta_x, const float delta_y,
+                                  const int x1, const int y1,
+                                  const int x2, const int y2) {
+    map_tex_point(0.0f - delta_x, 0.0f - delta_y,
+                  x1, y1);
+    map_tex_point(1.0f + delta_x, 0.0f - delta_y,
+                  x2, y1);
+    map_tex_point(1.0f + delta_x, 1.0f + delta_y,
+                  x2, y2);
+    map_tex_point(0.0f - delta_x, 1.0f + delta_y,
+                  x1, y2);
+}
+
+static inline float compute_delta(const int dim) {
+    const float f_dim = (float) dim;
+    if (dim > 128) {
+        return 24.0f / f_dim;
+    } else {
+        return 0.0f;
+    }
+}
+
+static void map_texture(const OCDimensions canvas_dim) {
+    const int   width   = canvas_dim.width;
+    const int   height  = canvas_dim.height;
+    const float ratio   = main_image.ratio;
+    int         max_dim = width;
+    int         min_dim = width;
+    float       delta_x, delta_y;
+    float       w_dim, h_dim;
+
+    if (height > max_dim) {
+        max_dim = height;
+    } else if (height < min_dim) {
+        min_dim = height;
+    } else {
+    }
+
+    delta_x = compute_delta(width);
+    delta_y = compute_delta(height);
+
+    w_dim = (float) width;
+    h_dim = roundf((float) width / ratio);
+    if (h_dim > (float) height) {
+        h_dim = (float) height;
+        w_dim = roundf(h_dim * ratio);
+    }
+    fprintf(stdout, "%-10s: x2 %4d y2 %4d r %5.3f -> %5.3f\n",
+            "landscape", (int) w_dim, (int) h_dim, ratio, w_dim / h_dim);
+
+    // Clear color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Operate on model-view matrix
+    glMatrixMode(GL_MODELVIEW);
+
+    /* Draw a fullscreen mapped quad */
+    glBegin(GL_QUADS);
+    {
+        map_tex_square(delta_x, delta_y,
+                       0, 0,
+                       (int) w_dim, (int) h_dim);
+    }
+    glEnd();
+
+}
+
 static nk_bool canvas_begin(struct nk_context *ctx,
                             nk_canvas *canvas,
                             nk_flags flags,
@@ -116,15 +190,15 @@ struct nk_image image_create(void) {
 }
 
 
-static void canvas(struct nk_context *ctx, OCDimensions win_dimensions) {
+static void canvas(struct nk_context *ctx, OCDimensions canvas_dim) {
     nk_canvas      canvas;
     struct nk_rect img_rect = {
             MAIN_DIALOG_WIDTH,
             0,
-            win_dimensions.width - MAIN_DIALOG_WIDTH,
-            win_dimensions.height
+            canvas_dim.width,
+            canvas_dim.height
     };
-    //    nk_rect(MAIN_DIALOG_WIDTH, 0, win_dimensions.width-MAIN_DIALOG_WIDTH, win_dimensions.height),
+    //    nk_rect(MAIN_DIALOG_WIDTH, 0, canvas_dim.width-MAIN_DIALOG_WIDTH, canvas_dim.height),
     if (canvas_begin(ctx, &canvas, NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                                    NK_WINDOW_CLOSABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE,
                      img_rect.x,
@@ -141,6 +215,7 @@ static void canvas(struct nk_context *ctx, OCDimensions win_dimensions) {
         //        const struct nk_image*,
         //        struct nk_color);
 #if 1
+        map_texture(canvas_dim);
         nk_draw_image(canvas.painter,
                       img_rect,
                       &main_nk_image,
@@ -153,25 +228,30 @@ static void canvas(struct nk_context *ctx, OCDimensions win_dimensions) {
 }
 
 bool show_picture_window(OCDimensions win_dimensions) {
-#if 0
-    canvas(main_data.ctx, win_dimensions);
+    OCDimensions canvas_dim = {
+            .width = win_dimensions.width - MAIN_DIALOG_WIDTH,
+            .height= win_dimensions.height
+    };
+#if 1
+    canvas(main_data.ctx, canvas_dim);
 #else
     if (nk_begin(main_data.ctx, "Picture",
                  nk_rect(
                          MAIN_DIALOG_WIDTH,
                          0,
-                         win_dimensions.width - MAIN_DIALOG_WIDTH,
-                         win_dimensions.height
+                         canvas_dim.width,
+                         canvas_dim.height
                  ),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
                  NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
 
         nk_layout_row_static(
                 main_data.ctx,
-                win_dimensions.height,
-                win_dimensions.width - MAIN_DIALOG_WIDTH,
+                canvas_dim.height,
+                canvas_dim.width,
                 1);
         nk_image_color(main_data.ctx, main_nk_image, main_data.pic_bg);
+        map_texture(canvas_dim);
         nk_image(main_data.ctx, main_nk_image);
         //        nk_draw_image();
     }
