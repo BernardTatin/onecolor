@@ -30,6 +30,7 @@
 
 #include <IL/il.h>
 #include <GL/glut.h>
+#include <math.h>
 
 
 #define DEFAULT_WIDTH  640
@@ -46,6 +47,20 @@ static int menu_id;
 static int submenu_id;
 static int value = 2;
 
+typedef enum {
+    OR_Landscape,           // width > height, ratio > 1.0
+    OR_Square,              // width = height, ratio = 1.0
+    OR_Portrait             // width < height, ratio < 1.0
+}          TEOrientation;
+
+typedef struct {
+    int           width;    // real image dimension
+    int           height;
+    float         ratio;    // width / height
+    TEOrientation orientation;
+}          TSImage;
+
+TSImage image_dims;
 
 void menuFunc0(int num) {
     value = num;
@@ -80,17 +95,60 @@ void createMenu(void) {
 }
 
 
-static inline void map_tex_2_vertex(const float s, const float t,
-                                    const int x, const int y) {
+static inline void map_tex_point(const float s, const float t,
+                                 const int x, const int y) {
     glTexCoord2f(s, t);
     glVertex2i(x, y);
+}
+
+static inline void map_tex_square(const float delta_x, const float delta_y,
+                                  const int x1, const int y1,
+                                  const int x2, const int y2) {
+    map_tex_point(0.0f - delta_x, 0.0f - delta_y,
+                  x1, y1);
+    map_tex_point(1.0f + delta_x, 0.0f - delta_y,
+                  x2, y1);
+    map_tex_point(1.0f + delta_x, 1.0f + delta_y,
+                  x2, y2);
+    map_tex_point(0.0f - delta_x, 1.0f + delta_y,
+                  x1, y2);
+}
+
+static inline float compute_delta(const int dim) {
+    const float f_dim = (float) dim;
+    if (dim > 128) {
+        return 24.0f / f_dim;
+    } else {
+        return 0.0f;
+    }
 }
 
 /* Handler for window-repaint event. Called back when the window first appears and
    whenever the window needs to be re-painted. */
 void displayFunc() {
+    int   max_dim = width;
+    int   min_dim = width;
+    float delta_x, delta_y;
+    float w_dim, h_dim;
 
-    //printf("Frame %d \n", ++nFrames);
+    if (height > max_dim) {
+        max_dim = height;
+    } else if (height < min_dim) {
+        min_dim = height;
+    } else {
+    }
+
+    delta_x = compute_delta(width);
+    delta_y = compute_delta(height);
+
+    w_dim = (float) width;
+    h_dim = roundf((float) width / image_dims.ratio);
+    if (h_dim > (float) height) {
+        h_dim = (float) height;
+        w_dim = roundf(h_dim * image_dims.ratio);
+    }
+    fprintf(stdout, "%-10s: x2 %4d y2 %4d r %5.3f -> %5.3f\n",
+            "landscape", (int) w_dim, (int) h_dim, image_dims.ratio, w_dim / h_dim);
 
     // Clear color and depth buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -100,14 +158,11 @@ void displayFunc() {
 
     /* Draw a fullscreen mapped quad */
     glBegin(GL_QUADS);
-    map_tex_2_vertex(-0.1f, -0.1f,
-                     0, 0);
-    map_tex_2_vertex(-0.1f, 1.1f,
-                     0, height);
-    map_tex_2_vertex(1.1f, 1.1f,
-                     width, height);
-    map_tex_2_vertex(1.1f, -0.1f,
-                     width, 0);
+    {
+        map_tex_square(delta_x, delta_y,
+                       0, 0,
+                       (int) w_dim, (int) h_dim);
+    }
     glEnd();
 
     glutSwapBuffers();
@@ -169,6 +224,17 @@ ILboolean LoadImage(char *filename, ILuint *image) {
         return IL_FALSE;
     }
 
+    image_dims.width  = ilGetInteger(IL_IMAGE_WIDTH);
+    image_dims.height = ilGetInteger(IL_IMAGE_HEIGHT);
+    image_dims.ratio  = (float) image_dims.width / (float) image_dims.height;
+    if (image_dims.width < image_dims.height) {
+        image_dims.orientation = OR_Portrait;
+    } else if (image_dims.height == image_dims.width) {
+        image_dims.orientation = OR_Square;
+        image_dims.ratio       = 1.0f;
+    } else {
+        image_dims.orientation = OR_Landscape;
+    }
     return IL_TRUE;
 }
 
