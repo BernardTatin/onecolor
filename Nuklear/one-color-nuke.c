@@ -114,10 +114,14 @@ int main(int argc, char **argv) {
          * TODO: font path must be computed
          */
         struct nk_font *gillius = nk_font_atlas_add_from_file(atlas,
-                                                              "/home/bernard/git/onecolor/fonts/GilliusADF/GilliusADFNo2-Regular.otf",
+                                                              "/home/bernard/git/onecolor/fonts2/GilliusADF/GilliusADFNo2-Regular.otf",
                                                               20, 0);
         nk_glfw3_font_stash_end(&main_data.glfw);
-        nk_style_set_font(main_data.ctx, &gillius->handle);
+        if (gillius != NULL) {
+            nk_style_set_font(main_data.ctx, &gillius->handle);
+        } else {
+            fprintf(stderr, "Cannot load Gillius font...\n");
+        }
     }
 
     set_style(main_data.ctx, THEME_RED);
