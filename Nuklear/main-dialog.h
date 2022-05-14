@@ -40,13 +40,17 @@
 typedef enum {
     Filter_None,
     Filter_Grey,
-    Filter_2_Colors,
-    Filter_More
+    Filter_Red,
+    Filter_Green,
+    Filter_Blue,
+    Filter_Shift1
 } FilterType;
 
 FilterType show_main_dialog(struct nk_context *ctx, OCDimensions win_dimensions);
 
 struct nk_image image_create(void);
+
+void refresh_image(void);
 
 bool show_picture_window(OCDimensions win_dimensions);
 
