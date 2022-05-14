@@ -53,38 +53,35 @@
 
 #include "style.c"
 
-/* ===============================================================
- *
- *                          DEMO
- *
- * ===============================================================*/
-static void error_callback(int e, const char *d) { printf("Error %d: %s\n", e, d); }
+static void error_callback(int e, const char *d) {
+    fprintf(stderr, "Error %d: %s\n", e, d);
+}
 
-struct nk_image image_create(void);
 
-int main(int argc, char **argv) {
-    /* Platform */
-
-    if (!init_file_data(argc, argv)) {
-        return EXIT_FAILURE;
+static void init_fonts(struct nk_glfw *glfw, struct nk_context *ctx) {
+    /* Load Fonts: if none of these are loaded a default font will be used  */
+    /* Load Cursor: if you uncomment cursor loading please hide the cursor */
+    struct nk_font_atlas *atlas;
+    nk_glfw3_font_stash_begin(glfw, &atlas);
+    /*
+     * TODO: font path must be computed
+     */
+    struct nk_font *gillius = nk_font_atlas_add_from_file(atlas,
+                                                          "/home/bernard/git/onecolor/fonts2/GilliusADF/GilliusADFNo2-Regular.otf",
+                                                          20, 0);
+    nk_glfw3_font_stash_end(glfw);
+    if (gillius != NULL) {
+        nk_style_set_font(ctx, &gillius->handle);
+    } else {
+        fprintf(stderr, "Cannot load Gillius font...\n");
     }
+}
 
-    /* Initialization of DevIL */
-    if (!init_DevIL()) {
-        fprintf(stderr, "wrong DevIL version\n");
-        return EXIT_FAILURE;
-    }
-
-    /* load the file picture with DevIL */
-    if (!LoadImage(&main_image, argv[1])) {
-        fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
-        return EXIT_FAILURE;
-    }
-    /* GLFW */
+static bool init_glfw(void) {
     glfwSetErrorCallback(error_callback);
     if (!glfwInit()) {
         fprintf(stdout, "[GFLW] failed to init!\n");
-        exit(1);
+        return false;
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -101,28 +98,70 @@ int main(int argc, char **argv) {
     glewExperimental = 1;
     if (glewInit() != GLEW_OK) {
         fprintf(stderr, "Failed to setup GLEW\n");
-        exit(1);
+        return false;
     }
 
     main_data.ctx = nk_glfw3_init(&main_data.glfw, main_data.win, NK_GLFW3_INSTALL_CALLBACKS);
-    /* Load Fonts: if none of these are loaded a default font will be used  */
-    /* Load Cursor: if you uncomment cursor loading please hide the cursor */
-    {
-        struct nk_font_atlas *atlas;
-        nk_glfw3_font_stash_begin(&main_data.glfw, &atlas);
-        /*
-         * TODO: font path must be computed
-         */
-        struct nk_font *gillius = nk_font_atlas_add_from_file(atlas,
-                                                              "/home/bernard/git/onecolor/fonts2/GilliusADF/GilliusADFNo2-Regular.otf",
-                                                              20, 0);
-        nk_glfw3_font_stash_end(&main_data.glfw);
-        if (gillius != NULL) {
-            nk_style_set_font(main_data.ctx, &gillius->handle);
-        } else {
-            fprintf(stderr, "Cannot load Gillius font...\n");
-        }
+    return true;
+}
+
+static OCDimensions begin_glfw_loop() {
+    OCDimensions win_dimensions;
+
+    nk_glfw3_new_frame(&main_data.glfw);
+    glfwGetWindowSize(main_data.win,
+                      &win_dimensions.width,
+                      &win_dimensions.height);
+    return win_dimensions;
+}
+
+static void end_glfw_loop(OCDimensions *win_dimensions) {
+    glViewport(0, 0, win_dimensions->width, win_dimensions->height);
+    glClearColor(main_data.bg.r,
+                 main_data.bg.g,
+                 main_data.bg.b,
+                 main_data.bg.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
+     * with blending, scissor, face culling, depth test and viewport and
+     * defaults everything back into a default state.
+     * Make sure to either a.) save and restore or b.) reset your own state after
+     * rendering the UI.
+     */
+    nk_glfw3_render(&main_data.glfw,
+                    NK_ANTI_ALIASING_ON,
+                    MAX_VERTEX_BUFFER,
+                    MAX_ELEMENT_BUFFER);
+    glfwSwapBuffers(main_data.win);
+    glfwPollEvents();
+}
+
+int main(int argc, char **argv) {
+    /* Platform */
+
+    if (!init_file_data(argc, argv)) {
+        return EXIT_FAILURE;
     }
+
+    /* Initialization of DevIL */
+    if (!init_DevIL()) {
+        fprintf(stderr, "wrong DevIL version\n");
+        return EXIT_FAILURE;
+    }
+
+    // TODO: image can be loaded from user interface, not only from command line
+    /* load the file picture with DevIL */
+    if (!LoadImage(&main_image, argv[1])) {
+        fprintf(stderr, "Can't load picture file %s by DevIL\n", argv[1]);
+        return EXIT_FAILURE;
+    }
+    /* GLFW */
+    if (!init_glfw()) {
+        return EXIT_FAILURE;
+    }
+
+    init_fonts(&main_data.glfw, main_data.ctx);
 
     set_style(main_data.ctx, THEME_RED);
 
@@ -130,8 +169,7 @@ int main(int argc, char **argv) {
     while (!glfwWindowShouldClose(main_data.win)) {
         OCDimensions win_dimensions;
         /* Input */
-        nk_glfw3_new_frame(&main_data.glfw);
-        glfwGetWindowSize(main_data.win, &win_dimensions.width, &win_dimensions.height);
+        win_dimensions = begin_glfw_loop();
 
         /* GUI */
         FilterType filter = show_main_dialog(main_data.ctx, win_dimensions);
@@ -149,27 +187,8 @@ int main(int argc, char **argv) {
         show_picture_window(win_dimensions);
 
         /* Draw */
-        glViewport(0, 0, win_dimensions.width, win_dimensions.height);
-        glClearColor(main_data.bg.r,
-                     main_data.bg.g,
-                     main_data.bg.b,
-                     main_data.bg.a);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        /*
-                map_texture(canvas_dim);
-        */
+        end_glfw_loop(&win_dimensions);
 
-        /* IMPORTANT: `nk_glfw_render` modifies some global OpenGL state
-         * with blending, scissor, face culling, depth test and viewport and
-         * defaults everything back into a default state.
-         * Make sure to either a.) save and restore or b.) reset your own state after
-         * rendering the UI. */
-        nk_glfw3_render(&main_data.glfw,
-                        NK_ANTI_ALIASING_ON,
-                        MAX_VERTEX_BUFFER,
-                        MAX_ELEMENT_BUFFER);
-        glfwSwapBuffers(main_data.win);
-        glfwPollEvents();
     }
     nk_glfw3_shutdown(&main_data.glfw);
     glfwTerminate();

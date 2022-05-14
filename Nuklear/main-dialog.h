@@ -46,7 +46,7 @@ typedef enum {
 
 FilterType show_main_dialog(struct nk_context *ctx, OCDimensions win_dimensions);
 
-//void map_texture(OCDimensions *canvas_dim);
+struct nk_image image_create(void);
 
 bool show_picture_window(OCDimensions win_dimensions);
 
