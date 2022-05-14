@@ -35,43 +35,7 @@
 #include "ocn-configuration.h"
 #include "main-dialog.h"
 
-typedef struct _nk_canvas {
-    struct nk_command_buffer *painter;
-    struct nk_vec2           item_spacing;
-    struct nk_vec2           panel_padding;
-    struct nk_style_item     window_background;
-} nk_canvas;
-
-
-static inline void map_tex_point(const float s, const float t,
-                                 const int x, const int y) {
-    glTexCoord2f(s, t);
-    glVertex2i(x, y);
-}
-
-static inline void map_tex_square(const float delta_x, const float delta_y,
-                                  const int x1, const int y1,
-                                  const int x2, const int y2) {
-    map_tex_point(0.0f - delta_x, 0.0f - delta_y,
-                  x1, y1);
-    map_tex_point(1.0f + delta_x, 0.0f - delta_y,
-                  x2, y1);
-    map_tex_point(1.0f + delta_x, 1.0f + delta_y,
-                  x2, y2);
-    map_tex_point(0.0f - delta_x, 1.0f + delta_y,
-                  x1, y2);
-}
-
-static inline float compute_delta(const int dim) {
-    const float f_dim = (float) dim;
-    if (dim > 128) {
-        return 24.0f / f_dim;
-    } else {
-        return 0.0f;
-    }
-}
-
-static void map_texture(OCDimensions *canvas_dim) {
+static void scale_texture(OCDimensions *canvas_dim) {
     const int   width  = canvas_dim->width;
     const int   height = canvas_dim->height;
     const float ratio  = main_image.ratio;
@@ -81,7 +45,6 @@ static void map_texture(OCDimensions *canvas_dim) {
 
     int   max_dim = width;
     int   min_dim = width;
-    float delta_x, delta_y;
     float w_dim, h_dim;
 
     if (height > max_dim) {
@@ -90,9 +53,6 @@ static void map_texture(OCDimensions *canvas_dim) {
         min_dim = height;
     } else {
     }
-
-    delta_x = compute_delta(width);
-    delta_y = compute_delta(height);
 
     w_dim = (float) width;
     h_dim = roundf((float) width / ratio);
@@ -109,72 +69,10 @@ static void map_texture(OCDimensions *canvas_dim) {
     const int new_w = (int) roundf(w_dim);
     const int new_h = (int) roundf(h_dim);
 
-#if 0
-    glViewport(0, 0, new_w, new_h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, (double) new_w, (double) new_h, 0.0, 0.0, 100.0);
-    glMatrixMode(GL_MODELVIEW);
-    // Clear color and depth buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Operate on model-view matrix
-    glMatrixMode(GL_MODELVIEW);
-
-    /* Draw a fullscreen mapped quad */
-    glBegin(GL_QUADS);
-    {
-        map_tex_square(delta_x, delta_y,
-                       0, 0,
-                       new_w, new_h);
-    }
-    glEnd();
-#endif
     canvas_dim->width  = new_w;
     canvas_dim->height = new_h;
 }
 
-static nk_bool canvas_begin(struct nk_context *ctx,
-                            nk_canvas *canvas,
-                            nk_flags flags,
-                            int x, int y, int width, int height,
-                            struct nk_color background_color) {
-    /* save style properties which will be overwritten */
-    canvas->panel_padding     = ctx->style.window.padding;
-    canvas->item_spacing      = ctx->style.window.spacing;
-    canvas->window_background = ctx->style.window.fixed_background;
-
-    /* use the complete window space and set background */
-    ctx->style.window.spacing          = nk_vec2(0, 0);
-    ctx->style.window.padding          = nk_vec2(0, 0);
-    ctx->style.window.fixed_background = nk_style_item_color(background_color);
-
-    /* create/update window and set position + size */
-    if (!nk_begin(ctx, "Picture",
-                  nk_rect(x, y, width, height),
-                  flags)) {
-        //NK_WINDOW_NO_SCROLLBAR | flags)) {
-        return nk_false;
-    }
-
-    /* allocate the complete window space for drawing */
-    {
-        struct nk_rect total_space;
-        total_space = nk_window_get_content_region(ctx);
-        nk_layout_row_dynamic(ctx, total_space.h, 1);
-        nk_widget(&total_space, ctx);
-        canvas->painter = nk_window_get_canvas(ctx);
-    }
-
-    return nk_true;
-}
-
-static void canvas_end(struct nk_context *ctx, nk_canvas *canvas) {
-    nk_end(ctx);
-    ctx->style.window.spacing          = canvas->panel_padding;
-    ctx->style.window.padding          = canvas->item_spacing;
-    ctx->style.window.fixed_background = canvas->window_background;
-}
 
 static struct nk_image main_nk_image;
 
@@ -211,62 +109,11 @@ struct nk_image image_create(void) {
 }
 
 
-static void canvas(struct nk_context *ctx, OCDimensions canvas_dim) {
-    nk_canvas       canvas;
-    struct nk_rect  img_rect = {
-            MAIN_DIALOG_WIDTH,
-            0,
-            canvas_dim.width,
-            canvas_dim.height
-    };
-    struct nk_color pic_bg   = {
-            .r = 0,
-            .g = 0,
-            .b = 0,
-            .a = 255,
-    };
-    //    nk_rect(MAIN_DIALOG_WIDTH, 0, canvas_dim.width-MAIN_DIALOG_WIDTH, canvas_dim.height),
-    if (canvas_begin(ctx,
-                     &canvas,
-                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-                     //NK_WINDOW_CLOSABLE | NK_WINDOW_MINIMIZABLE |
-                     NK_WINDOW_TITLE,
-                     img_rect.x,
-                     img_rect.y,
-                     img_rect.w,
-                     img_rect.h,
-                     pic_bg)) {
-        //float x = canvas.painter->clip.x, y = canvas.painter->clip.y;
-
-        nk_fill_rect(canvas.painter, img_rect, 5, pic_bg);
-        // nk_draw_image
-        //        NK_API void nk_draw_image(struct nk_command_buffer*,
-        //        struct nk_rect,
-        //        const struct nk_image*,
-        //        struct nk_color);
-        canvas_dim.width  = canvas.painter->clip.w;
-        canvas_dim.height = canvas.painter->clip.h;
-        map_texture(&canvas_dim);
-        img_rect.x = roundf(0.5f * (canvas.painter->clip.w - canvas_dim.width));
-        img_rect.y = roundf(0.5f * (canvas.painter->clip.h - canvas_dim.height));
-        img_rect.w = canvas_dim.width;
-        img_rect.h = canvas_dim.height;
-        nk_draw_image(canvas.painter,
-                      img_rect,
-                      &main_nk_image,
-                      main_data.pic_bg);
-    }
-    canvas_end(ctx, &canvas);
-}
-
 bool show_picture_window(OCDimensions win_dimensions) {
     OCDimensions canvas_dim = {
             .width = win_dimensions.width - MAIN_DIALOG_WIDTH,
             .height= win_dimensions.height - 64
     };
-#if 0
-    canvas(main_data.ctx, canvas_dim);
-#else
     if (nk_begin(main_data.ctx, "Picture",
                  nk_rect(
                          MAIN_DIALOG_WIDTH,
@@ -276,7 +123,7 @@ bool show_picture_window(OCDimensions win_dimensions) {
                  ),
                  NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE)) {
 
-        map_texture(&canvas_dim);
+        scale_texture(&canvas_dim);
         nk_layout_row_static(
                 main_data.ctx,
                 canvas_dim.height,
@@ -286,6 +133,6 @@ bool show_picture_window(OCDimensions win_dimensions) {
         nk_image_color(main_data.ctx, main_nk_image, main_data.pic_bg);
     }
     nk_end(main_data.ctx);
-#endif
+
     return true;
 }

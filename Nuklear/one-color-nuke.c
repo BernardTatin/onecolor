@@ -22,17 +22,10 @@
  * SOFTWARE.                                                                  *
  ******************************************************************************/
 
-/* nuklear - 1.32.0 - public domain */
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
-#include <stdarg.h>
 #include <string.h>
-#include <math.h>
-#include <assert.h>
-#include <limits.h>
-#include <time.h>
 
 #include "file-data.h"
 #include "ocn-glfw3.h"
@@ -40,23 +33,13 @@
 #include "basic-geometry.h"
 #include "main-dialog.h"
 #include "dev-IL-tools.h"
-#include "file-tools.h"
 #include "filtering.h"
-
-/* ===============================================================
- *
- *                          EXAMPLE
- *
- * ===============================================================*/
-/* This are some code examples to provide a small overview of what can be
- * done with this library. To try out an example uncomment the defines */
 
 #include "style.c"
 
 static void error_callback(int e, const char *d) {
     fprintf(stderr, "Error %d: %s\n", e, d);
 }
-
 
 static void init_fonts(struct nk_glfw *glfw, struct nk_context *ctx) {
     /* Load Fonts: if none of these are loaded a default font will be used  */
@@ -83,13 +66,22 @@ static bool init_glfw(void) {
         fprintf(stdout, "[GFLW] failed to init!\n");
         return false;
     }
+#if 1
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+#else
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+#endif
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    main_data.win = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "OneColor", NULL, NULL);
+    main_data.win = glfwCreateWindow(WINDOW_WIDTH,
+                                     WINDOW_HEIGHT,
+                                     "OneColor",
+                                     NULL,
+                                     NULL);
     glfwMakeContextCurrent(main_data.win);
     glfwGetWindowSize(main_data.win, &main_data.width, &main_data.height);
 
