@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 project(one-color C)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_VERBOSE_MAKEFILE TRUE)
+set(CMAKE_VERBOSE_MAKEFILE FALSE)
 
 UNSET(CMAKE_C_FLAGS CACHE)
 SET(CMAKE_C_FLAGS "-Wall -Wextra" CACHE STRING "" FORCE)
@@ -11,37 +11,14 @@ find_package(PkgConfig)
 
 
 pkg_search_module(IL required IL)
-pkg_search_module(EVAS required ecore-evas evas ecore eina ecore-file efl)
 pkg_search_module(GLFW required glfw3)
 pkg_search_module(GL required opengl)
-
-pkg_search_module(SDL2 REQUIRED sdl2 SDL2_image)
 
 #
 # one-color-nuke, current version
 #
 add_executable(one-color-nuke
         Nuklear/one-color-nuke.c
-        Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
-        Nuklear/main-dialog.c Nuklear/main-dialog.h
-        image-library/image-tools.c image-library/image-tools.h
-        )
-target_link_libraries(one-color-nuke
-        glut
-        ${SDL2_LIBRARIES}
-        SDL2_image-2.0
-        ${GLFW_LIBRARIES}
-        GL m GLU GLEW)
-target_include_directories(one-color-nuke PUBLIC
-        Nuklear/Nuklear-src
-        ${SDL2_INCLUDE_DIRS}
-        image-library
-        )
-#
-# one-color-nuke-old, first version
-#
-add_executable(one-color-nuke-old
-        Nuklear/one-color-nuk-old.c
         Nuklear/ocn-configuration.c Nuklear/ocn-configuration.h
         Nuklear/Nuklear-src/nuklear.h
         Nuklear/Nuklear-src/full-nuklear.c
@@ -59,44 +36,16 @@ add_executable(one-color-nuke-old
         image-library/image-tools.c image-library/image-tools.h
         image-library/basic-geometry.c image-library/basic-geometry.h
         image-library/basic-types.h Nuklear/nk_tools.h)
-target_link_libraries(one-color-nuke-old m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
-target_include_directories(one-color-nuke-old PUBLIC
+target_link_libraries(one-color-nuke m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
+target_include_directories(one-color-nuke PUBLIC
         DevIL
         tools
         image-library
         Nuklear
         Nuklear/Nuklear-src
         ${IL_INCLUDE_DIRS})
-target_compile_definitions(one-color-nuke-old PUBLIC WITH_NUKE)
+target_compile_definitions(one-color-nuke PUBLIC WITH_NUKE)
 
-#
-# evas version
-#
-add_executable(one-color-evas
-        DevIL/dev-IL-tools.c DevIL/dev-IL-tools.h
-        tools/file-tools.c tools/file-tools.h
-        evas/one-color-evas.c
-        evas/evas-configuration.c evas/evas-configuration.h
-        evas/evas-scene.c evas/evas-scene.h
-        evas/widgets.c evas/widgets.h
-        evas/evas-tools.c evas/evas-tools.h
-        image-library/basic-data.c image-library/basic-data.h
-        image-library/debug.h
-        image-library/colors.c image-library/colors.h
-        image-library/filtering.c image-library/filtering.h
-        image-library/file-data.c image-library/file-data.h
-        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h)
-target_link_libraries(one-color-evas
-        ${EVAS_LIBRARIES}
-        ${IL_LIBRARIES})
-target_include_directories(one-color-evas PUBLIC
-        evas
-        DevIL
-        tools
-        image-library
-        ${EVAS_INCLUDE_DIRS}
-        ${IL_INCLUDE_DIRS})
-target_compile_definitions(one-color-evas PUBLIC WITH_EVAS)
 
 #
 # openGL version
@@ -114,7 +63,7 @@ add_executable(one-color-GL
         image-library/filtering.c image-library/filtering.h
         image-library/file-data.c image-library/file-data.h
         image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h)
-target_link_libraries(one-color-GL m glut ${GL_LIBRARIES}  ${IL_LIBRARIES} )
+target_link_libraries(one-color-GL m glut ${GL_LIBRARIES} ${IL_LIBRARIES})
 target_include_directories(one-color-GL PUBLIC
         opengl
         DevIL

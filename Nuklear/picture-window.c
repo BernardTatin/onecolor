@@ -71,7 +71,7 @@ static inline float compute_delta(const int dim) {
     }
 }
 
-void map_texture(OCDimensions *canvas_dim) {
+static void map_texture(OCDimensions *canvas_dim) {
     const int   width  = canvas_dim->width;
     const int   height = canvas_dim->height;
     const float ratio  = main_image.ratio;
@@ -109,6 +109,7 @@ void map_texture(OCDimensions *canvas_dim) {
     const int new_w = (int) roundf(w_dim);
     const int new_h = (int) roundf(h_dim);
 
+#if 0
     glViewport(0, 0, new_w, new_h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -128,6 +129,7 @@ void map_texture(OCDimensions *canvas_dim) {
                        new_w, new_h);
     }
     glEnd();
+#endif
     canvas_dim->width  = new_w;
     canvas_dim->height = new_h;
 }
@@ -210,40 +212,49 @@ struct nk_image image_create(void) {
 
 
 static void canvas(struct nk_context *ctx, OCDimensions canvas_dim) {
-    nk_canvas      canvas;
-    struct nk_rect img_rect = {
+    nk_canvas       canvas;
+    struct nk_rect  img_rect = {
             MAIN_DIALOG_WIDTH,
             0,
             canvas_dim.width,
             canvas_dim.height
     };
+    struct nk_color pic_bg   = {
+            .r = 0,
+            .g = 0,
+            .b = 0,
+            .a = 255,
+    };
     //    nk_rect(MAIN_DIALOG_WIDTH, 0, canvas_dim.width-MAIN_DIALOG_WIDTH, canvas_dim.height),
-    if (canvas_begin(ctx, &canvas, NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-                                   NK_WINDOW_CLOSABLE | NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE,
+    if (canvas_begin(ctx,
+                     &canvas,
+                     NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+                     //NK_WINDOW_CLOSABLE | NK_WINDOW_MINIMIZABLE |
+                     NK_WINDOW_TITLE,
                      img_rect.x,
                      img_rect.y,
                      img_rect.w,
                      img_rect.h,
-                     main_data.pic_bg)) {
-        float x = canvas.painter->clip.x, y = canvas.painter->clip.y;
+                     pic_bg)) {
+        //float x = canvas.painter->clip.x, y = canvas.painter->clip.y;
 
-        nk_fill_rect(canvas.painter, img_rect, 5, main_data.pic_bg);
+        nk_fill_rect(canvas.painter, img_rect, 5, pic_bg);
         // nk_draw_image
         //        NK_API void nk_draw_image(struct nk_command_buffer*,
         //        struct nk_rect,
         //        const struct nk_image*,
         //        struct nk_color);
-#if 1
+        canvas_dim.width  = canvas.painter->clip.w;
+        canvas_dim.height = canvas.painter->clip.h;
         map_texture(&canvas_dim);
+        img_rect.x = roundf(0.5f * (canvas.painter->clip.w - canvas_dim.width));
+        img_rect.y = roundf(0.5f * (canvas.painter->clip.h - canvas_dim.height));
         img_rect.w = canvas_dim.width;
         img_rect.h = canvas_dim.height;
         nk_draw_image(canvas.painter,
                       img_rect,
                       &main_nk_image,
                       main_data.pic_bg);
-#else
-        nk_image(ctx, main_nk_image);
-#endif
     }
     canvas_end(ctx, &canvas);
 }
@@ -251,9 +262,9 @@ static void canvas(struct nk_context *ctx, OCDimensions canvas_dim) {
 bool show_picture_window(OCDimensions win_dimensions) {
     OCDimensions canvas_dim = {
             .width = win_dimensions.width - MAIN_DIALOG_WIDTH,
-            .height= win_dimensions.height - 48
+            .height= win_dimensions.height - 64
     };
-#if 1
+#if 0
     canvas(main_data.ctx, canvas_dim);
 #else
     if (nk_begin(main_data.ctx, "Picture",
@@ -263,10 +274,8 @@ bool show_picture_window(OCDimensions win_dimensions) {
                          canvas_dim.width,
                          canvas_dim.height
                  ),
-                 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-                 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE)) {
+                 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE | NK_WINDOW_TITLE)) {
 
-        // sadly, it does nothing at all
         map_texture(&canvas_dim);
         nk_layout_row_static(
                 main_data.ctx,
