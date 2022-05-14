@@ -60,7 +60,6 @@ static void scale_texture(OCDimensions *canvas_dim) {
         h_dim = (float) height;
         w_dim = roundf(h_dim * ratio);
     }
-    // TODO: only for debug purpose
     if (old_h != h_dim || old_w != w_dim) {
         fprintf(stdout, "%-10s: x2 %4d y2 %4d r %5.3f -> %5.3f\n",
                 "landscape", (int) w_dim, (int) h_dim, ratio, w_dim / h_dim);
@@ -74,13 +73,13 @@ static void scale_texture(OCDimensions *canvas_dim) {
     canvas_dim->height = new_h;
 }
 
-// TODO put it in main_image or main_data
+
 static struct nk_image main_nk_image;
-static GLuint          main_texture;
 
 struct nk_image image_create(void) {
-    glGenTextures(1, &main_texture);
-    glBindTexture(GL_TEXTURE_2D, main_texture);
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
@@ -105,34 +104,10 @@ struct nk_image image_create(void) {
                  GL_UNSIGNED_BYTE,
                  main_image.screen_pixels);
 
-    main_nk_image = nk_image_id((int) main_texture);
+    main_nk_image = nk_image_id((int) tex);
     return main_nk_image;
 }
 
-void refresh_image(void) {
-    glBindTexture(GL_TEXTURE_2D, main_texture);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MAG_FILTER,
-                    GL_LINEAR); /* We will use linear interpolation for magnification filter */
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR); /* We will use linear interpolation for minifying filter */
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_S,
-                    GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D,
-                    GL_TEXTURE_WRAP_T,
-                    GL_CLAMP_TO_BORDER);
-    glTexImage2D(GL_TEXTURE_2D,
-                 0,
-                 GL_RGBA8,
-                 main_image.width,
-                 main_image.height,
-                 0,
-                 main_image.format,
-                 GL_UNSIGNED_BYTE,
-                 main_image.screen_pixels);
-}
 
 bool show_picture_window(OCDimensions win_dimensions) {
     OCDimensions canvas_dim = {
