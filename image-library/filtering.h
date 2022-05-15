@@ -29,6 +29,16 @@
 #ifndef ONE_COLOR_FILTERING_H
 #define ONE_COLOR_FILTERING_H
 
+typedef enum {
+    Filter_None,
+    Filter_Grey,
+    Filter_Red,
+    Filter_Green,
+    Filter_Blue,
+    Filter_Shift1,
+    Filter_Shift2,
+} FilterType;
+
 void apply_grey_filter(void);
 
 void apply_red_filter(void);
@@ -38,5 +48,7 @@ void apply_green_filter(void);
 void apply_blue_filter(void);
 
 void apply_shift1_filter(void);
+
+void apply_shift2_filter(void);
 
 #endif //ONE_COLOR_FILTERING_H

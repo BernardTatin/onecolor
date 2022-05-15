@@ -31,20 +31,12 @@
 
 #include "ocn-configuration.h"
 #include "basic-geometry.h"
+#include "filtering.h"
 
 #define MAIN_DIALOG_WIDTH   230
 #define MAIN_DIALOG_HEIGHT  WINDOW_HEIGHT
 #define PIC_WINDOW_WIDTH    (WINDOW_WIDTH - MAIN_DIALOG_WIDTH)
 #define PIC_WINDOW_HEIGHT   WINDOW_HEIGHT
-
-typedef enum {
-    Filter_None,
-    Filter_Grey,
-    Filter_Red,
-    Filter_Green,
-    Filter_Blue,
-    Filter_Shift1
-} FilterType;
 
 FilterType show_main_dialog(struct nk_context *ctx, OCDimensions win_dimensions);
 

@@ -41,7 +41,9 @@
 #include "debug.h"
 #include "filtering.h"
 
-void apply_grey_filter(void) {
+typedef void (*filter_function)(RGBA *screen_pixels, RGBA *original, HSV *hsv);
+
+static void apply_func_filter(filter_function filter) {
     int  n              = main_image.number_of_pixels;
     RGBA *screen_pixels = main_image.screen_pixels;
     HSV  *hsv           = main_image.hsv;
@@ -49,73 +51,76 @@ void apply_grey_filter(void) {
 
     DBG();
     for (int i = 0; i < n; i++, screen_pixels++, hsv++, original++) {
-        u8 value = float_to_u8(hsv->v * 255.0f);
-        screen_pixels->r = value;
-        screen_pixels->g = value;
-        screen_pixels->b = value;
-        screen_pixels->a = original->a;
+        filter(screen_pixels, original, hsv);
     }
+}
+
+static void grey_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+    u8 value = float_to_u8(hsv->v * 255.0f);
+    screen_pixels->r = value;
+    screen_pixels->g = value;
+    screen_pixels->b = value;
+    screen_pixels->a = original->a;
+}
+
+static void red_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+    u8 value = float_to_u8(hsv->v * 255.0f);
+    screen_pixels->r = value;
+    screen_pixels->g = original->g;
+    screen_pixels->b = original->b;
+    screen_pixels->a = original->a;
+}
+
+static void green_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+    u8 value = float_to_u8(hsv->v * 255.0f);
+    screen_pixels->r = original->r;
+    screen_pixels->g = value;
+    screen_pixels->b = original->b;
+    screen_pixels->a = original->a;
+}
+
+static void blue_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+    u8 value = float_to_u8(hsv->v * 255.0f);
+    screen_pixels->r = original->r;
+    screen_pixels->g = original->g;
+    screen_pixels->b = value;
+    screen_pixels->a = original->a;
+}
+
+static void shift1_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+    screen_pixels->r = original->b;
+    screen_pixels->g = original->r;
+    screen_pixels->b = original->g;
+    screen_pixels->a = original->a;
+}
+
+static void shift2_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+    screen_pixels->r = original->g;
+    screen_pixels->g = original->b;
+    screen_pixels->b = original->r;
+    screen_pixels->a = original->a;
+}
+
+void apply_grey_filter(void) {
+    apply_func_filter(grey_filter);
 }
 
 void apply_red_filter(void) {
-    int  n              = main_image.number_of_pixels;
-    RGBA *screen_pixels = main_image.screen_pixels;
-    HSV  *hsv           = main_image.hsv;
-    RGBA *original      = main_image.original_pixels;
-
-    DBG();
-    for (int i = 0; i < n; i++, screen_pixels++, hsv++, original++) {
-        u8 value = float_to_u8(hsv->v * 255.0f);
-        screen_pixels->r = value;
-        screen_pixels->g = original->g;
-        screen_pixels->b = original->b;
-        screen_pixels->a = original->a;
-    }
+    apply_func_filter(red_filter);
 }
 
 void apply_green_filter(void) {
-    int  n              = main_image.number_of_pixels;
-    RGBA *screen_pixels = main_image.screen_pixels;
-    HSV  *hsv           = main_image.hsv;
-    RGBA *original      = main_image.original_pixels;
-
-    DBG();
-    for (int i = 0; i < n; i++, screen_pixels++, hsv++, original++) {
-        u8 value = float_to_u8(hsv->v * 255.0f);
-        screen_pixels->r = original->r;
-        screen_pixels->g = value;
-        screen_pixels->b = original->b;
-        screen_pixels->a = original->a;
-    }
+    apply_func_filter(grey_filter);
 }
 
 void apply_blue_filter(void) {
-    int  n              = main_image.number_of_pixels;
-    RGBA *screen_pixels = main_image.screen_pixels;
-    HSV  *hsv           = main_image.hsv;
-    RGBA *original      = main_image.original_pixels;
-
-    DBG();
-    for (int i = 0; i < n; i++, screen_pixels++, hsv++, original++) {
-        u8 value = float_to_u8(hsv->v * 255.0f);
-        screen_pixels->r = original->r;
-        screen_pixels->g = original->g;
-        screen_pixels->b = value;
-        screen_pixels->a = original->a;
-    }
+    apply_func_filter(blue_filter);
 }
 
 void apply_shift1_filter(void) {
-    int  n              = main_image.number_of_pixels;
-    RGBA *screen_pixels = main_image.screen_pixels;
-    HSV  *hsv           = main_image.hsv;
-    RGBA *original      = main_image.original_pixels;
+    apply_func_filter(shift1_filter);
+}
 
-    DBG();
-    for (int i = 0; i < n; i++, screen_pixels++, hsv++, original++) {
-        screen_pixels->r = original->b;     // green
-        screen_pixels->g = original->r;     // red
-        screen_pixels->b = original->g;     // blue
-        screen_pixels->a = original->a;
-    }
+void apply_shift2_filter(void) {
+    apply_func_filter(shift2_filter);
 }

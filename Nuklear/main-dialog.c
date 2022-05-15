@@ -40,7 +40,8 @@ static const char *filter_names[] = {
         "Bad Red Filter",
         "Bad Green Filter",
         "Bad Blue Filter",
-        "Shift 1"
+        "Shift 1",
+        "Shift 2",
 };
 
 FilterType show_main_dialog(struct nk_context *ctx, OCDimensions win_dimensions) {
@@ -68,7 +69,7 @@ FilterType show_main_dialog(struct nk_context *ctx, OCDimensions win_dimensions)
         nk_layout_row_dynamic(ctx, 20, 1);
         nk_label(ctx, "filter type:", NK_TEXT_LEFT);
         nk_layout_row_dynamic(ctx, 25, 1);
-        int selected = nk_combo(ctx, filter_names, 6, selected_filter, 25, nk_vec2(nk_widget_width(ctx),
+        int selected = nk_combo(ctx, filter_names, 7, selected_filter, 25, nk_vec2(nk_widget_width(ctx),
                                                                                    400));
         if (selected != selected_filter) {
             fprintf(stdout, "filter: %d:%s\n", selected, filter_names[selected]);

@@ -188,6 +188,10 @@ int main(int argc, char **argv) {
                 apply_shift1_filter();
                 refresh_image();
                 break;
+            case Filter_Shift2:
+                apply_shift2_filter();
+                refresh_image();
+                break;
             default:
                 fprintf(stderr, "Unknown filter %d\n", filter);
                 break;
