@@ -23,104 +23,30 @@
  ******************************************************************************/
 
 //
-// Created by bernard on 22/04/22.
+// Created by bernard on 25/04/22.
 //
 
-#ifndef ONE_COLOR_BASIC_DATA_H
-#define ONE_COLOR_BASIC_DATA_H
+#include <stdbool.h>
+#include <stdio.h>
 
-#include <IL/il.h>
+#include "file-data.h"
+#include "file-tools.h"
 
-#if defined(WITH_GL)
-#include <GL/glut.h>
-#endif
+char *program_name    = NULL;
+char *img_source      = NULL;
+char *img_base_source = NULL;
+char *img_destination = NULL;
 
-#include <math.h>
-
-#include "basic-types.h"
-
-typedef struct __attribute__((__packed__)) {
-    u8 r;
-    u8 g;
-    u8 b;
-    u8 a;
-} RGBA;
-
-typedef struct __attribute__((__packed__)) {
-    u8 b;
-    u8 g;
-    u8 r;
-    u8 a;
-} BGRA;
-
-typedef struct {
-    float r;
-    float g;
-    float b;
-} fRGB;
-
-typedef struct {
-    float h;
-    float s;
-    float v;
-} HSV;
-
-typedef struct {
-    ILuint image_name;
-
-    int width;
-    int height;
-    int number_of_pixels;
-
-    int byte_per_pixel;
-    int format;
-
-    float ratio;
-
-    RGBA *original_pixels;
-#if !defined(WITH_EVAS)
-    RGBA *screen_pixels;
-#else
-    BGRA *screen_pixels;
-#endif
-    HSV  *hsv;
-    fRGB *rgb;
-} TheImage;
-
-extern TheImage main_image;
-
-static inline u8 float_to_u8(const float x) {
-    int ix = (int) roundf(x);
-    if (ix > 255) {
-        return (u8) 255;
-    } else if (ix < 0) {
-        return (u8) 0;
-    } else {
-        return (u8) ix;
+bool init_file_data(const int argc, char **argv) {
+    program_name = get_base_name(argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s image_source image_destination\n",
+                program_name);
+        return false;
     }
-}
 
-static inline float u8_to_unit(u8 v) {
-    static const float u_factor = 1.0f / 255.0f;
-    return (float) v * u_factor;
+    img_source      = argv[1];
+    img_base_source = get_base_name(img_source);
+    img_destination = argv[2];
+    return true;
 }
-
-static inline float unit_to_u8(float v) {
-    return float_to_u8(v * 255.0f);
-}
-
-static inline float squeeze_float(const float x, const float min, const float max) {
-    if (x < min) {
-        return min;
-    } else if (x > max) {
-        return max;
-    } else {
-        return x;
-    }
-}
-
-static inline float squeeze_round_float(const float x, const float min, const float max) {
-    return squeeze_float(roundf(x), min, max);
-}
-
-#endif //ONE_COLOR_BASIC_DATA_H

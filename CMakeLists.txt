@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_VERBOSE_MAKEFILE FALSE)
 
 UNSET(CMAKE_C_FLAGS CACHE)
-SET(CMAKE_C_FLAGS "-Wall -Wextra" CACHE STRING "" FORCE)
+SET(CMAKE_C_FLAGS "-Wall -Wextra -pedantic" CACHE STRING "" FORCE)
 
 find_package(PkgConfig)
 
@@ -29,11 +29,11 @@ add_executable(one-color-nuke
         image-library/basic-data.c image-library/basic-data.h
         image-library/colors.c image-library/colors.h
         image-library/filtering.c image-library/filtering.h
-        image-library/file-data.c image-library/file-data.h
+        tools/file-data.c tools/file-data.h
         Nuklear/ocn-glfw3.c Nuklear/ocn-glfw3.h
         Nuklear/main-dialog.c Nuklear/main-dialog.h
         Nuklear/picture-window.c
-        image-library/image-tools.c image-library/image-tools.h
+        opengl/image-tools.c opengl/image-tools.h
         image-library/basic-geometry.c image-library/basic-geometry.h
         image-library/basic-types.h Nuklear/nk_tools.h)
 target_link_libraries(one-color-nuke m glut ${GLFW_LIBRARIES} ${IL_LIBRARIES} GL m GLU GLEW)
@@ -61,8 +61,8 @@ add_executable(one-color-GL
         image-library/basic-data.c image-library/basic-data.h
         image-library/colors.c image-library/colors.h
         image-library/filtering.c image-library/filtering.h
-        image-library/file-data.c image-library/file-data.h
-        image-library/image-tools.c image-library/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h)
+        tools/file-data.c tools/file-data.h
+        opengl/image-tools.c opengl/image-tools.h image-library/basic-geometry.c image-library/basic-geometry.h image-library/basic-types.h)
 target_link_libraries(one-color-GL m glut ${GL_LIBRARIES} ${IL_LIBRARIES})
 target_include_directories(one-color-GL PUBLIC
         opengl

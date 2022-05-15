@@ -65,6 +65,9 @@ static void grey_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
 
 static void red_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
     u8 value = float_to_u8(hsv->v * 255.0f);
+    if (value > 64) {
+        value = 255;
+    }
     screen_pixels->r = value;
     screen_pixels->g = original->g;
     screen_pixels->b = original->b;
@@ -73,6 +76,9 @@ static void red_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
 
 static void green_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
     u8 value = float_to_u8(hsv->v * 255.0f);
+    if (value > 64) {
+        value = 255;
+    }
     screen_pixels->r = original->r;
     screen_pixels->g = value;
     screen_pixels->b = original->b;
@@ -81,6 +87,9 @@ static void green_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
 
 static void blue_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
     u8 value = float_to_u8(hsv->v * 255.0f);
+    if (value > 64) {
+        value = 255;
+    }
     screen_pixels->r = original->r;
     screen_pixels->g = original->g;
     screen_pixels->b = value;
@@ -110,7 +119,7 @@ void apply_red_filter(void) {
 }
 
 void apply_green_filter(void) {
-    apply_func_filter(grey_filter);
+    apply_func_filter(green_filter);
 }
 
 void apply_blue_filter(void) {
