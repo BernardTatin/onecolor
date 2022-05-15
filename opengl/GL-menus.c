@@ -1,3 +1,27 @@
+/******************************************************************************
+ * MIT License                                                                *
+ *                                                                            *
+ * Copyright (c) 2022.  Bernard Tatin                                         *
+ *                                                                            *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  *
+ * copies of the Software, and to permit persons to whom the Software is      *
+ * furnished to do so, subject to the following conditions:                   *
+ *                                                                            *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.                            *
+ *                                                                            *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR *
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,   *
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE*
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.                                                                  *
+ ******************************************************************************/
+
 //
 // Created by bernard on 08/04/2022.
 //
@@ -18,7 +42,7 @@ static void exec_option(const Menu_Values option) {
     bool redraw = true;
     switch (option) {
         case Menu_BW_Normal1:
-//            filter_bw_normal1();
+            //            filter_bw_normal1();
             apply_grey_filter();
             break;
         case Menu_BW_Normal2:
@@ -56,7 +80,7 @@ static void exec_option(const Menu_Values option) {
             glutPostRedisplay();
             break;
         default:
-            fprintf(stderr, "Unknown option %d\n", (int)option);
+            fprintf(stderr, "Unknown option %d\n", (int) option);
             redraw = false;
             break;
     }
@@ -66,11 +90,11 @@ static void exec_option(const Menu_Values option) {
 }
 
 static void menuBlackAndWhite(int num) {
-    exec_option((Menu_Values)num);
+    exec_option((Menu_Values) num);
 }
 
 static void menuMain(int num) {
-    exec_option((Menu_Values)num);
+    exec_option((Menu_Values) num);
 }
 
 void on_special_keys(int key, int x __attribute__((unused)), int y __attribute__((unused))) {
