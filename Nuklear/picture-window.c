@@ -43,16 +43,7 @@ static void scale_texture(OCDimensions *canvas_dim) {
     static float old_w = 0.0f;
     static float old_h = 0.0f;
 
-    int   max_dim = width;
-    int   min_dim = width;
     float w_dim, h_dim;
-
-    if (height > max_dim) {
-        max_dim = height;
-    } else if (height < min_dim) {
-        min_dim = height;
-    } else {
-    }
 
     w_dim = (float) width;
     h_dim = roundf((float) width / ratio);
@@ -74,12 +65,12 @@ static void scale_texture(OCDimensions *canvas_dim) {
 }
 
 
+// FIXME: bad stuff!, must be in a structure
 static struct nk_image main_nk_image;
+static GLuint          main_texture;
 
-struct nk_image image_create(void) {
-    GLuint tex;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
+void refresh_image(void) {
+    glBindTexture(GL_TEXTURE_2D, main_texture);
     glTexParameteri(GL_TEXTURE_2D,
                     GL_TEXTURE_MAG_FILTER,
                     GL_LINEAR); /* We will use linear interpolation for magnification filter */
@@ -103,8 +94,12 @@ struct nk_image image_create(void) {
                  main_image.format,
                  GL_UNSIGNED_BYTE,
                  main_image.screen_pixels);
+}
 
-    main_nk_image = nk_image_id((int) tex);
+struct nk_image image_create(void) {
+    glGenTextures(1, &main_texture);
+    refresh_image();
+    main_nk_image = nk_image_id((int) main_texture);
     return main_nk_image;
 }
 

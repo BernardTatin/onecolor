@@ -26,24 +26,27 @@
 // Created by bernard on 25/04/22.
 //
 
-#ifndef ONE_COLOR_OCN_GLFW3_H
-#define ONE_COLOR_OCN_GLFW3_H
+#include <stdbool.h>
+#include <stdio.h>
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "file-data.h"
+#include "file-tools.h"
 
-#include "nuklear-config.h"
-#include "nuklear.h"
-#include "nuklear_glfw_gl3.h"
+char *program_name    = NULL;
+char *img_source      = NULL;
+char *img_base_source = NULL;
+char *img_destination = NULL;
 
-typedef struct MainData {
-    struct nk_glfw    glfw;
-    GLFWwindow        *win;
-    int               width, height;
-    struct nk_context *ctx;
-    struct nk_colorf  bg;
-    struct nk_color   pic_bg;
-} MainData;
+bool init_file_data(const int argc, char **argv) {
+    program_name = get_base_name(argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s image_source image_destination\n",
+                program_name);
+        return false;
+    }
 
-extern MainData main_data;
-#endif //ONE_COLOR_OCN_GLFW3_H
+    img_source      = argv[1];
+    img_base_source = get_base_name(img_source);
+    img_destination = argv[2];
+    return true;
+}

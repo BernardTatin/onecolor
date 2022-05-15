@@ -1,3 +1,27 @@
+/******************************************************************************
+ * MIT License                                                                *
+ *                                                                            *
+ * Copyright (c) 2022.  Bernard Tatin                                         *
+ *                                                                            *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell  *
+ * copies of the Software, and to permit persons to whom the Software is      *
+ * furnished to do so, subject to the following conditions:                   *
+ *                                                                            *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.                            *
+ *                                                                            *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR *
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,   *
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE*
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.                                                                  *
+ ******************************************************************************/
+
 //
 // Created by bernard on 22/04/22.
 //
@@ -7,12 +31,7 @@
 
 #include <IL/il.h>
 
-#if defined(WITH_EVAS)
-
-#include <Ecore.h>
-#include <Ecore_Evas.h>
-
-#elif defined(WITH_GL)
+#if defined(WITH_GL)
 #include <GL/glut.h>
 #endif
 
@@ -64,26 +83,26 @@ typedef struct {
 #else
     BGRA *screen_pixels;
 #endif
-    HSV *hsv;
+    HSV  *hsv;
     fRGB *rgb;
-}  TheImage;
+} TheImage;
 
 extern TheImage main_image;
 
 static inline u8 float_to_u8(const float x) {
     int ix = (int) roundf(x);
     if (ix > 255) {
-        return (u8)255;
+        return (u8) 255;
     } else if (ix < 0) {
-        return (u8)0;
+        return (u8) 0;
     } else {
-        return (u8)ix;
+        return (u8) ix;
     }
 }
 
 static inline float u8_to_unit(u8 v) {
     static const float u_factor = 1.0f / 255.0f;
-    return (float)v * u_factor;
+    return (float) v * u_factor;
 }
 
 static inline float unit_to_u8(float v) {

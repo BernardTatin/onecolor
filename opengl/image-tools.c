@@ -23,27 +23,46 @@
  ******************************************************************************/
 
 //
-// Created by bernard on 25/04/22.
+// Created by bernard on 26/04/22.
 //
 
-#ifndef ONE_COLOR_OCN_GLFW3_H
-#define ONE_COLOR_OCN_GLFW3_H
+#include <stdio.h>
+#include "basic-geometry.h"
+#include "image-tools.h"
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+//#define _dbg_
 
-#include "nuklear-config.h"
-#include "nuklear.h"
-#include "nuklear_glfw_gl3.h"
+void scale_image(const OCDimensions canvas_dimensions, const float ratio, OCRectangle *pict_rectangle) {
+#if defined(_dbg_)
+    static int       kk = 0;
+    static const int m  = 128;
+#endif
+    int   left   = 0;
+    int   top    = 0;
+    int   width  = canvas_dimensions.width;
+    int   height = canvas_dimensions.height;
+    float nw     = (float) width;
+    float nh     = nw / ratio;
 
-typedef struct MainData {
-    struct nk_glfw    glfw;
-    GLFWwindow        *win;
-    int               width, height;
-    struct nk_context *ctx;
-    struct nk_colorf  bg;
-    struct nk_color   pic_bg;
-} MainData;
-
-extern MainData main_data;
-#endif //ONE_COLOR_OCN_GLFW3_H
+    if (nh > (float) height) {
+        nh = (float) height;
+        nw = (float) nh * ratio;
+        if (nw > (float) width) {
+            fprintf(stderr, "Resize image: nw > width (%d > %d)\n",
+                    (int) roundf(nw), width);
+        }
+    }
+    left         = (int) fabsf(roundf(0.5f * (nw - (float) canvas_dimensions.width)));
+    top          = (int) fabsf(roundf(0.5f * (nh - (float) canvas_dimensions.height)));
+    pict_rectangle->left   = left;
+    pict_rectangle->top    = top;
+    pict_rectangle->width  = (int) nw;
+    pict_rectangle->height = (int) nh;
+#if defined(_dbg_)
+    if (kk == 0) {
+        fprintf(stdout, "Ratio %5.3f -> %5.3f\n", ratio, nw / nh);
+    }
+    kk++;
+    kk &= m - 1;
+#endif
+}

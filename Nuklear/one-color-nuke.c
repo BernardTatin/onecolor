@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "debug.h"
 #include "file-data.h"
 #include "ocn-glfw3.h"
 #include "ocn-configuration.h"
@@ -170,7 +171,28 @@ int main(int argc, char **argv) {
                 break;
             case Filter_Grey:
                 apply_grey_filter();
-                image_create();
+                refresh_image();
+                break;
+            case Filter_Red:
+                apply_red_filter();
+                refresh_image();
+                break;
+            case Filter_Green:
+                DBG();
+                apply_green_filter();
+                refresh_image();
+                break;
+            case Filter_Blue:
+                apply_blue_filter();
+                refresh_image();
+                break;
+            case Filter_Shift1:
+                apply_shift1_filter();
+                refresh_image();
+                break;
+            case Filter_Shift2:
+                apply_shift2_filter();
+                refresh_image();
                 break;
             default:
                 fprintf(stderr, "Unknown filter %d\n", filter);
