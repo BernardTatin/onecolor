@@ -41,8 +41,7 @@ static void exec_option(const Menu_Values option) {
     bool redraw = true;
     switch (option) {
         case Menu_BW_Normal1:
-            //            filter_bw_normal1();
-            apply_grey_filter();
+            filter_bw_normal1();
             break;
         case Menu_BW_Normal2:
             filter_bw_normal2();

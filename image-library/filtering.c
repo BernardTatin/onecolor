@@ -29,9 +29,11 @@
 #include <stdio.h>
 
 #if defined(WITH_GL)
+
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
+
 #elif defined(WITH_NUKE)
 
 #include "ocn-configuration.h"
@@ -96,14 +98,14 @@ static void blue_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
     screen_pixels->a = original->a;
 }
 
-static void shift1_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+static void shift1_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv __attribute__((unused))) {
     screen_pixels->r = original->b;
     screen_pixels->g = original->r;
     screen_pixels->b = original->g;
     screen_pixels->a = original->a;
 }
 
-static void shift2_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv) {
+static void shift2_filter(RGBA *screen_pixels, RGBA *original, HSV *hsv __attribute__((unused))) {
     screen_pixels->r = original->g;
     screen_pixels->g = original->b;
     screen_pixels->b = original->r;

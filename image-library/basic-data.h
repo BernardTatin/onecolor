@@ -32,7 +32,9 @@
 #include <IL/il.h>
 
 #if defined(WITH_GL)
+
 #include <GL/glut.h>
+
 #endif
 
 #include <math.h>
@@ -46,12 +48,6 @@ typedef struct __attribute__((__packed__)) {
     u8 a;
 } RGBA;
 
-typedef struct __attribute__((__packed__)) {
-    u8 b;
-    u8 g;
-    u8 r;
-    u8 a;
-} BGRA;
 
 typedef struct {
     float r;
@@ -78,11 +74,7 @@ typedef struct {
     float ratio;
 
     RGBA *original_pixels;
-#if !defined(WITH_EVAS)
     RGBA *screen_pixels;
-#else
-    BGRA *screen_pixels;
-#endif
     HSV  *hsv;
     fRGB *rgb;
 } TheImage;

@@ -31,18 +31,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#if defined(WITH_EVAS)
-#include <Ecore_Evas.h>
-#elif defined(WITH_GL)
+#if defined(WITH_GL)
+
 #include <GL/glut.h>
+
 #endif
 
 #include "colors.h"
 
-#if defined(WITH_EVAS)
-#include "evas-configuration.h"
-#elif defined(WITH_GL)
+#if defined(WITH_GL)
+
 #include "GL-Configuration.h"
+
 #endif
 
 #include "dev-IL-tools.h"
@@ -62,10 +62,6 @@ static void fill_pixels_buffers(TheImage *image) {
     RGBA *pixels = image->original_pixels;
     HSV  *hsv    = image->hsv;
     fRGB *rgb    = image->rgb;
-#if defined(WITH_EVAS)
-    image->screen_pixels = (BGRA *)malloc(n * sizeof(BGRA));
-    BGRA *screen_pixels = image->screen_pixels;
-#else
     image->screen_pixels = (RGBA *) malloc(n * sizeof(RGBA));
     RGBA *screen_pixels = image->screen_pixels;
     ilCopyPixels(0, 0, 0,
@@ -73,14 +69,7 @@ static void fill_pixels_buffers(TheImage *image) {
                  1,
                  IL_RGBA, IL_UNSIGNED_BYTE,
                  image->screen_pixels);
-#endif
     for (int i = 0; i < n; i++, rgb++, pixels++, screen_pixels++, hsv++) {
-#if defined(WITH_EVAS)
-        screen_pixels->a = pixels->a;
-        screen_pixels->r = pixels->r;
-        screen_pixels->g = pixels->g;
-        screen_pixels->b = pixels->b;
-#endif
         rgb->r           = (float) pixels->r / 255.0f;
         rgb->g           = (float) pixels->g / 255.0f;
         rgb->b           = (float) pixels->b / 255.0f;

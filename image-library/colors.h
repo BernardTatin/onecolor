@@ -44,13 +44,4 @@ static inline void evas_color_RGBA_to_hsv(RGBA *rgba, HSV *hsv) {
                             &hsv->v);
 }
 
-static inline void evas_color_BGRA_to_hsv(BGRA *bgra, HSV *hsv) {
-    evas_color_rgb_to_hsv_k(bgra->r,
-                            bgra->g,
-                            bgra->b,
-                            &hsv->h,
-                            &hsv->s,
-                            &hsv->v);
-}
-
 #endif //ONE_COLOR_COLORS_H
