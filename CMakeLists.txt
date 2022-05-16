@@ -84,15 +84,15 @@ target_link_libraries(opengl-load-image m glut GL GLU IL)
 #
 add_executable(one-color
         one-color/one-color.c
-        image-lib/filters.h
-        image-lib/filters.c
-        image-lib/image-files.c
-        image-lib/image-files.h
-        image-lib/color-tools.h
-        image-lib/color-data.h
-        image-lib/hsv-filter.c
-        image-lib/hsv-filter.h
+        old-image-lib/filters.h
+        old-image-lib/filters.c
+        old-image-lib/image-files.c
+        old-image-lib/image-files.h
+        old-image-lib/color-tools.h
+        old-image-lib/color-data.h
+        old-image-lib/hsv-filter.c
+        old-image-lib/hsv-filter.h
         configuration/main-configuration.h
         configuration/main-configuration.c)
 target_link_libraries(one-color jpeg m)
-target_include_directories(one-color PUBLIC image-lib configuration)
+target_include_directories(one-color PUBLIC old-image-lib configuration)
