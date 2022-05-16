@@ -68,7 +68,7 @@ static void exec_option(const Menu_Values option) {
             filter_average();
             break;
         case Menu_Quit:
-            glutDestroyWindow(mainWindow.window);
+            glutDestroyWindow(main_window.window);
             exit(0);
             break;
         case Menu_Clear:
@@ -127,7 +127,7 @@ void on_key(unsigned char key, int x __attribute__((unused)), int y __attribute_
 }
 
 void createMenu(void) {
-    mainWindow.submenu_id = glutCreateMenu(menuBlackAndWhite);
+    main_window.submenu_id = glutCreateMenu(menuBlackAndWhite);
     glutAddMenuEntry("Normal 1", Menu_BW_Normal1);
     glutAddMenuEntry("Normal 2", Menu_BW_Normal2);
     glutAddMenuEntry("Normal 3", Menu_BW_Normal3);
@@ -139,9 +139,9 @@ void createMenu(void) {
     glutAddMenuEntry("Hard Blue :b", Menu_BW_Hard_Blue);
     glutAddMenuEntry("Suppress saturation", Menu_BW_No_Saturation);
 
-    mainWindow.menu_id = glutCreateMenu(menuMain);
+    main_window.menu_id = glutCreateMenu(menuMain);
     glutAddMenuEntry("Clear :c", Menu_Clear);
-    glutAddSubMenu("Black and White", mainWindow.submenu_id);
+    glutAddSubMenu("Black and White", main_window.submenu_id);
     glutAddMenuEntry("Quit :q", Menu_Quit);
 
     glutAttachMenu(GLUT_RIGHT_BUTTON);

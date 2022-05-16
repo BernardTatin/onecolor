@@ -42,7 +42,7 @@
 
 int nFrames = 0;
 
-GLWindow mainWindow = {
+GLWindow main_window = {
         .width = DEFAULT_WIDTH,
         .height = DEFAULT_HEIGHT,
         .value = 2
@@ -57,8 +57,8 @@ static inline void quad_vertex(const int tx, const int ty,
 
 static inline void unit_quad(void) {
     OCDimensions dimensions = {
-            .width = mainWindow.width,
-            .height = mainWindow.height
+            .width = main_window.width,
+            .height = main_window.height
     };
     OCRectangle  rectangle;
     scale_image(dimensions, main_image.ratio, &rectangle);
@@ -104,13 +104,13 @@ static void reshapeFunc(GLsizei new_width, GLsizei new_height) {
 
     // printf("reshape(%d, %d) ", new_width, new_height );
 
-    mainWindow.width  = new_width;
-    mainWindow.height = new_height;
+    main_window.width  = new_width;
+    main_window.height = new_height;
     // Set the viewport to cover the new window
-    glViewport(0, 0, mainWindow.width, mainWindow.height);
+    glViewport(0, 0, main_window.width, main_window.height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, mainWindow.width, mainWindow.height, 0.0, 0.0, 100.0);
+    glOrtho(0.0, main_window.width, main_window.height, 0.0, 0.0, 100.0);
     glMatrixMode(GL_MODELVIEW);
 
     glutPostRedisplay();
@@ -144,9 +144,9 @@ int main(int argc, char **argv) {
     /* GLUT init */
     glutInit(&argc, argv);            // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE); // Enable double buffered mode
-    glutInitWindowSize(mainWindow.width, mainWindow.height);   // Set the window's initial width & height
+    glutInitWindowSize(main_window.width, main_window.height);   // Set the window's initial width & height
 
-    mainWindow.window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
+    main_window.window = glutCreateWindow(argv[1]);      // Create window with the name of the executable
 
     createMenu();
     glutKeyboardFunc(on_key);
@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
     glutReshapeFunc(reshapeFunc);       // Register callback handler for window re-size event
 
     /* OpenGL 2D generic init */
-    //    initGL(mainWindow.width, mainWindow.height);
+    //    initGL(main_window.width, main_window.height);
 
     /* Initialization of DevIL */
     if (!init_DevIL()) {
@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
     /* OpenGL 2D generic init */
-    initGL(mainWindow.width, mainWindow.height);
+    initGL(main_window.width, main_window.height);
     /* OpenGL texture binding of the main_image loaded by DevIL  */
     glGenTextures(1, &texID); /* Texture name generation */
     glBindTexture(GL_TEXTURE_2D, texID); /* Binding of texture name */
