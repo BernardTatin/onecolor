@@ -36,7 +36,6 @@
 #include "GL-Configuration.h"
 #include "GL-menus.h"
 #include "GL-filters.h"
-#include "filtering.h"
 
 static void exec_option(const Menu_Values option) {
     bool redraw = true;

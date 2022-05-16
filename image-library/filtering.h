@@ -40,15 +40,10 @@ typedef enum {
 } FilterType;
 
 void apply_grey_filter(void);
-
 void apply_red_filter(void);
-
 void apply_green_filter(void);
-
 void apply_blue_filter(void);
-
 void apply_shift1_filter(void);
-
 void apply_shift2_filter(void);
 
 #endif //ONE_COLOR_FILTERING_H

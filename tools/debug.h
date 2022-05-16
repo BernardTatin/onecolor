@@ -29,7 +29,9 @@
 #ifndef ONE_COLOR_DEBUG_H
 #define ONE_COLOR_DEBUG_H
 
+#if !defined(__FILE_NAME__)
+#define __FILE_NAME__ __FILE__
+#endif
 #define DBG()   fprintf(stdout, "DEBUG %5d %-32s %s\n", \
-                    __LINE__, __FILE__, __func__)
-
+                    __LINE__, __FILE_NAME__, __func__)
 #endif //ONE_COLOR_DEBUG_H
