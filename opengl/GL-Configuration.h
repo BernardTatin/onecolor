@@ -46,14 +46,12 @@
 #define gl_version "4.0"
 #elif defined(GL_VERSION_3GL_VERSION_3_3)
 #define gl_version "3.3"
-#elif defined(GL_VERSION_3GL_VERSION_3_2)
-#define gl_version "3.2"
 #else
-#error "We need Open GL version 3.2 or more recent"
+#warning "We need Open GL version 3.3 or more recent"
 #endif
 
 
-#define DEFAULT_WIDTH  640
+#define DEFAULT_WIDTH  960
 #define DEFAULT_HEIGHT 640
 
 #include "basic-data.h"
@@ -69,6 +67,5 @@ typedef struct {
 
 
 extern GLWindow mainWindow;
-extern TheImage main_image;
 
 #endif //ONE_COLOR_GL_CONFIGURATION_H

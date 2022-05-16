@@ -30,8 +30,6 @@
 
 #if defined(WITH_GL)
 
-#include <GL/glut.h>
-
 #include "GL-Configuration.h"
 
 #elif defined(WITH_NUKE)
