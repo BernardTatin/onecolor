@@ -29,7 +29,7 @@
 #ifndef ONECOLOR_IMAGE_FILES_H
 #define ONECOLOR_IMAGE_FILES_H
 
-#include "filters.h"
+#include "../filtering/filters.h"
 
 ImageLib_RawImage *loadJpegImageFile(char *lpFilename);
 

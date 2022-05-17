@@ -31,8 +31,8 @@
 
 #include "color-data.h"
 #include "image-files.h"
-#include "filters.h"
-#include "hsv-filter.h"
+#include "../filtering/filters.h"
+#include "../filtering/hsv-filter.h"
 #include "main-configuration.h"
 
 static void do_help(const int exit_code) {

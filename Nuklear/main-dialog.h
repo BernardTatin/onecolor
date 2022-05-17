@@ -31,7 +31,7 @@
 
 #include "ocn-configuration.h"
 #include "basic-geometry.h"
-#include "filtering.h"
+#include "../filtering/filtering.h"
 
 #define MAIN_DIALOG_WIDTH   230
 #define MAIN_DIALOG_HEIGHT  WINDOW_HEIGHT

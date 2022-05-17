@@ -32,7 +32,7 @@
 #include <GL/glut.h>
 
 #include "GL-Configuration.h"
-#include "GL-filters.h"
+#include "../filtering/GL-filters.h"
 
 /*
  * Normal black and white

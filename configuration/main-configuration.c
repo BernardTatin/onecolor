@@ -29,8 +29,8 @@
 #include <stdbool.h>
 
 #include "color-data.h"
-#include "filters.h"
-#include "hsv-filter.h"
+#include "../filtering/filters.h"
+#include "../filtering/hsv-filter.h"
 #include "main-configuration.h"
 
 const float hsv_Red    = 0.0f;

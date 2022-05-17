@@ -29,7 +29,7 @@
 #ifndef ONE_COLOR_MAIN_CONFIGURATION_H
 #define ONE_COLOR_MAIN_CONFIGURATION_H
 
-#include "hsv-filter.h"
+#include "../filtering/hsv-filter.h"
 
 extern const float hsv_Red;
 extern const float hsv_Green;

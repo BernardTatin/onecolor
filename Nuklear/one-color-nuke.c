@@ -34,7 +34,7 @@
 #include "basic-geometry.h"
 #include "main-dialog.h"
 #include "dev-IL-tools.h"
-#include "filtering.h"
+#include "../filtering/filtering.h"
 
 #include "style.c"
 
