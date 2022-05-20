@@ -94,10 +94,12 @@ add_executable(one-color
         old-image-lib/color-data.h
         filtering/hsv-filter.c
         filtering/hsv-filter.h
+        image-library/colors.c image-library/colors.h
         configuration/main-configuration.h
         configuration/main-configuration.c)
 target_link_libraries(one-color jpeg m)
 target_include_directories(one-color PUBLIC
         filtering
+        image-library
         old-image-lib
         configuration)

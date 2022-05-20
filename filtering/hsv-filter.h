@@ -29,11 +29,15 @@
 #ifndef ONECOLOR_HSV_FILTER_H
 #define ONECOLOR_HSV_FILTER_H
 
+#include "basic-data.h"
+
+/*
 typedef struct {
     float h;
     float s;
     float v;
 } HSV;
+*/
 
 typedef struct {
     float h;

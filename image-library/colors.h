@@ -31,17 +31,36 @@
 
 #include "basic-data.h"
 
-void evas_color_rgb_to_hsv_k(int r, int g, int b, float *h, float *s, float *v);
+void evas_color_rgb_to_hsv_fk(int r, int g, int b, float *h, float *s, float *v);
 
-void evas_rgb_to_hsv_int_k(int r, int g, int b, int *h, int *s, int *v);
+void evas_color_rgb_to_hsv_ik(int r, int g, int b, int *h, int *s, int *v);
 
 static inline void evas_color_RGBA_to_hsv(RGBA *rgba, HSV *hsv) {
-    evas_color_rgb_to_hsv_k(rgba->r,
-                            rgba->g,
-                            rgba->b,
-                            &hsv->h,
-                            &hsv->s,
-                            &hsv->v);
+    evas_color_rgb_to_hsv_fk(rgba->r,
+                             rgba->g,
+                             rgba->b,
+                             &hsv->h,
+                             &hsv->s,
+                             &hsv->v);
+}
+
+static inline float get_hue_360f(const unsigned char R, const unsigned char G, const unsigned char B) {
+    HSV   hsv;
+    float hue;
+
+    evas_color_rgb_to_hsv_fk((int) R,
+                             (int) G,
+                             (int) B,
+                             &hsv.h,
+                             &hsv.s,
+                             &hsv.v);
+    hue = hsv.h;
+    if (hue < 0.0f) {
+        hue += 360.0f;
+    } else if (hue > 360.0f) {
+        hue -= 360.0f;
+    }
+    return hue;
 }
 
 #endif //ONE_COLOR_COLORS_H

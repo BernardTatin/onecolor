@@ -34,6 +34,7 @@
 #include "filters.h"
 #include "hsv-filter.h"
 #include "main-configuration.h"
+#include "colors.h"
 
 typedef enum {
     CMaxR, CMaxG, CMaxB
@@ -49,47 +50,6 @@ static float mod_float(float x, const float m) {
     return x;
 }
 
-static float rgb2hue(const unsigned char R, const unsigned char G, const unsigned char B) {
-    float         hue    = 0.0f;
-    float         fR     = (float) R / 255.0f;
-    float         fG     = (float) G / 255.0f;
-    float         fB     = (float) B / 255.0f;
-    unsigned char cMax   = R;
-    unsigned char cMin   = R;
-    CMaxType      mType  = CMaxR;
-    unsigned char delta  = 0;
-    float         fDelta = 0.0f;
-    if (G > R && G > B) {
-        cMax  = G;
-        mType = CMaxG;
-    } else if (B > R && B > G) {
-        cMax  = B;
-        mType = CMaxB;
-    }
-    if (G < R && G < B) {
-        cMin = G;
-    } else if (B < R && B < G) {
-        cMin = B;
-    }
-    delta                = cMax - cMin;
-    fDelta               = (float) delta / 255.0f;
-    if (delta == 0) {
-        return hue;
-    } else if (mType == CMaxR) {
-        hue = 0.0f + (fG - fB) / fDelta;
-    } else if (mType == CMaxG) {
-        hue = 2.0f + (fB - fR) / fDelta;
-    } else {
-        hue = 4.0f + (fR - fG) / fDelta;
-    }
-    hue                  = 60.0f * hue;
-    //    fprintf(stdout, "RGB: %3u, %3u, %3u -> hue: %3.5f\n",
-    //            (unsigned)R, (unsigned)G, (unsigned)B,
-    //            hue);
-    // hue = mod_float(60.0f * hue, 360.0f);
-    return hue;
-}
-
 ImageLib_Error filter_hue(ImageLib_RawImage *lpInput, ImageLib_RawImage **lpOutput) {
     unsigned long int pixelNumber = lpInput->width * lpInput->height;
 
@@ -99,12 +59,12 @@ ImageLib_Error filter_hue(ImageLib_RawImage *lpInput, ImageLib_RawImage **lpOutp
     }
     (*lpOutput) = make_lpOutput(lpInput);
 
-    for (unsigned int i = 0; i < pixelNumber; i++) {
-        unsigned long int i3     = i * 3;
+    float             minHue = mod_float(global_configuration.hue - global_configuration.delta, 360.0f);
+    float             maxHue = mod_float(global_configuration.hue + global_configuration.delta, 360.0f);
+    for (unsigned int i      = 0; i < pixelNumber; i++) {
+        unsigned long int i3  = i * 3;
         bool inFilter = false;
-        float             hue    = rgb2hue(Rin(i3), Gin(i3), Bin(i3));
-        float             minHue = mod_float(global_configuration.hue - global_configuration.delta, 360.0f);
-        float             maxHue = mod_float(global_configuration.hue + global_configuration.delta, 360.0f);
+        float             hue = get_hue_360f(Rin(i3), Gin(i3), Bin(i3));
         if (minHue < maxHue) {
             inFilter = (hue <= maxHue) && (hue >= minHue);
         } else {

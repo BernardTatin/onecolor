@@ -30,7 +30,7 @@
 
 #include "colors.h"
 
-void evas_color_rgb_to_hsv_k(int r, int g, int b, float *h, float *s, float *v) {
+void evas_color_rgb_to_hsv_fk(int r, int g, int b, float *h, float *s, float *v) {
     int max, min, d = r - g;
 
     //set min to MIN(g,r)
@@ -51,8 +51,12 @@ void evas_color_rgb_to_hsv_k(int r, int g, int b, float *h, float *s, float *v) 
 
     if (v) { *v = (max / 255.0); }
     if (!max || !d) {
-        if (s) { *s = 0; }
-        if (h) { *h = 0; }
+        if (s) {
+            *s = 0;
+        }
+        if (h) {
+            *h = 0;
+        }
         return;
     }
 
@@ -60,24 +64,31 @@ void evas_color_rgb_to_hsv_k(int r, int g, int b, float *h, float *s, float *v) 
     if (r == max) {
         if (h) {
             *h = 60 * ((g - b) / (float) d);
-            if (*h < 0) { *h += 360; }
+            if (*h < 0) {
+                *h += 360;
+            }
         }
         return;
     }
     if (g == max) {
         if (h) {
             *h = 120 + (60 * ((b - r) / (float) d));
-            if (*h < 0) { *h += 360; }
+            if (*h < 0) {
+                *h += 360;
+            }
         }
         return;
     }
     if (h) {
         *h = 240 + (60 * ((r - g) / (float) d));
-        if (*h < 0) { *h += 360; }
+        if (*h < 0) {
+            *h += 360;
+        }
+
     }
 }
 
-void evas_rgb_to_hsv_int_k(int r, int g, int b, int *h, int *s, int *v) {
+void evas_color_rgb_to_hsv_ik(int r, int g, int b, int *h, int *s, int *v) {
     int min, max, d = r - g;
 
     d   = (d & (~(d >> 8)));
@@ -102,14 +113,20 @@ void evas_rgb_to_hsv_int_k(int r, int g, int b, int *h, int *s, int *v) {
 
     if (r == max) {
         *h = (((g - b) * 255) / d);
-        if (*h < 0) { *h += 1530; }
+        if (*h < 0) {
+            *h += 1530;
+        }
         return;
     }
     if (g == max) {
         *h = 510 + (((b - r) * 255) / d);
-        if (*h < 0) { *h += 1530; }
+        if (*h < 0) {
+            *h += 1530;
+        }
         return;
     }
     *h = 1020 + (((r - g) * 255) / d);
-    if (*h < 0) { *h += 1530; }
+    if (*h < 0) {
+        *h += 1530;
+    }
 }

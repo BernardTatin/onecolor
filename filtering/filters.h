@@ -30,9 +30,7 @@
 #define ONECOLOR_FILTERS_H
 
 ImageLib_Error exec_filter(ImageLib_RawImage *lpInput, ImageLib_RawImage **lpOutput);
-
 ImageLib_Error filter_gray_scale(ImageLib_RawImage *lpInput, ImageLib_RawImage **lpOutput);
-
 ImageLib_Error filter_hue(ImageLib_RawImage *lpInput, ImageLib_RawImage **lpOutput);
 
 
