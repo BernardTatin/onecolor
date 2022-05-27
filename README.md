@@ -1,12 +1,14 @@
 # One Color
 
+Rien ne va plus, on donne un coup de jeune au PC et on recommence, autrement.
+
+
+
 Le but de cet outil est de ne garder qu'une seule couleur d'une photo pour rendre en noir et blanc tout le reste. Pour la teinte (_hue_), voir [HSL and HSV](https://en.m.wikipedia.org/wiki/HSL_and_HSV) sur _Wikipedia_.
 
 Voir aussi:
 
 - [TODO](TODO.md)
-
-
 
 ## le code
 
@@ -36,8 +38,6 @@ make[1] : on quitte le répertoire « .../build »
 /usr/bin/cmake -E cmake_progress_start .../build/CMakeFiles 0
 ```
 
-
-
 ## versions
 
 ### 5 avril 2022
@@ -63,4 +63,3 @@ Les options possibles sont en réalité les suivantes:
   - `jpegin jpegout`
     - `jpegin`: fichier image en entrée, au format JPEG, le fichier doit exister et avoir un format JPEG valide,
     - `jpegout`: fichier image en sortie, écrase sans vergogne le fichier existant du même nom et supprime toutes les données EXIF du fichier en entrée.
-
